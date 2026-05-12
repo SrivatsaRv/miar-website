@@ -15,14 +15,11 @@ const socialImage = "https://miar.reachdefence.com/imagery/hotan-airfield-hero.p
 const navItems = isHome
   ? [
       { href: "#solutions", label: "Solutions" },
-      { href: "/whitepapers/", label: "Whitepapers" },
-      { href: "/blogs/", label: "Blogs" },
-      { href: "#about", label: "About" },
+      { href: "#insights", label: "Insights" },
+      { href: "#waitlist", label: "Request access" },
     ]
   : [
       { href: "/", label: "Home", active: current === "home" },
-      { href: "/whitepapers/", label: "Whitepapers", active: current === "whitepapers" },
-      { href: "/blogs/", label: "Blogs", active: current === "blogs" },
     ];
 ---
 
@@ -105,13 +102,23 @@ const navItems = isHome
 
     <footer class="site-footer">
       <div class="footer-shell">
-        <span>MIAR</span>
+        <div class="footer-brand">
+          <span>MIAR</span>
+          <p>
+            A Reach Defence initiative. Access is restricted, invite-only, and intended for
+            evaluated users and approved workflows.
+          </p>
+        </div>
+
         <div class="footer-links">
           <a href="/#solutions">Solutions</a>
-          <a href="/whitepapers/">Whitepapers</a>
-          <a href="/blogs/">Blogs</a>
-          <a href="/#about">About</a>
+          <a href="/#insights">Insights</a>
           <a href="/#waitlist">Request access</a>
+        </div>
+
+        <div class="footer-meta">
+          <p>Reach Defence</p>
+          <p>Restricted use. Invitation required.</p>
         </div>
       </div>
     </footer>
