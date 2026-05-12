@@ -1,0 +1,16 @@
+{
+  "name": "miar-website",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port 3004",
+    "build": "astro build",
+    "preview": "astro preview --host 0.0.0.0 --port 3004",
+    "preview:pages": "npm run build && wrangler pages dev dist --port 3004 --compatibility-date=2026-05-12"
+  },
+  "dependencies": {
+    "astro": "^6.3.1",
+    "wrangler": "^4.90.0"
+  }
+}

@@ -1,0 +1,1264 @@
+# Remote Sensing Subject-Matter Primer
+
+## Satellite Imagery, Commercial Providers, Change Detection, and Object Detection
+
+Date: 2026-05-12
+
+## How To Read This Primer
+
+This primer is meant to be used in three passes:
+
+1. First pass: understand the sensor and market landscape.
+2. Second pass: understand change detection and object detection workflows.
+3. Third pass: connect those concepts into an evidence-bearing system like SHIELD.
+
+If you only need the shortest possible study order, read these sections first:
+
+- `1. Remote Sensing Fundamentals`
+- `2. Main Satellite Sensor Types`
+- `7. How Imagery Companies Usually Work`
+- `9. Change Detection`
+- `10. Object Detection in Overhead Imagery`
+- `15. What SHIELD Needs to Understand from All This`
+
+## Purpose
+
+This document is a subject-matter primer, not a product brief.
+
+It is meant to teach the technical concepts that a team needs to understand before it
+can build serious capabilities around:
+
+- aircraft taxonomy from overhead imagery
+- resolution-aware image analysis
+- satellite and SAR imagery sourcing
+- change detection over time
+- object detection and fine-grained recognition
+- evidence-bearing workflows inside a system like SHIELD
+
+It is deliberately broader than MIAR. The goal is to understand the domain itself:
+
+- how the Earth observation market works
+- what kinds of imagery exist
+- what commercial and public providers actually offer today
+- how imagery is consumed in real workflows
+- what modern analysis pipelines do well
+- where the hard limitations still are
+
+## Executive View
+
+If you are new to this domain, the first thing to understand is that "satellite
+imagery" is not one thing.
+
+It is an ecosystem built from different tradeoffs:
+
+- optical vs radar
+- very high spatial resolution vs broad area coverage
+- daily revisit vs exquisite detail
+- open public data vs premium commercial tasking
+- single-scene interpretation vs long-running time-series monitoring
+
+Most failed geospatial AI efforts make one of four mistakes:
+
+1. They treat resolution as the only thing that matters.
+2. They ignore how imagery is actually purchased, tasked, licensed, and delivered.
+3. They underestimate change detection and time-series analysis.
+4. They confuse object detection demos with operational evidence workflows.
+
+The right mental model is:
+
+1. learn the sensor stack
+2. learn the supplier landscape
+3. learn the data delivery and consumption models
+4. learn the analysis patterns
+5. learn the failure modes
+6. only then decide what product or model program to build
+
+## At A Glance
+
+| Topic | What you need to know first | Why it matters |
+| --- | --- | --- |
+| Resolution | Spatial resolution is only one of four resolution types | Many teams overestimate what a nominal GSD can prove |
+| Sensors | Optical and SAR solve different problems | Real monitoring stacks usually need both |
+| Providers | Archive, tasking, monitoring, licensing, and APIs matter as much as pixels | Product and evidence workflows depend on how imagery is sold and delivered |
+| Change detection | Registration and normalization are as important as model choice | False change is one of the core operational failure modes |
+| Object detection | Benchmark mAP is not the same as operational success | Domain shift and evidence quality dominate in real deployments |
+| SHIELD alignment | Detections should enter as evidence first, not canonical truth | This preserves provenance, reviewability, and governance |
+
+## 1. Remote Sensing Fundamentals
+
+### 1.1 What remote sensing means
+
+Remote sensing is the measurement or observation of the Earth from a distance. In this
+context, that usually means:
+
+- satellites
+- aircraft
+- drones
+
+For this primer, the primary focus is Earth observation satellites.
+
+### 1.2 The four resolution concepts everyone must know
+
+When people say "resolution", they often mean only spatial resolution. That is too
+narrow. There are four distinct ideas:
+
+#### Spatial resolution
+
+The ground size represented by one pixel.
+
+Examples:
+
+- 30 cm
+- 50 cm
+- 1 m
+- 10 m
+- 30 m
+
+This determines how much geometric detail can be resolved.
+
+#### Temporal resolution
+
+How often the same place can be imaged again.
+
+Examples:
+
+- several times per day in high-demand commercial constellations
+- near-daily land coverage with medium-resolution fleets
+- every few days with paired public missions
+
+This determines whether you can monitor change or only inspect snapshots.
+
+#### Spectral resolution
+
+How many wavelength bands are measured, and how narrow those bands are.
+
+Examples:
+
+- RGB only
+- RGB + near-infrared
+- multispectral
+- hyperspectral
+
+This determines whether you can do more than shape-based visual interpretation.
+
+#### Radiometric resolution
+
+How finely the sensor records intensity differences.
+
+This affects subtle discrimination, calibration quality, and analytic usefulness.
+
+### 1.3 Ground sample distance is important, but not enough
+
+Ground sample distance, or GSD, is the most widely quoted number in the market because it
+is easy to compare across providers. But GSD is not the full story.
+
+Interpretability also depends on:
+
+- look angle or off-nadir collection
+- atmospheric haze
+- cloud cover
+- shadows
+- geolocation accuracy
+- image processing pipeline
+- pansharpening quality
+- sensor noise
+- compression
+- whether the target is in the open or obscured
+
+A nominal 30 cm image can still be poor for recognition if the acquisition geometry or
+scene conditions are bad.
+
+### 1.4 The operational distinction between seeing and knowing
+
+In remote sensing, there is a major difference between:
+
+- seeing something in the image
+- proving what it is
+
+This difference matters for all downstream tasks:
+
+- aircraft family recognition
+- force-counting
+- change detection
+- intelligence reporting
+
+A useful rule:
+
+- detection asks "is there an object here"
+- classification asks "what object is it"
+- interpretation asks "what does it mean"
+
+Many teams are good at the first and weak at the third.
+
+### Quick reference: four kinds of resolution
+
+| Resolution type | Core question | Typical example |
+| --- | --- | --- |
+| Spatial | How much ground does one pixel cover? | `30 cm`, `50 cm`, `10 m` |
+| Temporal | How often can I see the same place again? | `daily`, `5-day`, `16-day` |
+| Spectral | Which wavelength bands are measured? | `RGB`, `multispectral`, `hyperspectral` |
+| Radiometric | How finely are intensity differences captured? | bit-depth and tone discrimination |
+
+## 2. Main Satellite Sensor Types
+
+### 2.1 Optical electro-optical imagery
+
+This is the imagery most people imagine first: photos of the Earth in visible light,
+often with near-infrared or other bands.
+
+Strengths:
+
+- intuitive for human interpretation
+- excellent for object shape and scene context
+- strongest ecosystem for conventional computer vision
+- useful for maps, basemaps, site monitoring, and object recognition
+
+Weaknesses:
+
+- blocked by clouds
+- dependent on daylight
+- can be degraded by haze and shadow
+
+For aircraft analysis, optical imagery is usually the primary modality for morphology and
+fine-grained recognition.
+
+### 2.2 Multispectral imagery
+
+Multispectral imagery captures a limited number of distinct wavelength bands, often in
+visible, near-infrared, and shortwave infrared.
+
+Why it matters:
+
+- vegetation and water separation
+- material and land-cover cues
+- cloud and shadow masking
+- change detection robustness
+- harmonized time-series analysis
+
+For example, Sentinel-2 provides 13 spectral bands at multiple spatial resolutions and is
+used heavily for land and change applications.
+
+### 2.3 Hyperspectral imagery
+
+Hyperspectral imagery measures many narrow bands and is useful for material
+identification, anomaly detection, and some industrial or environmental tasks.
+
+It is strategically important, but for military aircraft detection from overhead imagery
+it is not usually the first practical wedge. It is more relevant when:
+
+- material discrimination matters
+- plume or gas analysis matters
+- advanced environmental signatures matter
+
+### 2.4 Synthetic aperture radar
+
+SAR is one of the most important concepts to learn if you want a serious monitoring
+capability.
+
+Radar satellites illuminate the Earth actively and can image:
+
+- at night
+- through clouds
+- in many weather conditions
+
+Strengths:
+
+- all-weather, day-night collection
+- highly useful for repeated monitoring
+- often excellent for change detection
+- can support coherence and interferometric analysis
+
+Weaknesses:
+
+- much less intuitive for human analysts unfamiliar with radar phenomenology
+- speckle, layover, and geometry can complicate interpretation
+- object classification often requires special model design and domain expertise
+
+For persistent military monitoring, SAR is not optional knowledge. Even if the end-user
+prefers optical imagery, the monitoring stack should understand SAR.
+
+### 2.5 Thermal and other modalities
+
+Thermal imagery can help with:
+
+- fires
+- heat signatures
+- night analysis
+- some industrial monitoring
+
+But for most overhead aircraft recognition workflows, thermal is secondary relative to
+optical and SAR.
+
+### Quick reference: sensor types
+
+| Sensor type | Best at | Main limitation |
+| --- | --- | --- |
+| Optical / EO | Human-readable scene interpretation and shape-based recognition | Cloud and daylight dependence |
+| Multispectral | Time series, land-cover, masking, environmental context | Usually not detailed enough for small-object ID |
+| Hyperspectral | Material discrimination and advanced signature analysis | Less common operationally and not the first wedge for aircraft work |
+| SAR | All-weather, day-night monitoring and change detection | Harder human interpretation and different model requirements |
+| Thermal | Heat-related phenomena and some night use cases | Usually secondary for overhead aircraft recognition |
+
+## 3. Public Earth Observation Systems You Must Know
+
+These systems are foundational because they anchor a huge amount of research, analytics,
+and operational preprocessing.
+
+### 3.1 Sentinel-2
+
+Sentinel-2 is the canonical free optical multispectral land mission for many workflows.
+
+Key facts from Copernicus:
+
+- 13 spectral bands
+- 4 bands at 10 m
+- 6 bands at 20 m
+- 3 bands at 60 m
+- 290 km swath
+- paired mission with 5-day revisit in the combined constellation
+
+What it is good for:
+
+- land-cover and land-use analysis
+- broad site context
+- environmental and infrastructure monitoring
+- medium-resolution change detection
+- building time-series baselines
+
+What it is not good for:
+
+- fine-grained aircraft subtype recognition
+- tactical vehicle identification
+- small-object discrimination at military-site level
+
+Sentinel-2 is essential for context and time series, but not sufficient for detailed
+aircraft recognition.
+
+### 3.2 Sentinel-1
+
+Sentinel-1 is the core public SAR mission to know.
+
+Key facts from ESA and Copernicus:
+
+- C-band SAR
+- all-weather, day-night imaging
+- resolution down to about 5 m in some modes
+- coverage up to 400 km depending on mode
+- historically designed around two-satellite operations, with newer spacecraft entering
+  service after Sentinel-1B loss
+
+What it is good for:
+
+- broad persistent monitoring
+- flood and maritime applications
+- change detection
+- coherence-based analyses
+- weather-independent collection
+
+What it is not good for:
+
+- visually intuitive fine-grained aircraft recognition
+
+It is strategically important because it teaches the team how monitoring behaves when
+optical is unavailable.
+
+### 3.3 Landsat
+
+Landsat is the historical backbone of moderate-resolution Earth observation.
+
+USGS notes:
+
+- continuous archive since 1972
+- current Landsat 8 and 9 provide 30 m imagery
+- each satellite revisits globally every 16 days, and together every 8 days
+
+Why it matters:
+
+- long historical time series
+- calibration and scientific baselines
+- land change studies
+- harmonization with Sentinel-based products
+
+Landsat is rarely the main source for military aircraft monitoring, but it is vital for
+time-series Earth observation literacy.
+
+### Quick reference: public systems
+
+| System | Modality | Typical scale of use | Best use |
+| --- | --- | --- | --- |
+| Sentinel-2 | Optical multispectral | `10 m` to `60 m` bands | Land context, time series, broad change |
+| Sentinel-1 | C-band SAR | meter-class SAR modes | Weather-independent monitoring and change |
+| Landsat 8/9 | Optical multispectral | `30 m` | Historical baseline and long time series |
+
+## 4. Commercial Optical Imagery Providers You Should Understand
+
+This is not an exhaustive market map. It is a practical first-cut of the providers that
+shape current workflows.
+
+### 4.1 Maxar / Vantor
+
+Maxar's imagery business now appears under the Vantor brand in public web properties, but
+the core idea remains the same: premium, very high-resolution imagery with deep archive
+and tasking capabilities.
+
+Current public claims include:
+
+- same-location revisit up to 15x per day
+- about 3.5 million sq km per day at 30 cm resolution
+- integration of complementary sensors including Umbra SAR
+
+Why this matters:
+
+- premium optical imagery for detailed monitoring
+- strong archive and tasking posture
+- widely used for defense, mapping, and analytics
+
+Operational takeaway:
+
+This is the kind of provider teams use when detail matters and cost is acceptable.
+
+### 4.2 Airbus
+
+Airbus is one of the key premium competitors in optical and radar access.
+
+Relevant current public material highlights:
+
+- Pléiades Neo 30 cm imagery
+- OneAtlas access to archive and tasking
+- optical plus radar services in one platform
+- reactive tasking and long archive access
+
+Why it matters:
+
+- strong European alternative in premium imagery
+- good archive-plus-tasking model
+- useful for algorithm training and multi-provider sourcing
+
+### 4.3 BlackSky
+
+BlackSky differentiates around speed, revisit, and integrated analytics.
+
+Its current public material highlights:
+
+- 35 cm Gen-3 imagery
+- general availability as of March 12, 2026
+- AI-enabled analytics in the BlackSky Spectra platform
+- day, twilight, and nighttime collection positioning in its product story
+
+Why it matters:
+
+- monitoring-oriented posture
+- stronger emphasis on timely insight products
+- useful reference for customers who value alerting and persistent watch more than
+  archive depth alone
+
+### 4.4 Planet high-resolution optical
+
+Planet's high-resolution tasking side is anchored by SkySat and newer tasking products.
+
+Planet's current documentation says SkySat:
+
+- consists of 15 satellites
+- can revisit a location up to 10x daily
+- produces 4-band and panchromatic imagery
+- is sampled at 50 cm when orthorectified
+
+Why it matters:
+
+- strong tasking and API-first delivery model
+- more accessible operational workflows for high-frequency collection
+- useful midpoint between premium detail and programmatic access
+
+### Quick reference: commercial optical providers
+
+| Provider | Publicly positioned strength | What to remember |
+| --- | --- | --- |
+| Maxar / Vantor | Premium very-high-resolution imagery, archive, tasking | Use when detail and archive depth matter |
+| Airbus | Premium optical plus radar access through OneAtlas | Strong alternative supplier model with archive and tasking |
+| BlackSky | Fast revisit and integrated analytics posture | Monitoring-oriented commercial story |
+| Planet high-res / SkySat | Frequent tasking and API-first workflows | Useful for high-cadence operational access |
+
+## 5. Commercial Medium-Resolution Providers and Daily Monitoring
+
+### 5.1 PlanetScope
+
+PlanetScope is the canonical example of a high-temporal, medium-resolution commercial
+system.
+
+Planet documentation states:
+
+- near-daily multispectral coverage over landmasses
+- analysis-ready products at 3 m
+- harmonized stacks designed for time-series analysis and machine learning
+
+Why it matters:
+
+- not good for aircraft subtype work
+- excellent for persistent land monitoring, pattern-of-life at larger scales, and
+  time-series analytics
+- teaches an important lesson: cadence can matter more than exquisite detail
+
+This is a central concept for change detection. A daily 3 m feed is often more valuable
+for trend monitoring than occasional premium 30 cm images.
+
+## 6. Commercial SAR Providers You Should Understand
+
+### 6.1 ICEYE
+
+ICEYE is one of the most important commercial SAR providers to know for monitoring
+applications.
+
+Current public product messaging emphasizes:
+
+- SAR designed for change detection
+- imaging modes from wide-area monitoring to very high resolution
+- ground resolutions including 25 cm, 50 cm, and 1 m in dwell modes
+
+Why it matters:
+
+- strong fit for persistent monitoring
+- useful when cloud cover makes optical unreliable
+- emphasizes the reality that radar is often the monitoring backbone rather than a niche
+
+### 6.2 Capella Space
+
+Capella is a major commercial SAR provider and strong reference point for U.S.-based SAR
+tasking and archive access.
+
+Current public material highlights:
+
+- 50 cm x 50 cm Spotlight imagery
+- archive access plus tasking
+- SAR delivery through cloud-oriented workflows
+- time-sensitive tasking features and archive search
+
+Why it matters:
+
+- practical operational SAR access
+- strong reference for how modern SAR companies expose tasking and archive
+- useful for customers who need radar without building a full radar program themselves
+
+### 6.3 Umbra
+
+Umbra is important because it pushes very high-resolution commercial SAR.
+
+Public material highlights:
+
+- 16 cm resolution image released in 2023
+- complex data access better than 25 cm for some users and use cases
+
+Why it matters:
+
+- demonstrates how far commercial SAR has advanced
+- raises the ceiling for all-weather site detail
+- useful benchmark when discussing what "commercial radar" can now mean
+
+### 6.4 The key SAR lesson
+
+For serious monitoring, the question is not optical or SAR.
+
+The question is:
+
+- what part of the workflow depends on optical interpretation
+- what part needs weather-independent revisit
+- what part needs both
+
+The strongest operational systems fuse both.
+
+### Quick reference: commercial SAR providers
+
+| Provider | Publicly positioned strength | What to remember |
+| --- | --- | --- |
+| ICEYE | Monitoring-oriented SAR and change-detection fit | Strong all-weather monitoring reference |
+| Capella | High-resolution commercial SAR with tasking and archive | Practical SAR access model for many customers |
+| Umbra | Very-high-resolution SAR positioning | Shows the ceiling of modern commercial SAR |
+
+## 7. How Imagery Companies Usually Work
+
+This is the part many first-time builders overlook.
+
+You are not just buying pixels. You are buying access patterns, rights, latency, and
+operational behavior.
+
+### 7.1 The main acquisition models
+
+Most providers expose some combination of:
+
+- archive access
+- new tasking
+- subscriptions or repeat monitoring
+- basemaps or mosaics
+- API access
+- cloud delivery
+
+### 7.2 Archive imagery
+
+Archive means imagery already collected in the past.
+
+Why customers use it:
+
+- historical backfill
+- comparison against prior activity
+- cheaper access than fresh tasking in many cases
+- training and evaluation
+
+Examples from current vendor documentation:
+
+- Planet supports archive orders for high-resolution collects
+- Airbus OneAtlas exposes archive ordering
+- Capella exposes archive search and archive roles
+
+Archive is fundamental for change detection and site history.
+
+### 7.3 Tasking
+
+Tasking means asking a provider to collect a new image over an AOI within a time window.
+
+What tasking usually exposes:
+
+- AOI geometry
+- acquisition window
+- quality constraints
+- look-angle or off-nadir constraints
+- cloud preferences
+- priority tiers
+- product type
+
+This is where the business model changes from passive search to active collection.
+
+### 7.4 Repeat tasking and monitoring
+
+For defense and infrastructure workflows, repeat collection is often more important than a
+single exquisite scene.
+
+Monitoring products typically allow:
+
+- daily or periodic checks
+- recurring AOIs
+- event-driven collections
+- alerting when new imagery arrives
+
+This is operationally closer to "feed behavior" than to one-time image ordering.
+
+### 7.5 Basemaps and mosaics
+
+A basemap is not a scene. It is a processed, harmonized image layer built from many
+collections.
+
+Use cases:
+
+- visualization
+- map context
+- large-area feature extraction
+- broad planning
+
+Limits:
+
+- can hide acquisition specifics
+- may not retain scene-level provenance needed for evidence workflows
+
+Basemaps are excellent context layers but not a substitute for scene-level evidence.
+
+### 7.6 Delivery formats and access patterns
+
+Modern imagery is increasingly delivered through:
+
+- APIs
+- cloud object storage
+- streamable basemap endpoints
+- cloud-optimized GeoTIFFs
+- STAC-like catalog workflows
+
+Operational systems should assume programmatic delivery, not manual download only.
+
+### 7.7 Licensing and exclusivity
+
+Commercial imagery usually comes with licensing terms that matter operationally:
+
+- who may use the imagery
+- whether it can be shared with partners
+- whether derived outputs can be redistributed
+- whether tasked imagery enters a shared archive after a delay
+
+For example, Planet documents a tasking-to-archive model where high-resolution tasking is
+normally published to the archive by default, with some archive-withhold options available
+depending on contract.
+
+This matters for sovereignty, secrecy, and downstream redistribution.
+
+### Quick reference: imagery business models
+
+| Model | What it means | Why it matters |
+| --- | --- | --- |
+| Archive | Past collections already available | Required for backfill and historical analysis |
+| Tasking | New collection over a specified AOI and window | Required for time-sensitive collection |
+| Monitoring / repeat tasking | Repeated or subscription-style collection | Required for watchbox behavior |
+| Basemaps / mosaics | Harmonized context layers built from many scenes | Useful for context, weak for scene-level evidence |
+| API / cloud delivery | Programmatic access to imagery and metadata | Required for scalable pipelines |
+
+## 8. What "Consumption" Really Means in Practice
+
+When teams ask how customers will "consume" imagery, the answer usually spans five
+patterns.
+
+### 8.1 Visual inspection
+
+Analysts look at scenes, zoom, compare, annotate, and build assessments.
+
+### 8.2 GIS integration
+
+Imagery becomes a layer in:
+
+- desktop GIS
+- web GIS
+- map-based intelligence workspaces
+
+### 8.3 Time-series analytics
+
+The imagery is processed as a sequence rather than a standalone picture.
+
+### 8.4 Model inference
+
+The imagery is chipped, tiled, or streamed into detection, segmentation, or change
+models.
+
+### 8.5 Evidence workflows
+
+The resulting detections or changes are stored with:
+
+- scene ids
+- timestamps
+- footprints
+- chips
+- analyst notes
+- review state
+
+This fifth pattern is the one most relevant to SHIELD-like systems.
+
+## 9. Change Detection: What It Is and Why It Matters
+
+### 9.1 The core definition
+
+Change detection is the identification of meaningful differences between observations from
+different times.
+
+That sounds simple, but operationally it is difficult because you must separate:
+
+- real change on the ground
+- apparent change from sensor or geometry differences
+
+### 9.2 Types of change detection
+
+There are several major types:
+
+#### Pixel-level change detection
+
+Finds changed pixels or regions directly.
+
+Good for:
+
+- land-cover shifts
+- broad damage or flood mapping
+
+Less ideal for:
+
+- crisp object-level military interpretation
+
+#### Object-level change detection
+
+Compares detected objects or derived entities over time.
+
+Good for:
+
+- aircraft count change
+- vehicle appearance/disappearance
+- new structures
+
+This is often the most operationally useful form in defense monitoring.
+
+#### Semantic change detection
+
+Not only says that something changed, but what kind of change happened.
+
+Examples:
+
+- empty apron to occupied apron
+- civilian aircraft replaced by military aircraft
+- open terrain to new revetment construction
+
+#### Time-series or continuous change detection
+
+Works over longer sequences rather than just two dates.
+
+This matters because many defense questions are not binary before/after questions. They
+are pattern questions:
+
+- is activity increasing
+- is dispersal becoming more common
+- is a site preparing for a surge
+
+### 9.3 Why change detection is hard
+
+False changes are caused by:
+
+- registration error
+- seasonal variation
+- different illumination
+- cloud and shadow
+- off-nadir changes
+- atmospheric effects
+- different sensor modalities
+- SAR speckle and geometry effects
+
+In practice, most of the engineering work is about controlling these sources of false
+change.
+
+### 9.4 Preprocessing is not optional
+
+Before doing serious change detection, you typically need:
+
+- geometric co-registration
+- radiometric normalization
+- cloud and shadow masks
+- sensor harmonization
+- valid-pixel masks
+
+Planet's analysis-ready products are instructive here because they exist precisely to
+improve temporal consistency for time-series and machine learning uses.
+
+### 9.5 What is out there today
+
+The current state of the art is strongly deep-learning oriented, but the field is still
+mixed.
+
+Broad buckets:
+
+- classical image differencing and thresholding
+- feature- or index-based methods
+- Siamese CNN approaches
+- transformer-based change detection networks
+- hybrid CNN-transformer models
+- semantic change detection models
+
+Recent review literature shows:
+
+- the field is advancing quickly
+- open datasets matter a lot
+- supervision remains expensive
+- multi-sensor and cross-domain change remain hard
+
+The important strategic takeaway is that change detection is not a solved commodity when
+you move into operational, multi-source, mixed-quality military imagery.
+
+### Quick reference: change detection task types
+
+| Type | Best for | Limitation |
+| --- | --- | --- |
+| Pixel-level | Broad surface change | Weak semantic precision for military objects |
+| Object-level | Count change and appearance/disappearance | Depends on reliable detection first |
+| Semantic | Meaningful typed change | Harder labels and stronger models required |
+| Time-series / continuous | Trend and pattern-of-life analysis | Requires stronger temporal consistency and storage discipline |
+
+## 10. Object Detection in Overhead Imagery
+
+### 10.1 What it is
+
+Object detection localizes and labels objects in the image, usually with:
+
+- bounding boxes
+- oriented boxes
+- polygons or masks
+
+For overhead imagery, this differs from everyday computer vision because:
+
+- targets are small relative to the scene
+- orientations vary widely
+- classes can be visually similar
+- context differs from natural-image benchmarks
+
+### 10.2 Why overhead detection is special
+
+Satellite images are large and sparse.
+
+A scene may contain:
+
+- huge empty areas
+- cluttered infrastructure
+- highly imbalanced class frequencies
+- targets only a few dozen pixels across
+
+This changes model design and evaluation significantly.
+
+### 10.3 Main task types
+
+You should distinguish:
+
+- detection
+- classification
+- fine-grained classification
+- segmentation
+- tracking across time
+
+These are related but not interchangeable.
+
+For military aviation:
+
+- detection is finding aircraft
+- classification is broad role or family
+- fine-grained classification is subtype or variant
+- tracking across time is appearance and disappearance across scenes
+
+### 10.4 Model families commonly used today
+
+In practice, the detection ecosystem is built from a few broad model families:
+
+- one-stage detectors such as YOLO variants
+- two-stage detectors such as Faster R-CNN
+- anchor-free detectors
+- transformer-based detectors such as DETR families
+- oriented object detectors for rotated targets
+
+### 10.5 What current research says
+
+A 2024 comparative review focused on aircraft detection in satellite imagery found strong
+performance from YOLO-family models in that benchmark setting, with YOLOv5 leading the
+evaluated methods on the tested datasets.
+
+Do not over-generalize that finding into:
+
+- all datasets
+- all resolutions
+- all deployment constraints
+
+But it is a good practical signal:
+
+- modern detector choice still matters
+- benchmark success is measurable
+- aircraft detection is increasingly tractable on curated datasets
+
+### 10.6 The hard part is not just boxes
+
+Operational difficulty comes from:
+
+- domain shift across providers
+- limited labels for rare military classes
+- confusion among related airframes
+- low-quality or off-angle scenes
+- shelters, camouflage, and clutter
+- need for calibrated confidence rather than raw scores
+
+This is why product teams should not confuse good benchmark mAP with operational success.
+
+### Quick reference: analysis stack
+
+| Task | Question answered | Typical output |
+| --- | --- | --- |
+| Detection | Is there an object here? | box, mask, score |
+| Classification | What broad thing is it? | role or family label |
+| Fine-grained recognition | Which subtype or variant is it? | subtype hypothesis |
+| Change detection | What changed between dates? | delta object, region, or semantic change |
+| Interpretation | What does it mean operationally? | analyst claim or assessment |
+
+## 11. Fine-Grained Recognition: The Next Difficulty Step
+
+Detection is often easier than subtype recognition.
+
+For aircraft specifically, the challenge increases because:
+
+- many variants differ by small shape cues
+- overhead view removes side-profile details
+- wing and tail geometry can be ambiguous
+- shadows and orientation distort visual evidence
+
+A disciplined system therefore needs hierarchical outputs:
+
+- object present
+- broad role
+- family
+- subtype if supported
+
+This is one of the most important conceptual lessons in the domain.
+
+## 12. Data and Benchmarks You Should Know
+
+A few public benchmarks are especially useful for orientation:
+
+### xView
+
+The DIU xView challenge dataset is one of the best-known overhead object detection
+benchmarks and includes over one million objects across 60 classes in large-scale
+imagery.
+
+Why it matters:
+
+- strong baseline overhead-detection reference
+- broad object classes
+- useful for detection literacy
+
+### RarePlanes
+
+RarePlanes was designed to study aircraft detection and the role of synthetic data for
+overhead imagery.
+
+Why it matters:
+
+- aircraft-focused
+- mixes real and synthetic thinking
+- relevant to low-data and military-style scenarios
+
+### FAIR1M
+
+FAIR1M is a large fine-grained remote sensing benchmark with more than a million
+instances.
+
+Why it matters:
+
+- fine-grained recognition
+- oriented object detection
+- category richness beyond coarse object labels
+
+### The benchmark lesson
+
+Public datasets are essential for experimentation, but they are not the same thing as
+operational truth.
+
+They often differ from customer conditions in:
+
+- geography
+- provider mix
+- resolution mix
+- class priors
+- cloud and weather behavior
+- licensing and reproducibility
+
+## 13. Foundation Models and What They Mean Here
+
+Foundation models are now part of the remote sensing landscape, but their role should be
+understood carefully.
+
+### 13.1 What they are
+
+These are large pre-trained models trained on huge remote-sensing corpora and then
+fine-tuned for downstream tasks.
+
+### 13.2 Relevant current example
+
+NASA's Prithvi geospatial foundation model is one of the most important public examples.
+
+NASA's 2026 public material notes:
+
+- on-orbit deployment of Prithvi as the first geospatial foundation model demonstrated in
+  orbit
+- training on long historical Earth observation data
+- use across multiple Earth observation tasks
+
+NASA technical reporting on Prithvi-EO-2.0 also reports:
+
+- training on 4.2 million global time-series samples from harmonized Landsat and
+  Sentinel-2 data
+- benchmarking gains over earlier models and several other geospatial foundation models
+
+### 13.3 What this means practically
+
+Foundation models matter because they can:
+
+- reduce labeled-data needs
+- transfer across tasks
+- improve representation learning
+- support multi-temporal reasoning
+
+But they do not remove the need for:
+
+- domain-specific labels
+- target ontology
+- rigorous evaluation
+- deployment engineering
+
+For high-resolution military object localization, task-specific fine-tuning still matters
+a lot.
+
+## 14. Common Failure Modes in Real Systems
+
+These are the mistakes teams repeatedly make.
+
+### 14.1 Resolution overconfidence
+
+They assume a nominal GSD guarantees target identity.
+
+### 14.2 Archive blindness
+
+They think only about new tasking and forget that historical analysis depends on archive
+depth.
+
+### 14.3 Optical-only thinking
+
+They ignore SAR until weather or revisit constraints force them to care.
+
+### 14.4 Benchmark overfitting
+
+They optimize for public datasets and then fail on provider, geometry, or geography
+shift.
+
+### 14.5 Ignoring evidence lineage
+
+They store detections without:
+
+- scene ids
+- acquisition timestamps
+- model versions
+- quality metadata
+
+That makes later review weak.
+
+### 14.6 Confusing basemaps with evidentiary scenes
+
+Basemaps are excellent context, but they often strip away the exact acquisition identity
+needed for defensible analysis.
+
+## 15. What SHIELD Needs to Understand from All This
+
+If these subject matters are to connect well with SHIELD, the critical architectural
+boundary is simple:
+
+- scenes, detections, chips, and change products belong first in the evidence plane
+- reviewed interpretations can become claims
+- only governed, analyst-approved conclusions should influence canonical ORBAT truth
+
+That means SHIELD should treat the remote-sensing stack as:
+
+- imagery source and scene registry
+- geospatial evidence layer
+- annotation and claim environment
+- review and promotion workflow
+
+Not just as a map viewer.
+
+### 15.1 Recommended internal objects
+
+A SHIELD-aligned system should likely distinguish:
+
+- source asset
+- scene
+- collection footprint
+- derived chip
+- detection
+- compare result
+- analyst annotation
+- claim
+- promotion decision
+
+This makes the domain teachable and auditable.
+
+### 15.2 Why this matters
+
+The remote-sensing problem is not only model quality.
+
+It is also:
+
+- source management
+- time alignment
+- reviewability
+- provenance
+- evidence promotion
+
+Those are exactly the places where a product either becomes serious or remains a demo.
+
+## 16. A Study Order for the Team
+
+If you want a disciplined learning sequence, use this order:
+
+1. Learn optical, multispectral, and SAR differences.
+2. Learn spatial, temporal, spectral, and radiometric resolution.
+3. Learn the public systems first: Sentinel-1, Sentinel-2, Landsat.
+4. Learn the commercial provider models: archive, tasking, repeat monitoring, basemaps.
+5. Learn preprocessing and harmonization.
+6. Learn change detection before fine-grained object recognition.
+7. Learn object detection and hierarchical classification.
+8. Learn evidence and provenance design.
+9. Only then choose model and product priorities.
+
+## 17. Final Takeaway
+
+To work well in this domain, a team needs to stop thinking of "satellite imagery AI" as a
+single capability.
+
+It is really a stack:
+
+- sensor understanding
+- vendor and data-access understanding
+- preprocessing and quality control
+- temporal analysis
+- object detection
+- confidence management
+- evidence workflow
+
+The most valuable mindset shift is this:
+
+the operational asset is not just the model.
+
+It is the system that knows:
+
+- what imagery exists
+- what kind it is
+- what it can and cannot support
+- what changed
+- what the model thinks
+- what an analyst accepted
+- and how all of that is traceable
+
+That is the actual subject matter.
+
+## Appendix: One-Page Memory Frame
+
+If you remember only one page from this primer, remember this:
+
+1. `30 cm` imagery is not the same thing as certainty.
+2. Optical explains shape well; SAR explains persistence and all-weather monitoring.
+3. Archive plus tasking matters more than one-off imagery access.
+4. Time series and change detection are often more valuable than a single exquisite image.
+5. Benchmark detection is easier than operational classification.
+6. Detections are not intelligence truth until they are reviewed and linked to evidence.
+
+## References
+
+- Copernicus Sentinel-2 overview and imagery characteristics:
+  https://www.copernicus.eu/en/media/images/sentinel-2-high-resolution-and-multispectral
+- Copernicus / ESA Sentinel-1 mission references:
+  https://dataspace.copernicus.eu/data-collections/sentinel-data/sentinel-1
+  https://www.esa.int/Sentinel-1
+- USGS Landsat overview:
+  https://eros.usgs.gov/earthshots/the-landsat-program
+- Planet documentation:
+  https://docs.planet.com/data/imagery/planetscope/
+  https://docs.planet.com/data/imagery/arps/
+  https://docs.planet.com/data/imagery/skysat/
+  https://docs.planet.com/develop/apis/tasking/
+  https://docs.planet.com/develop/apis/tasking/archive_tasking/
+- Airbus OneAtlas / Pléiades Neo:
+  https://space-solutions.airbus.com/newsroom/press-releases/pleiades-neo-to-the-oneatlas-living-library/
+  https://api.oneatlas.airbus.com/guides/oneatlas-data/g-tasking/
+  https://space-solutions.airbus.com/imagery/how-to-order-imagery-and-data/how-to-order-pleiades-neo/
+  https://www.airbus.com/en/products-services/space/earth-observation/satellite-imagery
+- BlackSky Gen-3:
+  https://blacksky.com/press-releases/blacksky-successfully-commissions-gen-3-in-less-than-one-week-opening-gen-3-general-availability-for-global-customer-base/
+- Maxar / Vantor constellation and tasking positioning:
+  https://vantor.com/company/constellation/
+  https://vantor.com/
+- ICEYE SAR:
+  https://www.iceye.com/sar-data/imaging-modes
+- Capella SAR:
+  https://www.capellaspace.com/news/capella-space-releases-the-highest-resolution-commercial-sar-imagery-in-the-world
+  https://www.capellaspace.com/solution/sar-data
+- Umbra SAR:
+  https://umbra.space/blog/umbra-generates-the-highest-resolution-commercial-satellite-image-ever-released/
+- Change detection review:
+  https://www.mdpi.com/2072-4292/15/8/2092
+- Aircraft detection comparative review:
+  https://www.mdpi.com/2072-4292/16/24/4715
+- Foundation models:
+  https://science.nasa.gov/science-research/ai-foundation-model-in-orbit/
+  https://ntrs.nasa.gov/citations/20240015391
+- Public datasets:
+  https://xviewdataset.org/
+  https://registry.opendata.aws/rareplanes/
+  https://arxiv.org/abs/2103.05569

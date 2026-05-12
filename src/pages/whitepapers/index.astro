@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="MIAR Whitepapers"
+  description="MIAR whitepapers, primers, and technical documents on remote sensing, imagery intelligence, and operational interpretation."
+  current="whitepapers"
+>
+  <main class="subpage-shell">
+    <section class="subpage-hero">
+      <p class="eyebrow">Whitepapers</p>
+      <h1>Working papers for remote sensing and aviation intelligence.</h1>
+      <p class="lead">
+        MIAR’s public writing covers sensing, imagery interpretation, cadence,
+        evidence, and the operational questions that sit downstream of model
+        output.
+      </p>
+    </section>
+
+    <section class="document-listing">
+      <article class="document-card document-card-featured">
+        <span>Featured</span>
+        <h2>Remote Sensing for Defense Imagery Intelligence</h2>
+        <p>
+          Publication-style whitepaper covering sensors, providers, tasking,
+          change detection, object recognition, and evidence workflows.
+        </p>
+        <div class="document-actions">
+          <a class="button button-primary" href="/whitepapers/library/remote-sensing-whitepaper.pdf">Open PDF</a>
+          <a class="button button-secondary" href="/whitepapers/library/remote-sensing-whitepaper.docx">DOCX</a>
+          <a class="button button-secondary" href="/whitepapers/library/remote-sensing-whitepaper.html">HTML</a>
+        </div>
+      </article>
+
+      <div class="document-grid">
+        <article class="document-card">
+          <span>Primer</span>
+          <h3>Remote Sensing Subject-Matter Primer</h3>
+          <p>
+            Domain-first primer covering sensors, imagery companies, change
+            detection, and object detection.
+          </p>
+          <div class="mini-links">
+            <a href="/whitepapers/library/remote-sensing-subject-matter-primer.pdf">PDF</a>
+            <a href="/whitepapers/library/remote-sensing-subject-matter-primer.docx">DOCX</a>
+            <a href="/whitepapers/library/remote-sensing-subject-matter-primer.md">Markdown</a>
+          </div>
+        </article>
+
+        <article class="document-card">
+          <span>Strategy note</span>
+          <h3>MIAR Success Primer</h3>
+          <p>
+            Early framing around taxonomy, imagery constraints, evidence
+            thresholds, and platform alignment.
+          </p>
+          <div class="mini-links">
+            <a href="/whitepapers/library/miar-success-primer.pdf">PDF</a>
+            <a href="/whitepapers/library/miar-success-primer.md">Markdown</a>
+            <a href="/whitepapers/library/miar-success-primer.txt">Text</a>
+          </div>
+        </article>
+
+        <article class="document-card">
+          <span>Source library</span>
+          <h3>Working artifacts</h3>
+          <p>
+            Raw text and source files remain available for editing, conversion,
+            and future publication work.
+          </p>
+          <div class="mini-links">
+            <a href="/whitepapers/library/remote-sensing-whitepaper.md">Whitepaper source</a>
+            <a href="/whitepapers/library/remote-sensing-whitepaper.txt">Whitepaper text</a>
+            <a href="/whitepapers/library/whitepaper.css">Whitepaper CSS</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

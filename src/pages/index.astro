@@ -1,0 +1,187 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SolutionsGraphic from "../components/SolutionsGraphic.astro";
+import WaitlistVisual from "../components/WaitlistVisual.astro";
+---
+
+<BaseLayout
+  title="MIAR | Persistent Military Imagery Intelligence"
+  description="MIAR turns repeated military imagery into detection, comparison, and assessment-ready operational signal."
+  current="home"
+>
+  <main>
+    <section class="hero section-anchor" id="home">
+      <div class="hero-stage">
+        <img
+          class="hero-scene"
+          src="/imagery/hotan-airfield-hero.png"
+          alt="Annotated satellite image of Hotan Prefecture Airbase with aircraft detections and intelligence summary"
+          width="1752"
+          height="898"
+          loading="eager"
+          fetchpriority="high"
+        />
+
+        <div class="hero-shell">
+          <div class="hero-overlay">
+            <p class="eyebrow hero-eyebrow">MIAR / Military Imagery Analysis & Recognition</p>
+            <h1>Persistent imagery, made operational.</h1>
+            <p class="hero-lead">Detection, comparison, and assessment-ready signal across military scenes.</p>
+
+            <div class="hero-actions">
+              <a class="button button-primary" href="#waitlist">Request access</a>
+              <a class="button button-secondary" href="#solutions">View solutions</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-shell">
+      <section class="band band-split section-anchor" id="solutions">
+        <div class="section-copy">
+          <p class="eyebrow">Solutions</p>
+          <h2>Built for installations, assets, and activity over time.</h2>
+          <p>
+            MIAR is built for persistent military imagery analysis. It helps teams read
+            what is present, what has changed, and which shifts carry operational weight.
+          </p>
+
+          <div class="capability-list">
+            <article class="capability-item">
+              <span>Detection</span>
+              <p>Assets, equipment, and scene-level activity surfaced with precise localization and usable confidence.</p>
+            </article>
+
+            <article class="capability-item">
+              <span>Temporal compare</span>
+              <p>Scene-to-scene change measured against historical baseline, not treated as a single isolated frame.</p>
+            </article>
+
+            <article class="capability-item">
+              <span>Operational output</span>
+              <p>Outputs structured for review, correlation, and assessment workflows that follow the initial read.</p>
+            </article>
+          </div>
+        </div>
+
+        <SolutionsGraphic />
+      </section>
+
+      <section class="band section-anchor" id="about">
+        <div class="about-shell">
+          <div class="section-head">
+            <p class="eyebrow">Operational insights</p>
+            <h2>Built to preserve context across repeated observation.</h2>
+            <p>
+              MIAR is designed so imagery does not lose meaning between detection and
+              assessment. Context, scene history, and confidence stay attached to the
+              read so analysts can carry the signal forward.
+            </p>
+          </div>
+
+          <WaitlistVisual />
+        </div>
+
+        <div class="insight-grid">
+          <article class="insight-item">
+            <span>01</span>
+            <h3>Read change as pattern.</h3>
+            <p>Repeated scenes make buildup, dispersal, occupancy, and activity shifts legible over time.</p>
+          </article>
+
+          <article class="insight-item">
+            <span>02</span>
+            <h3>Keep confidence attached to the call.</h3>
+            <p>Recognition only matters when the underlying evidence survives review and handoff.</p>
+          </article>
+
+          <article class="insight-item">
+            <span>03</span>
+            <h3>Move cleanly into larger workflows.</h3>
+            <p>MIAR is designed to feed correlation, reasoning, and assessment systems around it.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="band waitlist-band section-anchor" id="waitlist">
+        <div class="waitlist-shell">
+          <div class="waitlist-copy">
+            <p class="eyebrow">Request access</p>
+            <h2>For teams evaluating persistent monitoring and imagery comparison.</h2>
+            <p>
+              We are speaking with analyst teams, technical partners, and operational
+              programs evaluating imagery-driven workflows.
+            </p>
+          </div>
+
+          <div class="waitlist-card">
+            <form class="waitlist-form" id="waitlist-form" method="post" action="/api/waitlist">
+              <label>
+                Full name
+                <input type="text" name="name" autocomplete="name" placeholder="Asha Menon" />
+              </label>
+
+              <label>
+                Work email
+                <input
+                  type="email"
+                  name="email"
+                  autocomplete="email"
+                  placeholder="asha@organization.com"
+                  required
+                />
+              </label>
+
+              <label>
+                Organization
+                <input
+                  type="text"
+                  name="organization"
+                  autocomplete="organization"
+                  placeholder="Defense lab, GEOINT team, platform program"
+                />
+              </label>
+
+              <label>
+                Primary interest
+                <div class="custom-select" data-custom-select>
+                  <input type="hidden" name="interest" value="" required data-custom-select-input />
+                  <button
+                    class="custom-select-trigger"
+                    type="button"
+                    aria-expanded="false"
+                    data-custom-select-trigger
+                  >
+                    <span data-custom-select-value>Select one</span>
+                  </button>
+                  <div class="custom-select-menu" hidden data-custom-select-menu>
+                    <button type="button" data-value="asset-monitoring">Asset monitoring</button>
+                    <button type="button" data-value="change-detection">Change detection</button>
+                    <button type="button" data-value="imagery-platform">Imagery platform integration</button>
+                    <button type="button" data-value="review-workflows">Assessment workflows</button>
+                  </div>
+                </div>
+              </label>
+
+              <label>
+                Mission note
+                <textarea
+                  name="mission"
+                  rows="4"
+                  placeholder="Describe the imagery or operational problem you want MIAR to support."
+                ></textarea>
+              </label>
+
+              <button class="button button-primary submit-button" type="submit">
+                Request access
+              </button>
+
+              <p class="form-status" id="form-status" aria-live="polite"></p>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,106 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  current?: "home" | "whitepapers" | "blogs";
+}
+
+const { title, description, current = "home" } = Astro.props;
+
+const isHome = current === "home";
+const navItems = isHome
+  ? [
+      { href: "#solutions", label: "Solutions" },
+      { href: "/whitepapers/", label: "Whitepapers" },
+      { href: "/blogs/", label: "Blogs" },
+      { href: "#about", label: "About" },
+    ]
+  : [
+      { href: "/", label: "Home", active: current === "home" },
+      { href: "/whitepapers/", label: "Whitepapers", active: current === "whitepapers" },
+      { href: "/blogs/", label: "Blogs", active: current === "blogs" },
+    ];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#131315" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="site-backdrop" aria-hidden="true">
+      <div class="backdrop-grid"></div>
+      <div class="backdrop-glow backdrop-glow-cool"></div>
+      <div class="backdrop-glow backdrop-glow-warm"></div>
+    </div>
+
+    <header class:list={["site-header", { "site-header-home": isHome }]}>
+      <div class="header-shell">
+        <a class="brand" href={isHome ? "#home" : "/"} aria-label="MIAR home">
+          <span class="brand-copy">
+            <strong>MIAR</strong>
+            <span>Persistent military imagery intelligence</span>
+          </span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Toggle navigation"
+          data-nav-toggle
+        >
+          <span></span>
+          <span></span>
+        </button>
+
+        <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+          {
+            navItems.map((item) => (
+              <a
+                href={item.href}
+                class:list={{ "is-active": Boolean(item.active) }}
+                aria-current={item.active ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="site-footer">
+      <div class="footer-shell">
+        <span>MIAR</span>
+        <div class="footer-links">
+          <a href="/#solutions">Solutions</a>
+          <a href="/whitepapers/">Whitepapers</a>
+          <a href="/blogs/">Blogs</a>
+          <a href="/#about">About</a>
+          <a href="/#waitlist">Request access</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="/site.js" defer></script>
+  </body>
+</html>
