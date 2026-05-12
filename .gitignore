@@ -3,3 +3,8 @@ dist/
 .astro/
 .wrangler/
 test-results/
+
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
