@@ -1,16 +1,16 @@
 # miar-website
 
-MIAR landing site built with Astro and deployed as a static Cloudflare Pages site with a Pages Function-backed waitlist endpoint.
+MIAR landing site built with Astro and deployed as a Cloudflare Worker with a worker-backed waitlist endpoint.
 
 ## Local
 
 - `npm install`
 - `npm run dev`
-- production-like preview at `http://localhost:3004` with `npm run preview`
+- worker preview at `http://localhost:8787` with `npm run preview`
 - static-only preview at `http://localhost:3005` with `npm run preview:static`
 
-Use `npm run preview` when testing the waitlist form. It runs through Cloudflare Pages
-so `/api/waitlist` is available locally.
+Use `npm run preview` when testing the waitlist form. It runs the Cloudflare Worker
+locally so `/api/waitlist` is exercised on the same runtime used for deployment.
 
 ## CI
 
@@ -23,10 +23,11 @@ This runs the local release check used before commits and pushes.
 - `src/pages/index.astro`
 - `src/components/`
 - `src/styles/global.css`
+- `src/pages/api/waitlist.ts`
+- `db/waitlist.sql`
 - `public/imagery/`
 - `public/whitepapers/`
 - `public/blogs/`
-- `functions/api/waitlist.js`
 
 ## Publishing status
 
@@ -36,17 +37,37 @@ This runs the local release check used before commits and pushes.
 
 ## Deploy
 
-Cloudflare Pages settings:
+Cloudflare Worker settings:
 
-- Framework preset: `None`
 - Build command: `npm run build`
-- Build output directory: `dist`
+- Deploy command: `npm run deploy`
+- Worker config: `wrangler.jsonc`
 
 ## Waitlist persistence
 
-Optional bindings:
+Primary binding:
 
 - `MIAR_WAITLIST_DB` for D1
+
+Fallback binding:
+
 - `MIAR_WAITLIST` for KV
 
-If neither binding is present, submissions are still accepted and logged by the Pages Function.
+If neither binding is present, submissions are accepted but only logged in worker output. That
+is suitable for local verification, not production capture.
+
+## Cloudflare D1 setup
+
+1. Create the database:
+   - `npx wrangler d1 create miar-waitlist`
+2. Copy the returned `database_id` into `wrangler.jsonc` under a `d1_databases` binding named `MIAR_WAITLIST_DB`.
+3. Apply the schema:
+   - `npx wrangler d1 execute miar-waitlist --remote --file=./db/waitlist.sql`
+4. Deploy:
+   - `npm run deploy`
+
+The waitlist currently records:
+
+- contact identity: `name`, `email`, `organization`, `role`
+- market signal: `interest`, `focus`, `timeline`, `mission`
+- request metadata: `submitted_at`, `referrer`, `user_agent`, `cf_country`, `cf_region`, `cf_city`

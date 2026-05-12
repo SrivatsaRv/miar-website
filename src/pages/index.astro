@@ -5,8 +5,8 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
 ---
 
 <BaseLayout
-  title="MIAR | Persistent Military Imagery Intelligence"
-  description="MIAR turns repeated military imagery into detection, comparison, and assessment-ready operational signal."
+  title="MIAR | Operational Imagery Intelligence"
+  description="MIAR turns repeat military imagery into detections, temporal change, and assessment-ready operational signal."
   current="home"
 >
   <main>
@@ -25,8 +25,11 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
         <div class="hero-shell">
           <div class="hero-overlay">
             <p class="eyebrow hero-eyebrow">MIAR / Military Imagery Analysis & Recognition</p>
-            <h1>Persistent imagery, made operational.</h1>
-            <p class="hero-lead">Detection, comparison, and assessment-ready signal across military scenes.</p>
+            <h1>Operational signal from repeat military imagery.</h1>
+            <p class="hero-lead">
+              MIAR establishes baseline, detects change, and surfaces evidence that can survive
+              operational review.
+            </p>
 
             <div class="hero-actions">
               <a class="button button-primary" href="#waitlist">Request access</a>
@@ -41,26 +44,26 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
       <section class="band band-split section-anchor" id="solutions">
         <div class="section-copy">
           <p class="eyebrow">Solutions</p>
-          <h2>Built for installations, assets, and activity over time.</h2>
+          <h2>Built for installations, basing, assets, and force posture over time.</h2>
           <p>
-            MIAR is built for persistent military imagery analysis. It helps teams read
-            what is present, what has changed, and which shifts carry operational weight.
+            MIAR is built for teams that need more than a single-frame detection. It reads what is
+            present, what changed, and which shifts matter enough to move downstream.
           </p>
 
           <div class="capability-list">
             <article class="capability-item">
               <span>Detection</span>
-              <p>Assets, equipment, and scene-level activity surfaced with precise localization and usable confidence.</p>
+              <p>Assets, equipment, and scene activity surfaced with precise localization and decision-usable confidence.</p>
             </article>
 
             <article class="capability-item">
               <span>Temporal compare</span>
-              <p>Scene-to-scene change measured against historical baseline, not treated as a single isolated frame.</p>
+              <p>Every scene is measured against historical baseline so routine motion does not get mistaken for operational change.</p>
             </article>
 
             <article class="capability-item">
               <span>Operational output</span>
-              <p>Outputs structured for review, correlation, and assessment workflows that follow the initial read.</p>
+              <p>Outputs are structured for analyst review, downstream correlation, and assessment workflows that need evidence, not hype.</p>
             </article>
           </div>
         </div>
@@ -72,11 +75,11 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
         <div class="about-shell">
           <div class="section-head">
             <p class="eyebrow">Operational insights</p>
-            <h2>Built to preserve context across repeated observation.</h2>
+            <h2>Built to keep scene memory attached to the read.</h2>
             <p>
-              MIAR is designed so imagery does not lose meaning between detection and
-              assessment. Context, scene history, and confidence stay attached to the
-              read so analysts can carry the signal forward.
+              MIAR is designed so imagery does not lose context between detection and
+              assessment. Scene history, evidence state, and confidence remain attached
+              to the signal as it moves into review.
             </p>
           </div>
 
@@ -86,20 +89,20 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
         <div class="insight-grid">
           <article class="insight-item">
             <span>01</span>
-            <h3>Read change as pattern.</h3>
-            <p>Repeated scenes make buildup, dispersal, occupancy, and activity shifts legible over time.</p>
+            <h3>Read change as pattern, not noise.</h3>
+            <p>Repeated scenes make buildup, dispersal, occupancy, and activity shifts legible at operational tempo.</p>
           </article>
 
           <article class="insight-item">
             <span>02</span>
-            <h3>Keep confidence attached to the call.</h3>
-            <p>Recognition only matters when the underlying evidence survives review and handoff.</p>
+            <h3>Keep evidence attached to the claim.</h3>
+            <p>Recognition only matters when the underlying evidence can survive review, challenge, and handoff.</p>
           </article>
 
           <article class="insight-item">
             <span>03</span>
-            <h3>Move cleanly into larger workflows.</h3>
-            <p>MIAR is designed to feed correlation, reasoning, and assessment systems around it.</p>
+            <h3>Move cleanly into larger systems.</h3>
+            <p>MIAR is designed to feed platform, correlation, and assessment layers that sit beyond the first read.</p>
           </article>
         </div>
       </section>
@@ -108,15 +111,22 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
         <div class="waitlist-shell">
           <div class="waitlist-copy">
             <p class="eyebrow">Request access</p>
-            <h2>For teams evaluating persistent monitoring and imagery comparison.</h2>
+            <h2>For programs building persistent watch over military infrastructure and activity.</h2>
             <p>
-              We are speaking with analyst teams, technical partners, and operational
-              programs evaluating imagery-driven workflows.
+              We are working with ISR teams, defense programs, and platform partners
+              responsible for installation monitoring, force posture, and imagery-driven assessment.
             </p>
           </div>
 
           <div class="waitlist-card">
-            <form class="waitlist-form" id="waitlist-form" method="post" action="/api/waitlist">
+            <form class="waitlist-form" id="waitlist-form" method="post" action="/api/waitlist/">
+              <div class="honeypot-field" aria-hidden="true">
+                <label>
+                  Website
+                  <input type="text" name="website" tabindex="-1" autocomplete="off" />
+                </label>
+              </div>
+
               <label>
                 Full name
                 <input type="text" name="name" autocomplete="name" placeholder="Asha Menon" />
@@ -139,29 +149,52 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                   type="text"
                   name="organization"
                   autocomplete="organization"
-                  placeholder="Defense lab, GEOINT team, platform program"
+                  placeholder="Program office, defense lab, ISR team, platform company"
                 />
               </label>
 
               <label>
-                Primary interest
-                <div class="custom-select" data-custom-select>
-                  <input type="hidden" name="interest" value="" required data-custom-select-input />
-                  <button
-                    class="custom-select-trigger"
-                    type="button"
-                    aria-expanded="false"
-                    data-custom-select-trigger
-                  >
-                    <span data-custom-select-value>Select one</span>
-                  </button>
-                  <div class="custom-select-menu" hidden data-custom-select-menu>
-                    <button type="button" data-value="asset-monitoring">Asset monitoring</button>
-                    <button type="button" data-value="change-detection">Change detection</button>
-                    <button type="button" data-value="imagery-platform">Imagery platform integration</button>
-                    <button type="button" data-value="review-workflows">Assessment workflows</button>
-                  </div>
-                </div>
+                Role or team
+                <input
+                  type="text"
+                  name="role"
+                  autocomplete="organization-title"
+                  placeholder="Program lead, analyst, product owner, GEOINT team"
+                />
+              </label>
+
+              <label>
+                Primary workflow
+                <select name="interest" required>
+                  <option value="">Select one</option>
+                  <option value="installation-monitoring">Installation monitoring</option>
+                  <option value="force-posture-change">Force posture change</option>
+                  <option value="activity-indications">Activity indications and warning</option>
+                  <option value="platform-integration">Platform or workflow integration</option>
+                </select>
+              </label>
+
+              <label>
+                Operating focus
+                <select name="focus" required>
+                  <option value="">Select one</option>
+                  <option value="airfields-aviation">Airfields and aviation</option>
+                  <option value="installations-basing">Installations and basing</option>
+                  <option value="maritime-activity">Maritime activity</option>
+                  <option value="logistics-ground-movement">Logistics and ground movement</option>
+                  <option value="multi-domain">Multi-domain coverage</option>
+                </select>
+              </label>
+
+              <label>
+                Program timing
+                <select name="timeline">
+                  <option value="">Select one</option>
+                  <option value="active-evaluation">Active evaluation now</option>
+                  <option value="0-3-months">Operational need in 0-3 months</option>
+                  <option value="3-6-months">Operational need in 3-6 months</option>
+                  <option value="longer-horizon">Longer-horizon research</option>
+                </select>
               </label>
 
               <label>
@@ -169,7 +202,7 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                 <textarea
                   name="mission"
                   rows="4"
-                  placeholder="Describe the imagery or operational problem you want MIAR to support."
+                  placeholder="Describe the collection, monitoring, or assessment problem you need to solve."
                 ></textarea>
               </label>
 
