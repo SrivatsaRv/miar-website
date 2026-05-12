@@ -5,6 +5,7 @@ const navLinks = document.querySelectorAll(".site-nav a");
 const form = document.getElementById("waitlist-form");
 const statusNode = document.getElementById("form-status");
 const submitButton = form?.querySelector(".submit-button");
+const customSelects = document.querySelectorAll("[data-custom-select]");
 
 function setNavOpen(isOpen) {
   if (!headerShell || !navToggle) {
@@ -33,15 +34,105 @@ navLinks.forEach((link) => {
   });
 });
 
+function closeCustomSelect(select) {
+  const trigger = select?.querySelector("[data-custom-select-trigger]");
+  const menu = select?.querySelector("[data-custom-select-menu]");
+
+  if (!select || !trigger || !menu) {
+    return;
+  }
+
+  select.classList.remove("is-open");
+  trigger.setAttribute("aria-expanded", "false");
+  menu.hidden = true;
+}
+
+function syncCustomSelect(select, value = "") {
+  const shell = select?.closest(".select-shell");
+  const hiddenInput = shell?.querySelector("[data-custom-select-input]");
+  const mobileSelect = shell?.querySelector("[data-custom-select-mobile]");
+  const trigger = select?.querySelector("[data-custom-select-trigger]");
+  const valueNode = select?.querySelector("[data-custom-select-value]");
+  const options = select?.querySelectorAll("[data-value]");
+
+  if (!shell || !hiddenInput || !mobileSelect || !trigger || !valueNode || !options?.length) {
+    return;
+  }
+
+  hiddenInput.value = value;
+  mobileSelect.value = value;
+
+  const selectedOption = Array.from(options).find((option) => option.dataset.value === value);
+
+  if (selectedOption) {
+    valueNode.textContent = selectedOption.textContent || "Select one";
+    trigger.classList.remove("is-placeholder");
+  } else {
+    valueNode.textContent = "Select one";
+    trigger.classList.add("is-placeholder");
+  }
+
+  options.forEach((option) => {
+    option.classList.toggle("is-selected", option.dataset.value === value);
+  });
+}
+
+customSelects.forEach((select) => {
+  const shell = select.closest(".select-shell");
+  const hiddenInput = shell?.querySelector("[data-custom-select-input]");
+  const mobileSelect = shell?.querySelector("[data-custom-select-mobile]");
+  const trigger = select.querySelector("[data-custom-select-trigger]");
+  const menu = select.querySelector("[data-custom-select-menu]");
+  const options = select.querySelectorAll("[data-value]");
+
+  if (!shell || !hiddenInput || !mobileSelect || !trigger || !menu || !options.length) {
+    return;
+  }
+
+  syncCustomSelect(select, hiddenInput.value || mobileSelect.value || "");
+
+  trigger.addEventListener("click", () => {
+    const isOpen = select.classList.contains("is-open");
+
+    customSelects.forEach((node) => {
+      if (node !== select) {
+        closeCustomSelect(node);
+      }
+    });
+
+    select.classList.toggle("is-open", !isOpen);
+    trigger.setAttribute("aria-expanded", String(!isOpen));
+    menu.hidden = isOpen;
+  });
+
+  options.forEach((option) => {
+    option.addEventListener("click", () => {
+      syncCustomSelect(select, option.dataset.value || "");
+      closeCustomSelect(select);
+    });
+  });
+
+  mobileSelect.addEventListener("change", () => {
+    syncCustomSelect(select, mobileSelect.value);
+  });
+});
+
 document.addEventListener("click", (event) => {
   if (headerShell?.classList.contains("is-nav-open") && !headerShell.contains(event.target)) {
     setNavOpen(false);
   }
+
+  customSelects.forEach((select) => {
+    if (!select.contains(event.target)) {
+      closeCustomSelect(select);
+    }
+  });
 });
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     setNavOpen(false);
+    customSelects.forEach((select) => closeCustomSelect(select));
   }
 });
 
@@ -71,8 +162,8 @@ function setSubmittingState(isSubmitting) {
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  const interestInput = form.querySelector('select[name="interest"]');
-  const focusInput = form.querySelector('select[name="focus"]');
+  const interestInput = form.querySelector('input[name="interest"]');
+  const focusInput = form.querySelector('input[name="focus"]');
 
   if (interestInput && !interestInput.value) {
     setStatus("Select a primary workflow before submitting.", "is-error");
@@ -105,6 +196,7 @@ form?.addEventListener("submit", async (event) => {
     }
 
     form.reset();
+    customSelects.forEach((select) => syncCustomSelect(select, ""));
     setStatus(
       result.message || "Request recorded. We will review fit and reach out directly.",
       result.persisted === false ? "is-error" : "is-success"

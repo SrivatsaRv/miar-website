@@ -907,7 +907,6 @@ h3 {
 }
 
 .waitlist-form input,
-.waitlist-form select,
 .waitlist-form textarea {
   width: 100%;
   min-height: 3.25rem;
@@ -920,7 +919,13 @@ h3 {
   font-size: 16px;
 }
 
-.waitlist-form select {
+.mobile-select {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.84rem 2.5rem 0.84rem 0.92rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.025);
   background-image:
     linear-gradient(45deg, transparent 50%, rgba(228, 226, 228, 0.82) 50%),
     linear-gradient(135deg, rgba(228, 226, 228, 0.82) 50%, transparent 50%);
@@ -929,7 +934,13 @@ h3 {
     calc(100% - 0.8rem) calc(50% - 0.16rem);
   background-size: 0.4rem 0.4rem, 0.4rem 0.4rem;
   background-repeat: no-repeat;
-  padding-right: 2.5rem;
+  color: var(--text);
+  appearance: none;
+  display: none;
+}
+
+.select-shell {
+  position: relative;
 }
 
 .custom-select {
@@ -1010,6 +1021,12 @@ h3 {
 .custom-select-menu button.is-selected {
   border-color: rgba(183, 200, 225, 0.2);
   background: rgba(183, 200, 225, 0.08);
+}
+
+.custom-select-menu button.is-selected::before {
+  content: "•";
+  margin-right: 0.5rem;
+  color: var(--primary);
 }
 
 .waitlist-form textarea {
@@ -1294,9 +1311,12 @@ h3 {
     padding: 0.6rem 0.68rem;
   }
 
-  .custom-select-menu {
-    position: static;
-    margin-top: 0.35rem;
+  .mobile-select {
+    display: block;
+  }
+
+  .custom-select {
+    display: none;
   }
 
   .solutions-panel {
@@ -1304,6 +1324,16 @@ h3 {
   }
 
   .brand-copy span {
+    display: none;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .mobile-select {
+    display: block;
+  }
+
+  .custom-select {
     display: none;
   }
 }

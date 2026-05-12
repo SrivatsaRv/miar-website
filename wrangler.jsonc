@@ -1,6 +1,8 @@
 {
 	"compatibility_date": "2026-05-12",
-	"compatibility_flags": ["global_fetch_strictly_public"],
+	"compatibility_flags": [
+		"global_fetch_strictly_public"
+	],
 	"name": "miar-website",
 	"main": "@astrojs/cloudflare/entrypoints/server",
 	"assets": {
@@ -9,5 +11,12 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"d1_databases": [
+		{
+			"binding": "MIAR_WAITLIST_DB",
+			"database_name": "miar-waitlist",
+			"database_id": "80699e16-88da-41e1-a0aa-7a3d8218437d"
+		}
+	]
 }

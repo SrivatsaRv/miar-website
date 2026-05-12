@@ -165,36 +165,94 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
 
               <label>
                 Primary workflow
-                <select name="interest" required>
-                  <option value="">Select one</option>
-                  <option value="installation-monitoring">Installation monitoring</option>
-                  <option value="force-posture-change">Force posture change</option>
-                  <option value="activity-indications">Activity indications and warning</option>
-                  <option value="platform-integration">Platform or workflow integration</option>
-                </select>
+                <div class="select-shell">
+                  <input type="hidden" name="interest" value="" required data-custom-select-input />
+                  <select class="mobile-select" data-custom-select-mobile>
+                    <option value="">Select one</option>
+                    <option value="installation-monitoring">Installation monitoring</option>
+                    <option value="force-posture-change">Force posture change</option>
+                    <option value="activity-indications">Activity indications and warning</option>
+                    <option value="platform-integration">Platform or workflow integration</option>
+                  </select>
+                  <div class="custom-select" data-custom-select>
+                    <button
+                      class="custom-select-trigger is-placeholder"
+                      type="button"
+                      aria-expanded="false"
+                      data-custom-select-trigger
+                    >
+                      <span data-custom-select-value>Select one</span>
+                    </button>
+                    <div class="custom-select-menu" hidden data-custom-select-menu>
+                      <button type="button" data-value="installation-monitoring">Installation monitoring</button>
+                      <button type="button" data-value="force-posture-change">Force posture change</button>
+                      <button type="button" data-value="activity-indications">Activity indications and warning</button>
+                      <button type="button" data-value="platform-integration">Platform or workflow integration</button>
+                    </div>
+                  </div>
+                </div>
               </label>
 
               <label>
                 Operating focus
-                <select name="focus" required>
-                  <option value="">Select one</option>
-                  <option value="airfields-aviation">Airfields and aviation</option>
-                  <option value="installations-basing">Installations and basing</option>
-                  <option value="maritime-activity">Maritime activity</option>
-                  <option value="logistics-ground-movement">Logistics and ground movement</option>
-                  <option value="multi-domain">Multi-domain coverage</option>
-                </select>
+                <div class="select-shell">
+                  <input type="hidden" name="focus" value="" required data-custom-select-input />
+                  <select class="mobile-select" data-custom-select-mobile>
+                    <option value="">Select one</option>
+                    <option value="airfields-aviation">Airfields and aviation</option>
+                    <option value="installations-basing">Installations and basing</option>
+                    <option value="maritime-activity">Maritime activity</option>
+                    <option value="logistics-ground-movement">Logistics and ground movement</option>
+                    <option value="multi-domain">Multi-domain coverage</option>
+                  </select>
+                  <div class="custom-select" data-custom-select>
+                    <button
+                      class="custom-select-trigger is-placeholder"
+                      type="button"
+                      aria-expanded="false"
+                      data-custom-select-trigger
+                    >
+                      <span data-custom-select-value>Select one</span>
+                    </button>
+                    <div class="custom-select-menu" hidden data-custom-select-menu>
+                      <button type="button" data-value="airfields-aviation">Airfields and aviation</button>
+                      <button type="button" data-value="installations-basing">Installations and basing</button>
+                      <button type="button" data-value="maritime-activity">Maritime activity</button>
+                      <button type="button" data-value="logistics-ground-movement">Logistics and ground movement</button>
+                      <button type="button" data-value="multi-domain">Multi-domain coverage</button>
+                    </div>
+                  </div>
+                </div>
               </label>
 
               <label>
                 Program timing
-                <select name="timeline">
-                  <option value="">Select one</option>
-                  <option value="active-evaluation">Active evaluation now</option>
-                  <option value="0-3-months">Operational need in 0-3 months</option>
-                  <option value="3-6-months">Operational need in 3-6 months</option>
-                  <option value="longer-horizon">Longer-horizon research</option>
-                </select>
+                <div class="select-shell">
+                  <input type="hidden" name="timeline" value="" data-custom-select-input />
+                  <select class="mobile-select" data-custom-select-mobile>
+                    <option value="">Select one</option>
+                    <option value="active-evaluation">Active evaluation now</option>
+                    <option value="0-3-months">Operational need in 0-3 months</option>
+                    <option value="3-6-months">Operational need in 3-6 months</option>
+                    <option value="longer-horizon">Longer-horizon research</option>
+                  </select>
+                  <div class="custom-select" data-custom-select>
+                    <button
+                      class="custom-select-trigger is-placeholder"
+                      type="button"
+                      aria-expanded="false"
+                      data-custom-select-trigger
+                    >
+                      <span data-custom-select-value>Select one</span>
+                    </button>
+                    <div class="custom-select-menu" hidden data-custom-select-menu>
+                      <button type="button" data-value="active-evaluation">Active evaluation now</button>
+                      <button type="button" data-value="0-3-months">Operational need in 0-3 months</button>
+                      <button type="button" data-value="3-6-months">Operational need in 3-6 months</button>
+                      <button type="button" data-value="longer-horizon">Longer-horizon research</button>
+                    </div>
+                  </div>
+                </div>
               </label>
 
               <label>
