@@ -10,7 +10,8 @@ interface Props {
 const { title, description, current = "home" } = Astro.props;
 
 const isHome = current === "home";
-const socialImage = "/imagery/hotan-airfield-hero.png";
+const canonicalUrl = "https://miar.reachdefence.com/";
+const socialImage = "https://miar.reachdefence.com/imagery/hotan-airfield-hero.png";
 const navItems = isHome
   ? [
       { href: "#solutions", label: "Solutions" },
@@ -36,12 +37,19 @@ const navItems = isHome
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:image:secure_url" content={socialImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1752" />
+    <meta property="og:image:height" content="898" />
     <meta property="og:image:alt" content="Annotated MIAR airfield intelligence scene" />
+    <link rel="canonical" href={canonicalUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
+    <meta name="twitter:image:alt" content="Annotated MIAR airfield intelligence scene" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
