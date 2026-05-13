@@ -6,7 +6,7 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
 
 <BaseLayout
   title="MIAR | Operational Imagery Intelligence"
-  description="MIAR helps analysts track what is present, what changed, and what matters across repeat military imagery."
+  description="MIAR helps analysts compare repeat imagery, detect visible equipment and activity, and keep the evidence behind every finding."
   current="home"
 >
   <main>
@@ -24,16 +24,16 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
 
         <div class="hero-shell">
           <div class="hero-overlay">
-            <p class="eyebrow hero-eyebrow">MIAR / Military Imagery Analysis & Recognition</p>
-            <h1>See what changed. Keep the history. Move faster.</h1>
+            <p class="eyebrow hero-eyebrow">Military-grade imagery intelligence, delivered at operational tempo</p>
+            <h1>Know what changed before the next image arrives.</h1>
             <p class="hero-lead">
-              MIAR helps analysts work repeat military imagery without losing scene history,
-              change context, or the evidence behind the call.
+              MIAR helps analysts compare repeat imagery, detect visible equipment and
+              activity, and keep the evidence behind every finding.
             </p>
 
             <div class="hero-actions">
               <a class="button button-primary" href="#waitlist">Request access</a>
-              <a class="button button-secondary" href="#solutions">View solutions</a>
+              <a class="button button-secondary" href="#solutions">View capability flow</a>
             </div>
           </div>
         </div>
@@ -43,27 +43,34 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
     <div class="page-shell">
       <section class="band band-split section-anchor" id="solutions">
         <div class="section-copy">
-          <p class="eyebrow">Solutions</p>
-          <h2>Built for sites, assets, and activity that have to be watched over time.</h2>
+          <p class="eyebrow">What It Does</p>
+          <h2>Built for military sites, operating areas, and assets under repeated monitoring.</h2>
           <p>
-            This is for teams that work from revisit to revisit, not from one clean image.
-            It helps you keep track of what is there, what moved, and what deserves another look.
+            MIAR is built for teams monitoring airfields, bases, ports, logistics routes,
+            launch areas, forward positions, and other areas of military interest. It helps
+            analysts understand what is present, what has changed, what needs review, and
+            what should be tasked next.
           </p>
 
           <div class="capability-list">
             <article class="capability-item">
               <span>Detection</span>
-              <p>Find equipment, assets, and visible activity in the scene with usable confidence.</p>
+              <p>Identify aircraft, vehicles, equipment, structures, and visible activity in the scene, with confidence scores and analyst review built into the workflow.</p>
             </article>
 
             <article class="capability-item">
-              <span>Temporal compare</span>
-              <p>Compare the current scene to earlier coverage so routine movement is not mistaken for meaningful change.</p>
+              <span>Compare</span>
+              <p>Compare the latest image against earlier imagery of the same site to separate routine movement from meaningful change.</p>
             </article>
 
             <article class="capability-item">
-              <span>Operational output</span>
-              <p>Carry detections, scene history, and change notes into review and downstream assessment.</p>
+              <span>Fusion</span>
+              <p>Correlate EO, SAR, IR, and other available sources so analysts are not limited to one image type or one collection condition.</p>
+            </article>
+
+            <article class="capability-item">
+              <span>Evidence</span>
+              <p>Preserve the source image, detection, comparison result, confidence score, analyst decision, and audit trail behind every finding.</p>
             </article>
           </div>
         </div>
@@ -74,11 +81,13 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
       <section class="band section-anchor" id="insights">
         <div class="about-shell">
           <div class="section-head">
-            <p class="eyebrow">Operational insights</p>
-            <h2>Built so the read stays tied to the scene.</h2>
+            <p class="eyebrow">Multi-Payload</p>
+            <h2>Multi-payload change detection for real-world collection conditions.</h2>
             <p>
-              Good imagery review is not just about what is in one frame. You need the earlier
-              passes, the baseline, and a clean record of why something looks different now.
+              Military imagery is rarely perfect. EO may be blocked by cloud cover. SAR may
+              reveal metallic objects or structural change when optical imagery is unavailable.
+              IR may indicate recent activity through heat signatures. Non-imaging sources can
+              add context around movement, alerts, and operating patterns.
             </p>
           </div>
 
@@ -87,21 +96,27 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
 
         <div class="insight-grid">
           <article class="insight-item">
-            <span>01</span>
-            <h3>Read change in sequence.</h3>
-            <p>Buildup, dispersal, occupancy, and activity become clearer when scenes are read across time.</p>
+            <span>EO</span>
+            <h3>EO imagery</h3>
+            <p>High-resolution visual review for clear-weather, daytime detection and classification.</p>
           </article>
 
           <article class="insight-item">
-            <span>02</span>
-            <h3>Keep the basis for the call.</h3>
-            <p>A label is not enough. Analysts need the scene context and the reason the system flagged it.</p>
+            <span>SAR</span>
+            <h3>SAR imagery</h3>
+            <p>All-weather, day/night sensing for structural change, metallic signatures, and activity under poor optical conditions.</p>
           </article>
 
           <article class="insight-item">
-            <span>03</span>
-            <h3>Feed the next step.</h3>
-            <p>The output should be usable in review, reporting, and broader assessment workflows without being reworked from scratch.</p>
+            <span>IR</span>
+            <h3>IR imagery</h3>
+            <p>Heat-based indicators for active engines, recently moved equipment, and thermal activity.</p>
+          </article>
+
+          <article class="insight-item">
+            <span>OSINT</span>
+            <h3>Contextual signals</h3>
+            <p>Support from non-imaging sources such as ADS-B, AIS, NOTAMs, and other contextual feeds through the wider ReachDefence stack.</p>
           </article>
         </div>
       </section>
@@ -110,10 +125,12 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
         <div class="waitlist-shell">
           <div class="waitlist-copy">
             <p class="eyebrow">Request access</p>
-            <h2>For teams that monitor military sites, assets, and change over time.</h2>
+            <h2>For teams that need to monitor military activity over time.</h2>
             <p>
-              We are speaking with analysts, program teams, and platform groups who work
-              installation monitoring, movement, activity tracking, and imagery review day to day.
+              MIAR is being built for defence analysts, geospatial intelligence teams,
+              research groups, program teams, and platform owners working on military
+              imagery analysis and change detection. If your team monitors military sites,
+              operating areas, assets, or activity over time, we would like to speak with you.
             </p>
           </div>
 
@@ -163,15 +180,18 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
               </label>
 
               <label>
-                Primary workflow
+                What do you need to monitor?
                 <div class="select-shell">
                   <input type="hidden" name="interest" value="" required data-custom-select-input />
                   <select class="mobile-select" data-custom-select-mobile>
                     <option value="">Select one</option>
-                    <option value="installation-monitoring">Installation monitoring</option>
-                    <option value="force-posture-change">Force posture change</option>
-                    <option value="activity-indications">Activity indications and warning</option>
-                    <option value="platform-integration">Platform or workflow integration</option>
+                    <option value="airfields-aviation-activity">Airfields and aviation activity</option>
+                    <option value="bases-installations">Bases and installations</option>
+                    <option value="ports-maritime-activity">Ports and maritime activity</option>
+                    <option value="logistics-routes-staging">Logistics routes and staging areas</option>
+                    <option value="ground-equipment-movement">Ground equipment and movement</option>
+                    <option value="multi-payload-change-detection">Multi-payload change detection</option>
+                    <option value="platform-system-integration">Platform or system integration</option>
                   </select>
                   <div class="custom-select" data-custom-select>
                     <button
@@ -183,26 +203,31 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                       <span data-custom-select-value>Select one</span>
                     </button>
                     <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="installation-monitoring">Installation monitoring</button>
-                      <button type="button" data-value="force-posture-change">Force posture change</button>
-                      <button type="button" data-value="activity-indications">Activity indications and warning</button>
-                      <button type="button" data-value="platform-integration">Platform or workflow integration</button>
+                      <button type="button" data-value="airfields-aviation-activity">Airfields and aviation activity</button>
+                      <button type="button" data-value="bases-installations">Bases and installations</button>
+                      <button type="button" data-value="ports-maritime-activity">Ports and maritime activity</button>
+                      <button type="button" data-value="logistics-routes-staging">Logistics routes and staging areas</button>
+                      <button type="button" data-value="ground-equipment-movement">Ground equipment and movement</button>
+                      <button type="button" data-value="multi-payload-change-detection">Multi-payload change detection</button>
+                      <button type="button" data-value="platform-system-integration">Platform or system integration</button>
                     </div>
                   </div>
                 </div>
               </label>
 
               <label>
-                Operating focus
+                Primary area of interest
                 <div class="select-shell">
                   <input type="hidden" name="focus" value="" required data-custom-select-input />
                   <select class="mobile-select" data-custom-select-mobile>
                     <option value="">Select one</option>
-                    <option value="airfields-aviation">Airfields and aviation</option>
-                    <option value="installations-basing">Installations and basing</option>
-                    <option value="maritime-activity">Maritime activity</option>
-                    <option value="logistics-ground-movement">Logistics and ground movement</option>
-                    <option value="multi-domain">Multi-domain coverage</option>
+                    <option value="eo-imagery-analysis">EO imagery analysis</option>
+                    <option value="sar-imagery-analysis">SAR imagery analysis</option>
+                    <option value="ir-thermal-indicators">IR or thermal indicators</option>
+                    <option value="multi-payload-fusion">Multi-payload fusion</option>
+                    <option value="change-detection">Change detection</option>
+                    <option value="tasking-revisit-planning">Tasking and revisit planning</option>
+                    <option value="evidence-provenance">Evidence and provenance</option>
                   </select>
                   <div class="custom-select" data-custom-select>
                     <button
@@ -214,26 +239,28 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                       <span data-custom-select-value>Select one</span>
                     </button>
                     <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="airfields-aviation">Airfields and aviation</button>
-                      <button type="button" data-value="installations-basing">Installations and basing</button>
-                      <button type="button" data-value="maritime-activity">Maritime activity</button>
-                      <button type="button" data-value="logistics-ground-movement">Logistics and ground movement</button>
-                      <button type="button" data-value="multi-domain">Multi-domain coverage</button>
+                      <button type="button" data-value="eo-imagery-analysis">EO imagery analysis</button>
+                      <button type="button" data-value="sar-imagery-analysis">SAR imagery analysis</button>
+                      <button type="button" data-value="ir-thermal-indicators">IR or thermal indicators</button>
+                      <button type="button" data-value="multi-payload-fusion">Multi-payload fusion</button>
+                      <button type="button" data-value="change-detection">Change detection</button>
+                      <button type="button" data-value="tasking-revisit-planning">Tasking and revisit planning</button>
+                      <button type="button" data-value="evidence-provenance">Evidence and provenance</button>
                     </div>
                   </div>
                 </div>
               </label>
 
               <label>
-                Program timing
+                When do you need this capability?
                 <div class="select-shell">
                   <input type="hidden" name="timeline" value="" data-custom-select-input />
                   <select class="mobile-select" data-custom-select-mobile>
                     <option value="">Select one</option>
-                    <option value="active-evaluation">Active evaluation now</option>
-                    <option value="0-3-months">Operational need in 0-3 months</option>
-                    <option value="3-6-months">Operational need in 3-6 months</option>
-                    <option value="longer-horizon">Longer-horizon research</option>
+                    <option value="evaluating-now">Evaluating now</option>
+                    <option value="0-3-months">0 to 3 months</option>
+                    <option value="3-6-months">3 to 6 months</option>
+                    <option value="researching-for-later">Researching for later</option>
                   </select>
                   <div class="custom-select" data-custom-select>
                     <button
@@ -245,21 +272,21 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                       <span data-custom-select-value>Select one</span>
                     </button>
                     <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="active-evaluation">Active evaluation now</button>
-                      <button type="button" data-value="0-3-months">Operational need in 0-3 months</button>
-                      <button type="button" data-value="3-6-months">Operational need in 3-6 months</button>
-                      <button type="button" data-value="longer-horizon">Longer-horizon research</button>
+                      <button type="button" data-value="evaluating-now">Evaluating now</button>
+                      <button type="button" data-value="0-3-months">0 to 3 months</button>
+                      <button type="button" data-value="3-6-months">3 to 6 months</button>
+                      <button type="button" data-value="researching-for-later">Researching for later</button>
                     </div>
                   </div>
                 </div>
               </label>
 
               <label>
-                Mission note
+                What should we know about your use case?
                 <textarea
                   name="mission"
                   rows="4"
-                  placeholder="Describe the monitoring or imagery review problem you need to solve."
+                  placeholder="Describe the monitoring problem, site set, or imagery review workflow you need to support."
                 ></textarea>
               </label>
 
