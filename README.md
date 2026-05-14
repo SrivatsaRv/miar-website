@@ -21,6 +21,7 @@ This runs the local release check used before commits and pushes.
 ## Structure
 
 - `src/pages/index.astro`
+- `src/pages/legal/index.astro`
 - `src/components/`
 - `src/styles/global.css`
 - `src/pages/api/waitlist.ts`
@@ -71,3 +72,25 @@ The waitlist currently records:
 - contact identity: `name`, `email`, `organization`, `role`
 - market signal: `interest`, `focus`, `timeline`, `mission`
 - request metadata: `submitted_at`, `referrer`, `user_agent`, `cf_country`, `cf_region`, `cf_city`
+- acknowledgements: `privacy_acknowledged`, `eligibility_acknowledged`
+
+## Legal and access notice
+
+- public notice route: `/legal/`
+- the request-access form links to the site notice and treats submission as acknowledgement
+- the waitlist API rejects requests geolocated to `CN` and `PK`
+
+## Country blocking
+
+App-level checks are only a second layer for the waitlist endpoint. If you need to block the
+entire website, enforce it at Cloudflare WAF with a custom rule.
+
+Recommended rule expression:
+
+```txt
+(ip.src.country in {"CN" "PK"})
+```
+
+Recommended action:
+
+- `Block`

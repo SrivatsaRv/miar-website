@@ -20,7 +20,20 @@ type Submission = {
   cfCountry: string;
   cfRegion: string;
   cfCity: string;
+  privacyAcknowledged: string;
+  eligibilityAcknowledged: string;
 };
+
+type DatabaseStatement = {
+  bind: (...values: string[]) => { run: () => Promise<unknown> };
+  run: () => Promise<unknown>;
+};
+
+type Database = {
+  prepare: (query: string) => DatabaseStatement;
+};
+
+const RESTRICTED_COUNTRIES = new Set(["CN", "PK"]);
 
 function normalizeValue(value: FormDataEntryValue | null) {
   if (typeof value !== "string") {
@@ -36,36 +49,13 @@ function readCfText(value: unknown) {
 
 async function saveSubmission(submission: Submission) {
   const runtimeEnv = env as Record<string, unknown>;
-  const database = runtimeEnv.MIAR_WAITLIST_DB as
-    | { prepare: (query: string) => { bind: (...values: string[]) => { run: () => Promise<unknown> }; run: () => Promise<unknown> } }
-    | undefined;
+  const database = runtimeEnv.MIAR_WAITLIST_DB as Database | undefined;
   const kv = runtimeEnv.MIAR_WAITLIST as
     | { put: (key: string, value: string) => Promise<unknown> }
     | undefined;
 
   if (database && typeof database.prepare === "function") {
-    await database.prepare(
-      `
-      CREATE TABLE IF NOT EXISTS waitlist_submissions (
-        id TEXT PRIMARY KEY,
-        submitted_at TEXT NOT NULL,
-        name TEXT,
-        email TEXT NOT NULL,
-        organization TEXT,
-        role TEXT,
-        interest TEXT NOT NULL,
-        focus TEXT NOT NULL,
-        timeline TEXT,
-        mission TEXT,
-        source_path TEXT,
-        referrer TEXT,
-        user_agent TEXT,
-        cf_country TEXT,
-        cf_region TEXT,
-        cf_city TEXT
-      )
-      `
-    ).run();
+    await ensureWaitlistSchema(database);
 
     await database.prepare(
       `
@@ -85,9 +75,11 @@ async function saveSubmission(submission: Submission) {
         user_agent,
         cf_country,
         cf_region,
-        cf_city
+        cf_city,
+        privacy_acknowledged,
+        eligibility_acknowledged
       )
-      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)
+      VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17, ?18)
       `
     )
       .bind(
@@ -106,7 +98,9 @@ async function saveSubmission(submission: Submission) {
         submission.userAgent,
         submission.cfCountry,
         submission.cfRegion,
-        submission.cfCity
+        submission.cfCity,
+        submission.privacyAcknowledged,
+        submission.eligibilityAcknowledged
       )
       .run();
 
@@ -158,6 +152,54 @@ function buildHtmlResponse(message: string) {
   </html>`;
 }
 
+async function runOptionalSchemaUpdate(database: Database, query: string) {
+  try {
+    await database.prepare(query).run();
+  } catch (error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : "";
+
+    if (!message.includes("duplicate column name")) {
+      throw error;
+    }
+  }
+}
+
+async function ensureWaitlistSchema(database: Database) {
+  await database.prepare(
+    `
+    CREATE TABLE IF NOT EXISTS waitlist_submissions (
+      id TEXT PRIMARY KEY,
+      submitted_at TEXT NOT NULL,
+      name TEXT,
+      email TEXT NOT NULL,
+      organization TEXT,
+      role TEXT,
+      interest TEXT NOT NULL,
+      focus TEXT NOT NULL,
+      timeline TEXT,
+      mission TEXT,
+      source_path TEXT,
+      referrer TEXT,
+      user_agent TEXT,
+      cf_country TEXT,
+      cf_region TEXT,
+      cf_city TEXT,
+      privacy_acknowledged INTEGER NOT NULL DEFAULT 0,
+      eligibility_acknowledged INTEGER NOT NULL DEFAULT 0
+    )
+    `
+  ).run();
+
+  await runOptionalSchemaUpdate(
+    database,
+    "ALTER TABLE waitlist_submissions ADD COLUMN privacy_acknowledged INTEGER NOT NULL DEFAULT 0"
+  );
+  await runOptionalSchemaUpdate(
+    database,
+    "ALTER TABLE waitlist_submissions ADD COLUMN eligibility_acknowledged INTEGER NOT NULL DEFAULT 0"
+  );
+}
+
 export const POST: APIRoute = async ({ request }) => {
   try {
     const formData = await request.formData();
@@ -174,6 +216,15 @@ export const POST: APIRoute = async ({ request }) => {
       };
     };
     const requestUrl = new URL(request.url);
+    const cfCountry = readCfText(requestWithCf.cf?.country).toUpperCase();
+
+    if (RESTRICTED_COUNTRIES.has(cfCountry)) {
+      return Response.json(
+        { error: "Access requests are not accepted from your jurisdiction." },
+        { status: 403 }
+      );
+    }
+
     const submission: Submission = {
       id: crypto.randomUUID(),
       submittedAt: new Date().toISOString(),
@@ -188,9 +239,11 @@ export const POST: APIRoute = async ({ request }) => {
       sourcePath: requestUrl.pathname,
       referrer: request.headers.get("referer") || "",
       userAgent: request.headers.get("user-agent") || "",
-      cfCountry: readCfText(requestWithCf.cf?.country),
+      cfCountry,
       cfRegion: readCfText(requestWithCf.cf?.region),
       cfCity: readCfText(requestWithCf.cf?.city),
+      privacyAcknowledged: "1",
+      eligibilityAcknowledged: "1",
     };
 
     if (!submission.email) {

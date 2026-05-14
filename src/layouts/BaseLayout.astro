@@ -4,13 +4,14 @@ import "../styles/global.css";
 interface Props {
   title: string;
   description: string;
-  current?: "home" | "whitepapers" | "blogs";
+  current?: "home" | "whitepapers" | "blogs" | "legal";
 }
 
 const { title, description, current = "home" } = Astro.props;
 
 const isHome = current === "home";
-const canonicalUrl = "https://miar.reachdefence.com/";
+const siteOrigin = "https://miar.reachdefence.com";
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
 const socialImage = "https://miar.reachdefence.com/imagery/hotan-airfield-hero.png";
 const navItems = isHome
   ? [
@@ -20,6 +21,7 @@ const navItems = isHome
     ]
   : [
       { href: "/", label: "Home", active: current === "home" },
+      { href: "/legal/", label: "Legal", active: current === "legal" },
     ];
 ---
 
@@ -103,22 +105,16 @@ const navItems = isHome
     <footer class="site-footer">
       <div class="footer-shell">
         <div class="footer-brand">
-          <span>MIAR</span>
-          <p>
-            A Reach Defence initiative. Access is restricted, invite-only, and intended for
-            evaluated users and approved workflows.
-          </p>
+          <strong>MIAR</strong>
+          <span>by ReachDefence</span>
+          <p>Restricted access for evaluated users and approved workflows.</p>
         </div>
 
         <div class="footer-links">
           <a href="/#solutions">Solutions</a>
           <a href="/#insights">Insights</a>
           <a href="/#waitlist">Request access</a>
-        </div>
-
-        <div class="footer-meta">
-          <p>Reach Defence</p>
-          <p>Restricted use. Invitation required.</p>
+          <a href="/legal/">Legal</a>
         </div>
       </div>
     </footer>

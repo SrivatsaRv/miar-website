@@ -14,7 +14,9 @@ CREATE TABLE IF NOT EXISTS waitlist_submissions (
   user_agent TEXT,
   cf_country TEXT,
   cf_region TEXT,
-  cf_city TEXT
+  cf_city TEXT,
+  privacy_acknowledged INTEGER NOT NULL DEFAULT 0,
+  eligibility_acknowledged INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX IF NOT EXISTS idx_waitlist_submissions_submitted_at

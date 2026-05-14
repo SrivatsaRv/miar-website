@@ -1,0 +1,137 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="MIAR Legal, Privacy, and Access Notice"
+  description="MIAR privacy, access, and jurisdiction notice for the public website and waitlist."
+  current="legal"
+>
+  <main class="subpage-shell legal-shell">
+    <section class="subpage-hero legal-hero">
+      <p class="eyebrow">Legal Notice</p>
+      <h1>Privacy, access, and jurisdiction for the public MIAR site.</h1>
+      <p class="lead">
+        This notice covers the public MIAR website and the request-access form. It is meant to
+        be practical and narrow: it explains what information is collected here, who can review
+        it, who cannot, and when access may be refused or withdrawn.
+      </p>
+    </section>
+
+    <section class="legal-grid" aria-label="Legal notice sections">
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">What This Site Is</p>
+        <h2>Public landing page, not open self-service access</h2>
+        <p>
+          MIAR is presented here as a public information and access-request site. Submitting the
+          form does not create an account, contract, evaluation right, or guaranteed follow-up.
+          Access requests are reviewed case by case.
+        </p>
+        <p>
+          Separate written terms may apply to any pilot, demonstration, data-sharing arrangement,
+          or production use of the platform.
+        </p>
+      </article>
+
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">Information Collected</p>
+        <h2>Only the information needed to review a request and secure the site</h2>
+        <p>The current request-access form collects the details you choose to submit, including:</p>
+        <ul class="legal-list">
+          <li>Name, work email, organization, and role.</li>
+          <li>Operational interest, monitoring focus, timing, and free-text use case notes.</li>
+          <li>Technical request metadata such as referrer, user agent, and approximate country, region, and city derived from the request.</li>
+        </ul>
+        <p>
+          Do not submit classified, export-controlled, or other sensitive information through this
+          public form.
+        </p>
+      </article>
+
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">How It Is Used</p>
+        <h2>Access review, contact, operations, and security</h2>
+        <ul class="legal-list">
+          <li>To review whether there is a credible organizational or mission fit.</li>
+          <li>To contact you about your request where follow-up is warranted.</li>
+          <li>To maintain basic records of inbound requests and reduce abuse or spam.</li>
+          <li>To protect the site, investigate misuse, and enforce access restrictions.</li>
+        </ul>
+      </article>
+
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">Who Gets Access</p>
+        <h2>Need-to-know internal review only</h2>
+        <p>Your submission may be accessed by:</p>
+        <ul class="legal-list">
+          <li>ReachDefence personnel involved in site administration, access review, or business follow-up.</li>
+          <li>Service providers or contractors helping host, secure, or maintain the site, where access is necessary for that work and subject to confidentiality controls.</li>
+          <li>Advisers or authorities where disclosure is required to comply with law, protect rights, or respond to abuse or security issues.</li>
+        </ul>
+      </article>
+
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">Who Does Not</p>
+        <h2>No public publication or unrelated third-party sharing</h2>
+        <ul class="legal-list">
+          <li>Submissions are not intended for public display.</li>
+          <li>Submission data is not sold.</li>
+          <li>Submission data is not shared with unrelated third parties for advertising or general marketing distribution.</li>
+        </ul>
+      </article>
+
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">Eligibility</p>
+        <h2>Who may request access, and who may be refused</h2>
+        <p>
+          This site is intended for lawful organizational use, including government, defence,
+          research, industrial, and approved partner evaluation workflows. ReachDefence may deny,
+          defer, or revoke access where identity, organization, intended use, or jurisdiction
+          cannot be validated or appears inconsistent with platform risk controls.
+        </p>
+      </article>
+
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">Jurisdictions</p>
+        <h2>Access may be restricted by country or legal risk</h2>
+        <p>
+          MIAR is not offered in every jurisdiction. ReachDefence may block or refuse requests
+          based on geography, sanctions, export-control concerns, compliance requirements, or
+          security risk.
+        </p>
+        <p>
+          As currently configured for this site, access requests from restricted jurisdictions,
+          including China and Pakistan, are not accepted.
+        </p>
+      </article>
+
+      <article class="article-body legal-card">
+        <p class="eyebrow eyebrow-compact">Retention And External Services</p>
+        <h2>Kept as needed for review and operations</h2>
+        <p>
+          Request data may be retained for as long as reasonably needed to review requests,
+          maintain operational records, and protect the site. The site may also rely on hosting,
+          delivery, and security providers that process technical request data to serve and protect
+          the service.
+        </p>
+        <p>
+          External links and third-party websites have their own terms and privacy practices.
+        </p>
+      </article>
+    </section>
+
+    <section class="legal-cta">
+      <div class="article-body legal-callout">
+        <p class="eyebrow eyebrow-compact">Form Notice</p>
+        <p>
+          By using the request-access form, you confirm that the information you submit is yours
+          to share for contact and access-review purposes and that you are not sending sensitive
+          material through a public intake channel.
+        </p>
+        <p>
+          <a class="button button-primary" href="/#waitlist">Return to request access</a>
+        </p>
+      </div>
+    </section>
+  </main>
+</BaseLayout>
