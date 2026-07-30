@@ -33,7 +33,7 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
 
             <div class="hero-actions">
               <a class="button button-primary" href="#waitlist">Request access</a>
-              <a class="button button-secondary" href="#solutions">View capability flow</a>
+              <a class="button button-secondary" href="#overview">View capability flow</a>
             </div>
           </div>
         </div>
@@ -41,7 +41,7 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
     </section>
 
     <div class="page-shell">
-      <section class="band band-split section-anchor" id="solutions">
+      <section class="band band-split section-anchor" id="overview">
         <div class="section-copy">
           <p class="eyebrow">What It Does</p>
           <h2>Built for military sites, operating areas, and assets under repeated monitoring.</h2>
@@ -119,6 +119,7 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
             <p>Support from non-imaging sources such as ADS-B, AIS, NOTAMs, and other contextual feeds through the wider ReachDefence stack.</p>
           </article>
         </div>
+
       </section>
 
       <section class="band waitlist-band section-anchor" id="waitlist">
@@ -185,13 +186,12 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                   <input type="hidden" name="interest" value="" required data-custom-select-input />
                   <select class="mobile-select" data-custom-select-mobile>
                     <option value="">Select one</option>
-                    <option value="airfields-aviation-activity">Airfields and aviation activity</option>
-                    <option value="bases-installations">Bases and installations</option>
-                    <option value="ports-maritime-activity">Ports and maritime activity</option>
-                    <option value="logistics-routes-staging">Logistics routes and staging areas</option>
-                    <option value="ground-equipment-movement">Ground equipment and movement</option>
-                    <option value="multi-payload-change-detection">Multi-payload change detection</option>
-                    <option value="platform-system-integration">Platform or system integration</option>
+                    <option value="tactical-isr">Tactical ISR</option>
+                    <option value="military-asset-monitoring">Military asset monitoring</option>
+                    <option value="change-posture-monitoring">Change and posture monitoring</option>
+                    <option value="archive-trend-analysis">Archive and trend analysis</option>
+                    <option value="force-protection">Force protection</option>
+                    <option value="delivery-integration">Secure delivery and integration</option>
                   </select>
                   <div class="custom-select" data-custom-select>
                     <button
@@ -203,13 +203,12 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                       <span data-custom-select-value>Select one</span>
                     </button>
                     <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="airfields-aviation-activity">Airfields and aviation activity</button>
-                      <button type="button" data-value="bases-installations">Bases and installations</button>
-                      <button type="button" data-value="ports-maritime-activity">Ports and maritime activity</button>
-                      <button type="button" data-value="logistics-routes-staging">Logistics routes and staging areas</button>
-                      <button type="button" data-value="ground-equipment-movement">Ground equipment and movement</button>
-                      <button type="button" data-value="multi-payload-change-detection">Multi-payload change detection</button>
-                      <button type="button" data-value="platform-system-integration">Platform or system integration</button>
+                      <button type="button" data-value="tactical-isr">Tactical ISR</button>
+                      <button type="button" data-value="military-asset-monitoring">Military asset monitoring</button>
+                      <button type="button" data-value="change-posture-monitoring">Change and posture monitoring</button>
+                      <button type="button" data-value="archive-trend-analysis">Archive and trend analysis</button>
+                      <button type="button" data-value="force-protection">Force protection</button>
+                      <button type="button" data-value="delivery-integration">Secure delivery and integration</button>
                     </div>
                   </div>
                 </div>
@@ -221,13 +220,13 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                   <input type="hidden" name="focus" value="" required data-custom-select-input />
                   <select class="mobile-select" data-custom-select-mobile>
                     <option value="">Select one</option>
-                    <option value="eo-imagery-analysis">EO imagery analysis</option>
-                    <option value="sar-imagery-analysis">SAR imagery analysis</option>
-                    <option value="ir-thermal-indicators">IR or thermal indicators</option>
-                    <option value="multi-payload-fusion">Multi-payload fusion</option>
-                    <option value="change-detection">Change detection</option>
-                    <option value="tasking-revisit-planning">Tasking and revisit planning</option>
-                    <option value="evidence-provenance">Evidence and provenance</option>
+                    <option value="aircraft-presence-by-type">Aircraft presence by type</option>
+                    <option value="vessel-vehicle-equipment-detection">Vessel, vehicle, or equipment detection</option>
+                    <option value="site-posture-and-readiness">Site posture and readiness</option>
+                    <option value="before-after-compare">Before-and-after compare</option>
+                    <option value="trendlines-over-time">Trendlines over time</option>
+                    <option value="analyst-review-and-provenance">Analyst review and provenance</option>
+                    <option value="downstream-delivery">Downstream delivery</option>
                   </select>
                   <div class="custom-select" data-custom-select>
                     <button
@@ -239,13 +238,13 @@ import WaitlistVisual from "../components/WaitlistVisual.astro";
                       <span data-custom-select-value>Select one</span>
                     </button>
                     <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="eo-imagery-analysis">EO imagery analysis</button>
-                      <button type="button" data-value="sar-imagery-analysis">SAR imagery analysis</button>
-                      <button type="button" data-value="ir-thermal-indicators">IR or thermal indicators</button>
-                      <button type="button" data-value="multi-payload-fusion">Multi-payload fusion</button>
-                      <button type="button" data-value="change-detection">Change detection</button>
-                      <button type="button" data-value="tasking-revisit-planning">Tasking and revisit planning</button>
-                      <button type="button" data-value="evidence-provenance">Evidence and provenance</button>
+                      <button type="button" data-value="aircraft-presence-by-type">Aircraft presence by type</button>
+                      <button type="button" data-value="vessel-vehicle-equipment-detection">Vessel, vehicle, or equipment detection</button>
+                      <button type="button" data-value="site-posture-and-readiness">Site posture and readiness</button>
+                      <button type="button" data-value="before-after-compare">Before-and-after compare</button>
+                      <button type="button" data-value="trendlines-over-time">Trendlines over time</button>
+                      <button type="button" data-value="analyst-review-and-provenance">Analyst review and provenance</button>
+                      <button type="button" data-value="downstream-delivery">Downstream delivery</button>
                     </div>
                   </div>
                 </div>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://miar.reachdefence.com/sitemap-index.xml

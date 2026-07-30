@@ -1,0 +1,183 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+
+export async function getStaticPaths() {
+  const posts = (await getCollection("blog")).filter(
+    (post) => post.data.status === "published"
+  );
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post, posts },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<"blog">;
+  posts: CollectionEntry<"blog">[];
+}
+
+const { post, posts } = Astro.props;
+const { Content } = await render(post);
+const siteOrigin = "https://miar.reachdefence.com";
+const pagePath = `/blogs/posts/${post.id}/`;
+const canonicalUrl = post.data.canonicalUrl || new URL(pagePath, siteOrigin).toString();
+const socialImage = post.data.socialImage || post.data.heroImage;
+const socialImageAlt = post.data.socialImageAlt || post.data.heroImageAlt;
+const shareUrl = (source: string, medium: string) => {
+  const url = new URL(canonicalUrl);
+  url.searchParams.set("utm_source", source);
+  url.searchParams.set("utm_medium", medium);
+  url.searchParams.set("utm_campaign", "blog_share");
+  url.searchParams.set("utm_content", post.id);
+  return url.toString();
+};
+const xShareUrl = `https://x.com/intent/post?${new URLSearchParams({
+  text: post.data.title,
+  url: shareUrl("x", "social"),
+})}`;
+const linkedInShareUrl = `https://www.linkedin.com/sharing/share-offsite/?${new URLSearchParams({
+  url: shareUrl("linkedin", "social"),
+})}`;
+const emailShareUrl = `mailto:?${new URLSearchParams({
+  subject: post.data.title,
+  body: `${post.data.summary}\n\n${shareUrl("email", "email")}`,
+})}`;
+const copyShareUrl = shareUrl("copy_link", "referral");
+
+const relatedPosts = post.data.related
+  .map((id) => posts.find((candidate) => candidate.id === id))
+  .filter((entry): entry is CollectionEntry<"blog"> => Boolean(entry));
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.publishedAt.toISOString(),
+  ...(post.data.updatedAt ? { dateModified: post.data.updatedAt.toISOString() } : {}),
+  mainEntityOfPage: canonicalUrl,
+  image: [new URL(socialImage, siteOrigin).toString()],
+  author: {
+    "@type": "Organization",
+    name: post.data.author.name,
+    url: siteOrigin,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: post.data.author.organization,
+    url: siteOrigin,
+  },
+  articleSection: post.data.category,
+  keywords: post.data.keywords.join(", "),
+  inLanguage: "en",
+};
+---
+
+<BaseLayout
+  title={`${post.data.title} | MIAR`}
+  description={post.data.description}
+  current="blogs"
+  canonicalUrl={canonicalUrl}
+  socialImage={socialImage}
+  socialImageAlt={socialImageAlt}
+  socialTitle={post.data.socialTitle}
+  socialDescription={post.data.socialDescription}
+  noindex={post.data.noindex}
+  article={{
+    publishedAt: post.data.publishedAt.toISOString(),
+    updatedAt: post.data.updatedAt?.toISOString(),
+    author: post.data.author.name,
+    section: post.data.category,
+    tags: post.data.tags,
+  }}
+  jsonLd={jsonLd}
+>
+  <main class="subpage-shell article-shell blog-article-shell">
+    <header class="blog-article-hero">
+      <p class="eyebrow">{post.data.category}</p>
+        <h1>{post.data.title}</h1>
+      <p class="lead">{post.data.summary}</p>
+      <div class="blog-meta-row">
+        <span>{post.data.author.name}</span>
+        <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+        <span>{post.data.readingMinutes} min read</span>
+        {post.data.updatedAt && <span>Updated {formatDate(post.data.updatedAt)}</span>}
+      </div>
+      <ul class="blog-tag-list" aria-label="Article tags">
+        {post.data.tags.map((tag) => <li>{tag}</li>)}
+      </ul>
+    </header>
+
+    {
+      post.data.gallery.length > 0 && (
+        <section class:list={["blog-scene-pair", post.data.gallery.length === 1 && "is-single"]}>
+          {post.data.gallery.map((image) => (
+            <figure>
+              <img
+                src={image.src}
+                alt={image.alt}
+                width={image.width}
+                height={image.height}
+                loading="eager"
+              />
+              <figcaption>{image.caption}</figcaption>
+            </figure>
+          ))}
+        </section>
+      )
+    }
+
+    <article class="article-body blog-article-body">
+      <Content />
+    </article>
+
+    <aside class="blog-share" aria-label="Share this article">
+      <span>Share</span>
+      <div>
+        <a href={linkedInShareUrl} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href={xShareUrl} target="_blank" rel="noopener noreferrer">X</a>
+        <a href={emailShareUrl}>Email</a>
+        <button type="button" data-copy-share data-share-url={copyShareUrl}>Copy link</button>
+      </div>
+      <p data-copy-status aria-live="polite"></p>
+    </aside>
+
+    {
+      relatedPosts.length > 0 && (
+        <nav class="blog-article-next" aria-label="Related articles">
+          <span>Read next / {relatedPosts[0].data.category}</span>
+          <a href={`/blogs/posts/${relatedPosts[0].id}/`}>
+            {relatedPosts[0].data.title} <span aria-hidden="true">→</span>
+          </a>
+        </nav>
+      )
+    }
+  </main>
+
+  <script>
+    const copyButton = document.querySelector("[data-copy-share]");
+    const copyStatus = document.querySelector("[data-copy-status]");
+
+    copyButton?.addEventListener("click", async () => {
+      if (!(copyButton instanceof HTMLButtonElement)) return;
+      const shareUrl = copyButton.dataset.shareUrl;
+      if (!shareUrl) return;
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        copyButton.textContent = "Copied";
+        if (copyStatus) copyStatus.textContent = "Tracked article link copied.";
+      } catch {
+        window.prompt("Copy this article link", shareUrl);
+      }
+    });
+  </script>
+</BaseLayout>

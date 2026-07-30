@@ -6,6 +6,7 @@ const form = document.getElementById("waitlist-form");
 const statusNode = document.getElementById("form-status");
 const submitButton = form?.querySelector(".submit-button");
 const customSelects = document.querySelectorAll("[data-custom-select]");
+const navGroupToggles = document.querySelectorAll("[data-nav-group-toggle]");
 
 function setNavOpen(isOpen) {
   if (!headerShell || !navToggle) {
@@ -23,7 +24,7 @@ navToggle?.addEventListener("click", () => {
 });
 
 window.addEventListener("resize", () => {
-  if (window.innerWidth > 980) {
+  if (window.innerWidth > 920) {
     setNavOpen(false);
   }
 });
@@ -31,6 +32,14 @@ window.addEventListener("resize", () => {
 navLinks.forEach((link) => {
   link.addEventListener("click", () => {
     setNavOpen(false);
+  });
+});
+
+navGroupToggles.forEach((toggle) => {
+  toggle.addEventListener("click", () => {
+    const group = toggle.closest(".nav-group");
+    const isOpen = group?.classList.toggle("is-open");
+    toggle.setAttribute("aria-expanded", String(Boolean(isOpen)));
   });
 });
 

@@ -1,23 +1,143 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const categories = ["All", "Analysis", "Tradecraft", "Case Notes", "Product Notes"];
+
+const posts = (await getCollection("blog"))
+  .filter((post) => post.data.status === "published")
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
 ---
 
 <BaseLayout
-  title="MIAR Blogs Temporarily Unavailable"
-  description="MIAR blog access is temporarily disabled while the public launch surface is narrowed."
+  title="Imagery Intelligence Articles | MIAR"
+  description="Analysis and practical notes from ReachDefence on satellite imagery, military-site monitoring, change analysis, and MIAR."
   current="blogs"
 >
-  <main class="subpage-shell">
-    <section class="subpage-hero">
-      <p class="eyebrow">Blogs</p>
-      <h1>This section is temporarily unavailable.</h1>
+  <main class="subpage-shell blog-index-shell">
+    <section class="blog-index-hero">
+      <div class="blog-index-copy">
+        <p class="eyebrow">Blogs</p>
+        <h1>Imagery intelligence, explained.</h1>
+      </div>
       <p class="lead">
-        Public blog access is disabled for now while the primary site and
-        submission path are being stabilized.
+        ReachDefence publishes practical analysis of satellite-imagery workflows: what the
+        imagery supports, where automation helps, and where an analyst still has to make the call.
       </p>
-      <p>
-        <a class="button button-primary" href="/">Return home</a>
+    </section>
+
+    <div class="blog-index-tools">
+      <nav class="blog-category-nav" aria-label="Filter articles by category">
+        {categories.map((category, index) => (
+          <button
+            type="button"
+            class:list={[index === 0 && "is-active"]}
+            data-blog-category={category}
+            aria-pressed={index === 0 ? "true" : "false"}
+          >
+            {category}
+          </button>
+        ))}
+      </nav>
+      <div class="blog-view-toggle" aria-label="Article view">
+        <button type="button" class="is-active" data-blog-view="list" aria-pressed="true">
+          List
+        </button>
+        <button type="button" data-blog-view="grid" aria-pressed="false">
+          Grid
+        </button>
+      </div>
+    </div>
+
+    <section class="blog-live-list" data-blog-list data-view="list" aria-label="Published articles">
+      {
+        posts.map((post, index) => (
+          <article
+            class:list={["blog-live-row", index === 0 && "is-featured"]}
+            data-blog-entry
+            data-category={post.data.category}
+          >
+            <a class="blog-live-image" href={`/blogs/posts/${post.id}/`}>
+              <img
+                src={post.data.heroImage}
+                alt={post.data.heroImageAlt}
+                width={post.data.heroImageWidth}
+                height={post.data.heroImageHeight}
+                loading={index === 0 ? "eager" : "lazy"}
+              />
+            </a>
+            <div class="blog-live-copy">
+              <div class="blog-meta-row">
+                <span>{post.data.category}</span>
+                <span>{post.data.author.name}</span>
+                <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+                <span>{post.data.readingMinutes} min read</span>
+              </div>
+              <h2><a href={`/blogs/posts/${post.id}/`}>{post.data.title}</a></h2>
+              <p>{post.data.summary}</p>
+              <ul class="blog-tag-list" aria-label="Tags">
+                {post.data.tags.map((tag) => <li>{tag}</li>)}
+              </ul>
+              <a class="text-link" href={`/blogs/posts/${post.id}/`}>Read article <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        ))
+      }
+      <p class="blog-empty-state" data-blog-empty hidden>
+        No articles are published in this category yet.
       </p>
     </section>
   </main>
+
+  <script>
+    const articleList = document.querySelector("[data-blog-list]");
+    const viewButtons = document.querySelectorAll("[data-blog-view]");
+    const categoryButtons = document.querySelectorAll("[data-blog-category]");
+    const entries = document.querySelectorAll("[data-blog-entry]");
+    const emptyState = document.querySelector("[data-blog-empty]");
+
+    const setView = (view) => {
+      if (!(articleList instanceof HTMLElement)) return;
+      articleList.dataset.view = view;
+      viewButtons.forEach((button) => {
+        const active = button.getAttribute("data-blog-view") === view;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
+      });
+      localStorage.setItem("miar-blog-view", view);
+    };
+
+    const savedView = localStorage.getItem("miar-blog-view");
+    if (savedView === "grid" || savedView === "list") setView(savedView);
+
+    viewButtons.forEach((button) => {
+      button.addEventListener("click", () => setView(button.getAttribute("data-blog-view") || "list"));
+    });
+
+    categoryButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const selected = button.getAttribute("data-blog-category") || "All";
+        categoryButtons.forEach((candidate) => {
+          const active = candidate === button;
+          candidate.classList.toggle("is-active", active);
+          candidate.setAttribute("aria-pressed", String(active));
+        });
+        entries.forEach((entry) => {
+          if (!(entry instanceof HTMLElement)) return;
+          entry.hidden = selected !== "All" && entry.dataset.category !== selected;
+        });
+        const hasVisibleEntries = [...entries].some(
+          (entry) => entry instanceof HTMLElement && !entry.hidden
+        );
+        if (emptyState instanceof HTMLElement) emptyState.hidden = hasVisibleEntries;
+      });
+    });
+  </script>
 </BaseLayout>

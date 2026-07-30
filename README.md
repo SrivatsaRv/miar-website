@@ -16,12 +16,24 @@ locally so `/api/waitlist` is exercised on the same runtime used for deployment.
 
 - `make ci-local`
 
-This runs the local release check used before commits and pushes.
+This builds the production bundle and runs Playwright browser checks used before commits and
+pushes. The browser suite covers the shared header/footer shell, burger navigation, responsive
+overflow, imagery loading, and desktop/mobile request-access form behavior.
+
+- `npm run test:e2e` runs the browser suite directly.
+- Playwright starts an isolated Astro test server on `http://127.0.0.1:4327`.
+- Failure traces, screenshots, and video are retained under the Playwright output directories.
 
 ## Structure
 
 - `src/pages/index.astro`
+- `src/pages/capabilities/index.astro`
 - `src/pages/legal/index.astro`
+- `src/pages/privacy/index.astro`
+- `src/pages/terms/index.astro`
+- `src/content/blog/`
+- `src/content.config.ts`
+- `docs/blog-publishing.md`
 - `src/components/`
 - `src/styles/global.css`
 - `src/pages/api/waitlist.ts`
@@ -32,9 +44,12 @@ This runs the local release check used before commits and pushes.
 
 ## Publishing status
 
-- `/blogs` is temporarily disabled
+- `/blogs` is live with Analysis and Tradecraft articles
+- planned journal categories: Analysis, Tradecraft, Case Notes, Product Notes
+- blog entries are validated Markdown files in `src/content/blog/`
+- publishing and agency handoff instructions: `docs/blog-publishing.md`
 - `/whitepapers` is temporarily disabled
-- source assets remain in `public/blogs/` and `public/whitepapers/` for later reuse
+- source whitepaper assets remain in `public/whitepapers/` for later reuse
 
 ## Deploy
 
@@ -74,11 +89,19 @@ The waitlist currently records:
 - request metadata: `submitted_at`, `referrer`, `user_agent`, `cf_country`, `cf_region`, `cf_city`
 - acknowledgements: `privacy_acknowledged`, `eligibility_acknowledged`
 
-## Legal and access notice
+## Legal and access notices
 
-- public notice route: `/legal/`
-- the request-access form links to the site notice and treats submission as acknowledgement
+- legal hub: `/legal/`
+- public-site privacy notice: `/privacy/`
+- public website terms: `/terms/`
+- the request-access form links to the privacy notice and website terms
 - the waitlist API rejects requests geolocated to `CN` and `PK`
+
+## Capability framing
+
+- homepage now positions MIAR as a vendor-agnostic intelligence layer rather than a tasking portal
+- public capabilities route: `/capabilities/`
+- core themes: tactical ISR, military asset monitoring, change and posture, archive trend intelligence, and sovereign delivery
 
 ## Country blocking
 

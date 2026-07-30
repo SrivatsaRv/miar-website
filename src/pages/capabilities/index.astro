@@ -1,0 +1,358 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const valueChain = [
+  {
+    step: "01",
+    title: "Collect",
+    body: "Bring archive and fresh imagery into one working surface.",
+  },
+  {
+    step: "02",
+    title: "Interpret",
+    body: "Apply detection, compare, analyst review, and mission context.",
+  },
+  {
+    step: "03",
+    title: "Deliver",
+    body: "Move approved outputs into secure downstream channels.",
+  },
+];
+
+const capabilities = [
+  {
+    key: "tactical",
+    eyebrow: "Tactical ISR",
+    title: "Enhance situational awareness at operational tempo.",
+    body:
+      "Monitor recurring AOIs with attention on what matters now: aircraft activity, vehicle movement, site status, staging, and other visible indicators that affect near-term decisions.",
+    points: [
+      "Recurring AOI monitoring for current operational questions",
+      "Current-scene review with classed detections and analyst confirmation",
+      "Evidence-backed outputs that help teams move from scene receipt to decision support",
+    ],
+  },
+  {
+    key: "assets",
+    eyebrow: "Military Asset Monitoring",
+    title: "Track high-value assets, posture shifts, and escalation signals.",
+    body:
+      "Track airfields, ports, launch areas, bases, and logistics sites where asset distribution, density, and placement carry operational meaning.",
+    points: [
+      "Detection and tabulation of aircraft, vessels, vehicles, equipment, and other visible assets",
+      "Structured summaries that surface changes in deployment, density, and configuration",
+      "Analyst review loop for separating machine suggestion from approved output",
+    ],
+  },
+  {
+    key: "posture",
+    eyebrow: "Change + Posture",
+    title: "Move from raw change detection to operationally meaningful interpretation.",
+    body:
+      "Object detection alone is not enough. The harder problem is determining whether a site has merely changed or whether its operational picture has shifted.",
+    points: [
+      "Scene-to-scene compare for visible asset movement and structural change",
+      "Support for posture interpretation rather than simple binary change flags",
+      "Evidence trail that preserves source scene, model output, confidence, and analyst decision",
+    ],
+  },
+  {
+    key: "trend",
+    eyebrow: "Archive + Trend",
+    title: "Turn the same AOI into a time-based intelligence record.",
+    body:
+      "The latest image is only one frame. Archive context, trendlines, and before-and-after views show how a site behaves across days, weeks, and longer monitoring cycles.",
+    points: [
+      "Historical scene access for longer-run comparison and pattern development",
+      "Trend views such as aircraft presence by type across the same AOI",
+      "Before-and-after analysis for activity surges, buildup, dispersal, and recovery",
+    ],
+  },
+  {
+    key: "delivery",
+    eyebrow: "Sovereign Delivery",
+    title: "Keep intelligence workflows under your authority.",
+    body:
+      "Support secure delivery and deployment patterns for organizations that need control over data handling, review workflows, and approved outputs.",
+    points: [
+      "Vendor-agnostic collection intake with MIAR-native intelligence extraction downstream",
+      "Secure delivery and integration posture for operational consumers",
+      "Deployment patterns aligned with sovereign, on-premise, or controlled environments where required",
+    ],
+  },
+];
+---
+
+<BaseLayout
+  title="MIAR Capabilities | Decision-Ready ISR"
+  description="Tactical ISR, military asset monitoring, change and posture detection, archive trend intelligence, and sovereign delivery through MIAR."
+  current="capabilities"
+>
+  <main class="subpage-shell capabilities-shell">
+    <section class="capabilities-hero-stage">
+      <div class="capabilities-hero-copy">
+        <p class="eyebrow">Capabilities</p>
+        <h1>Vendor-agnostic in collection. Opinionated in intelligence.</h1>
+        <p class="lead">
+          MIAR turns multi-provider imagery into decision-ready ISR. It is not a collection portal
+          clone. It is the layer that converts imagery into usable operational output.
+        </p>
+        <p class="capability-thesis-line">
+          Tasking is not the answer. Intelligence delivered inside the mission window is.
+        </p>
+        <div class="mini-links">
+          <a href="/#waitlist">Request access</a>
+          <a href="/legal/">Legal notice</a>
+        </div>
+      </div>
+
+      <aside class="capabilities-hero-visual" aria-label="Representative MIAR intelligence view">
+        <div class="capability-scene-frame capability-scene-frame-hero">
+          <img
+            src="/imagery/bholari-2026.png"
+            alt="Bholari airbase imagery showing a current MIAR review surface"
+            width="1546"
+            height="1090"
+            loading="eager"
+            fetchpriority="high"
+          />
+          <div class="capability-scene-overlay"></div>
+
+          <div class="capability-scene-card capability-scene-card-top">
+            <span>Current scene</span>
+            <strong>Bholari 2026 is aligned with prior archive context</strong>
+            <p>Fresh collection, archive reference, and analyst review stay in one surface.</p>
+          </div>
+
+          <div class="capability-scene-card capability-scene-card-right">
+            <span>Intelligence cue</span>
+            <strong>Apron shift surfaced for review</strong>
+            <p>Five C-130s and one P-3C are preserved with layout change context.</p>
+          </div>
+
+          <div class="capability-hero-strip" aria-hidden="true">
+            {
+              valueChain.map((item) => (
+                <article>
+                  <span>{item.step}</span>
+                  <strong>{item.title}</strong>
+                  <p>{item.body}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="capability-spine">
+      <div class="capability-spine-head">
+        <p class="eyebrow eyebrow-compact">Capability Spine</p>
+        <h2>Three moves define the platform: collect, interpret, and deliver.</h2>
+      </div>
+
+      <div class="capability-spine-track">
+        {
+          valueChain.map((item) => (
+            <article class="capability-spine-step">
+              <span>{item.step}</span>
+              <strong>{item.title}</strong>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </section>
+
+    {
+      capabilities.map((capability, index) => (
+        <section class:list={["capability-band", index % 2 === 1 && "is-reversed"]}>
+          <div class="capability-copy">
+            <p class="eyebrow">{capability.eyebrow}</p>
+            <h2>{capability.title}</h2>
+            <p>{capability.body}</p>
+            <ul class="capability-points-list">
+              {capability.points.map((point) => <li>{point}</li>)}
+            </ul>
+          </div>
+
+          <div class={`capability-visual capability-visual-${capability.key}`}>
+            {capability.key === "tactical" && (
+              <div class="capability-scene-frame">
+                <img
+                  src="/imagery/bholari-2026.png"
+                  alt="Current Bholari AOI view used for recurring monitoring"
+                  width="1546"
+                  height="1090"
+                  loading="lazy"
+                />
+                <div class="capability-scene-overlay"></div>
+                <div class="visual-tag visual-tag-top">
+                  <span>Recurring AOI</span>
+                  <strong>Bholari watch is active</strong>
+                </div>
+                <div class="visual-tag visual-tag-bottom">
+                  <span>Current scene</span>
+                  <strong>Aircraft presence and apron activity are surfaced</strong>
+                </div>
+              </div>
+            )}
+
+            {capability.key === "assets" && (
+              <div class="monitor-board">
+                <div class="monitor-board-head">
+                  <span>Asset watch</span>
+                  <strong>PAF Bholari airbase summary</strong>
+                </div>
+                <div class="monitor-board-grid">
+                  <article>
+                    <span>Aircraft</span>
+                    <strong>06</strong>
+                    <p>Visible aircraft in current review</p>
+                  </article>
+                  <article>
+                    <span>C-130</span>
+                    <strong>05</strong>
+                    <p>Transport aircraft detected</p>
+                  </article>
+                  <article>
+                    <span>P-3C</span>
+                    <strong>01</strong>
+                    <p>Maritime patrol aircraft detected</p>
+                  </article>
+                  <article>
+                    <span>Confidence</span>
+                    <strong>0.9137</strong>
+                    <p>Aggregate scene confidence</p>
+                  </article>
+                </div>
+                <div class="monitor-board-callout">
+                  <span>Review note</span>
+                  <strong>Counts alone are not the story. Placement and spacing matter too.</strong>
+                  <p>Analyst review separates machine suggestion from approved output.</p>
+                </div>
+              </div>
+            )}
+
+            {capability.key === "posture" && (
+              <div class="compare-board">
+                <div class="compare-board-head">
+                  <span>Compare</span>
+                  <strong>Bholari 2025 vs Bholari 2026</strong>
+                </div>
+                <div class="compare-images">
+                  <figure>
+                    <img src="/imagery/bholari-2025.png" alt="Bholari airbase archive view from 2025" width="1564" height="1136" loading="lazy" />
+                    <figcaption>Prior scene</figcaption>
+                  </figure>
+                  <figure>
+                    <img src="/imagery/bholari-2026.png" alt="Bholari airbase current view from 2026" width="1546" height="1090" loading="lazy" />
+                    <figcaption>Current scene</figcaption>
+                  </figure>
+                </div>
+                <div class="compare-panels">
+                  <article>
+                    <span>Prior</span>
+                    <strong>Five C-130s + one P-3C</strong>
+                    <p>Aircraft presence is steady, but the apron arrangement is different.</p>
+                  </article>
+                  <article>
+                    <span>Latest</span>
+                    <strong>Apron shift</strong>
+                    <p>MIAR preserves the same count while surfacing a changed spatial layout.</p>
+                  </article>
+                </div>
+                <div class="compare-deltas">
+                  <div>
+                    <span>Shift</span>
+                    <strong>Apron layout changed</strong>
+                  </div>
+                  <div>
+                    <span>Counts</span>
+                    <strong>No aircraft count delta</strong>
+                  </div>
+                  <div>
+                    <span>Compare confidence</span>
+                    <strong>0.9067 with provenance attached</strong>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {capability.key === "trend" && (
+              <div class="trend-board">
+                <div class="trend-board-head">
+                  <span>Trend intelligence</span>
+                  <strong>Bholari over time becomes an activity record</strong>
+                </div>
+                <div class="trend-bars" aria-hidden="true">
+                  <article>
+                    <span>2025</span>
+                    <div><i class="is-primary" style="height: 68%"></i><i style="height: 18%"></i><i class="is-accent" style="height: 14%"></i></div>
+                  </article>
+                  <article>
+                    <span>2026</span>
+                    <div><i class="is-primary" style="height: 68%"></i><i style="height: 18%"></i><i class="is-accent" style="height: 14%"></i></div>
+                  </article>
+                </div>
+                <div class="trend-legend">
+                  <span><i></i> C-130 presence</span>
+                  <span><i class="is-secondary"></i> P-3C presence</span>
+                  <span><i class="is-accent"></i> Layout-change marker</span>
+                </div>
+                <p class="trend-caption">
+                  Plot presence by type and preserve scene-to-scene change context instead of
+                  treating every image as an isolated event.
+                </p>
+              </div>
+            )}
+
+            {capability.key === "delivery" && (
+              <div class="delivery-board">
+                <div class="delivery-board-head">
+                  <span>Delivery posture</span>
+                  <strong>Secure downstream handoff with MIAR as the interpretation layer</strong>
+                </div>
+                <div class="delivery-lane" aria-hidden="true">
+                  <article>
+                    <span>Collection intake</span>
+                    <strong>Multi-provider scenes</strong>
+                  </article>
+                  <div class="delivery-arrow"></div>
+                  <article>
+                    <span>MIAR layer</span>
+                    <strong>Detection, compare, review</strong>
+                  </article>
+                  <div class="delivery-arrow"></div>
+                  <article>
+                    <span>Operational consumer</span>
+                    <strong>Secure brief, API, and controlled delivery</strong>
+                  </article>
+                </div>
+                <div class="delivery-flags">
+                  <span>On-premise options</span>
+                  <span>Controlled review</span>
+                  <span>Provenance attached</span>
+                  <span>National authority retained</span>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      ))
+    }
+
+    <section class="capability-close">
+      <p class="eyebrow eyebrow-compact">Request Access</p>
+      <h2>Review recurring military sites with the source evidence attached.</h2>
+      <p>
+        Talk to us if your team reviews repeat imagery of airfields, bases, ports, launch
+        areas, or operating zones and needs detections, comparisons, and analyst decisions
+        kept in one record.
+      </p>
+      <p>
+        <a class="button button-primary" href="/#waitlist">Request access</a>
+      </p>
+    </section>
+  </main>
+</BaseLayout>

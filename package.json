@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0 --port 3004",
+    "dev:test": "astro dev --host 127.0.0.1 --port 4327",
     "build": "astro build",
+    "test:e2e": "playwright test",
     "preview": "npm run build && wrangler dev",
     "preview:static": "astro preview --host 0.0.0.0 --port 3005",
     "generate-types": "wrangler types",
@@ -13,9 +15,11 @@
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.5.0",
+    "@astrojs/sitemap": "^3.7.3",
     "astro": "^6.3.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
     "wrangler": "^4.90.1"
   },
   "overrides": {
