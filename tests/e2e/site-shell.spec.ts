@@ -226,3 +226,20 @@ test("delivery workflow stays compact and content remains reachable", async ({ p
   ).toBeVisible();
   await expect(page.getByRole("link", { name: "Request access", exact: true }).last()).toBeVisible();
 });
+
+test("article imagery exposes visible captions and structured descriptions", async ({ page }) => {
+  await page.goto("/blogs/posts/what-makes-an-imagery-intelligence-capability-credible/");
+
+  const figures = page.locator(".blog-scene-pair figure");
+  await expect(figures).toHaveCount(2);
+  await expect(figures.nth(0).locator("figcaption")).toContainText("Reference scene / 2025");
+  await expect(figures.nth(0).locator("figcaption")).toContainText(
+    "Bholari airbase reference satellite imagery from 2025"
+  );
+  await expect(figures.nth(1).locator("figcaption")).toContainText("Follow-on scene / 2026");
+
+  const jsonLd = await page.locator('script[type="application/ld+json"]').textContent();
+  expect(jsonLd).toContain('"@type":"ImageObject"');
+  expect(jsonLd).toContain("Reference scene / 2025");
+  expect(jsonLd).toContain("Bholari airbase follow-on satellite imagery from 2026");
+});

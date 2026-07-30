@@ -105,6 +105,7 @@ The shared article template emits:
 - Twitter summary-large-image metadata
 - article publication time, modification time, author, section, and tags
 - `BlogPosting` JSON-LD
+- gallery `ImageObject` entries with visible captions and descriptions
 - XML sitemap entries through `@astrojs/sitemap`
 - `robots.txt` with the sitemap location
 - semantic `<article>`, `<header>`, `<time>`, headings, figures, and captions

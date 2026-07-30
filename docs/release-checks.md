@@ -11,6 +11,7 @@ The browser checks cover:
 - horizontal overflow and broken imagery at mobile, tablet, and desktop widths
 - desktop and mobile request-access form validation and submission states
 - blog category filters, empty categories, grid/list persistence, and unique index thumbnails
+- visible article image captions and structured `ImageObject` descriptions
 - compact Sovereign Delivery workflow rendering and access CTA reachability
 
 Playwright uses `http://127.0.0.1:4327` to avoid colliding with MIAR Workbench or the normal

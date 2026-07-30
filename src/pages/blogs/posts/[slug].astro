@@ -57,6 +57,22 @@ const formatDate = (date: Date) =>
     year: "numeric",
   }).format(date);
 
+const structuredImages = [
+  {
+    "@type": "ImageObject",
+    contentUrl: new URL(socialImage, siteOrigin).toString(),
+    description: socialImageAlt,
+  },
+  ...post.data.gallery.map((image) => ({
+    "@type": "ImageObject",
+    contentUrl: new URL(image.src, siteOrigin).toString(),
+    caption: image.caption,
+    description: image.alt,
+    width: image.width,
+    height: image.height,
+  })),
+];
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
@@ -65,7 +81,7 @@ const jsonLd = {
   datePublished: post.data.publishedAt.toISOString(),
   ...(post.data.updatedAt ? { dateModified: post.data.updatedAt.toISOString() } : {}),
   mainEntityOfPage: canonicalUrl,
-  image: [new URL(socialImage, siteOrigin).toString()],
+  image: structuredImages,
   author: {
     "@type": "Organization",
     name: post.data.author.name,
@@ -103,23 +119,40 @@ const jsonLd = {
 >
   <main class="subpage-shell article-shell blog-article-shell">
     <header class="blog-article-hero">
-      <p class="eyebrow">{post.data.category}</p>
-        <h1>{post.data.title}</h1>
+      <a class="blog-article-breadcrumb" href="/blogs/">Blogs <span>/</span> {post.data.category}</a>
+      <h1>{post.data.title}</h1>
       <p class="lead">{post.data.summary}</p>
-      <div class="blog-meta-row">
-        <span>{post.data.author.name}</span>
-        <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
-        <span>{post.data.readingMinutes} min read</span>
-        {post.data.updatedAt && <span>Updated {formatDate(post.data.updatedAt)}</span>}
+      <div class="blog-article-byline">
+        <div>
+          <span>Written by</span>
+          <strong>{post.data.author.name}</strong>
+        </div>
+        <div>
+          <span>Published</span>
+          <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt)}</time>
+        </div>
+        <div>
+          <span>Reading time</span>
+          <strong>{post.data.readingMinutes} minutes</strong>
+        </div>
+        {post.data.updatedAt && (
+          <div>
+            <span>Updated</span>
+            <time datetime={post.data.updatedAt.toISOString()}>{formatDate(post.data.updatedAt)}</time>
+          </div>
+        )}
       </div>
       <ul class="blog-tag-list" aria-label="Article tags">
-        {post.data.tags.map((tag) => <li>{tag}</li>)}
+        {post.data.tags.map((tag) => <li>#{tag}</li>)}
       </ul>
     </header>
 
     {
       post.data.gallery.length > 0 && (
-        <section class:list={["blog-scene-pair", post.data.gallery.length === 1 && "is-single"]}>
+        <section
+          class:list={["blog-scene-pair", post.data.gallery.length === 1 && "is-single"]}
+          aria-label="Article imagery"
+        >
           {post.data.gallery.map((image) => (
             <figure>
               <img
@@ -129,7 +162,10 @@ const jsonLd = {
                 height={image.height}
                 loading="eager"
               />
-              <figcaption>{image.caption}</figcaption>
+              <figcaption>
+                <span>{image.caption}</span>
+                <p>{image.alt}</p>
+              </figcaption>
             </figure>
           ))}
         </section>
