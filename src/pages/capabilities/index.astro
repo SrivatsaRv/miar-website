@@ -5,17 +5,17 @@ const valueChain = [
   {
     step: "01",
     title: "Collect",
-    body: "Bring archive and fresh imagery into one working surface.",
+    body: "Load current and archive scenes from the available providers.",
   },
   {
     step: "02",
     title: "Interpret",
-    body: "Apply detection, compare, analyst review, and mission context.",
+    body: "Run detection and comparison, then record the analyst decision.",
   },
   {
     step: "03",
     title: "Deliver",
-    body: "Move approved outputs into secure downstream channels.",
+    body: "Send reviewed findings to the systems and teams that use them.",
   },
 ];
 
@@ -23,9 +23,9 @@ const capabilities = [
   {
     key: "tactical",
     eyebrow: "Tactical ISR",
-    title: "Enhance situational awareness at operational tempo.",
+    title: "Review the latest pass against the site history.",
     body:
-      "Monitor recurring AOIs with attention on what matters now: aircraft activity, vehicle movement, site status, staging, and other visible indicators that affect near-term decisions.",
+      "Open the current scene beside earlier coverage and check aircraft, vehicles, equipment, construction, and site activity.",
     points: [
       "Recurring AOI monitoring for current operational questions",
       "Current-scene review with classed detections and analyst confirmation",
@@ -35,9 +35,9 @@ const capabilities = [
   {
     key: "assets",
     eyebrow: "Military Asset Monitoring",
-    title: "Track high-value assets, posture shifts, and escalation signals.",
+    title: "Count assets and preserve where they were found.",
     body:
-      "Track airfields, ports, launch areas, bases, and logistics sites where asset distribution, density, and placement carry operational meaning.",
+      "Record visible assets by class while retaining their position, spacing, and distribution across the site.",
     points: [
       "Detection and tabulation of aircraft, vessels, vehicles, equipment, and other visible assets",
       "Structured summaries that surface changes in deployment, density, and configuration",
@@ -47,9 +47,9 @@ const capabilities = [
   {
     key: "posture",
     eyebrow: "Change + Posture",
-    title: "Move from raw change detection to operationally meaningful interpretation.",
+    title: "Show the difference, then record the analyst's judgement.",
     body:
-      "Object detection alone is not enough. The harder problem is determining whether a site has merely changed or whether its operational picture has shifted.",
+      "Align two scenes, identify the objects involved, and separate routine movement from a difference that needs review.",
     points: [
       "Scene-to-scene compare for visible asset movement and structural change",
       "Support for posture interpretation rather than simple binary change flags",
@@ -59,9 +59,9 @@ const capabilities = [
   {
     key: "trend",
     eyebrow: "Archive + Trend",
-    title: "Turn the same AOI into a time-based intelligence record.",
+    title: "Build a site history from repeated observations.",
     body:
-      "The latest image is only one frame. Archive context, trendlines, and before-and-after views show how a site behaves across days, weeks, and longer monitoring cycles.",
+      "Use consistent classes and review questions across each pass so counts and layout changes can be compared over time.",
     points: [
       "Historical scene access for longer-run comparison and pattern development",
       "Trend views such as aircraft presence by type across the same AOI",
@@ -71,9 +71,9 @@ const capabilities = [
   {
     key: "delivery",
     eyebrow: "Sovereign Delivery",
-    title: "Keep intelligence workflows under your authority.",
+    title: "Keep data, review, and delivery under customer control.",
     body:
-      "Support secure delivery and deployment patterns for organizations that need control over data handling, review workflows, and approved outputs.",
+      "Keep source imagery, analyst actions, model output, and approved findings inside the required deployment boundary.",
     points: [
       "Vendor-agnostic collection intake with MIAR-native intelligence extraction downstream",
       "Secure delivery and integration posture for operational consumers",
@@ -92,13 +92,14 @@ const capabilities = [
     <section class="capabilities-hero-stage">
       <div class="capabilities-hero-copy">
         <p class="eyebrow">Capabilities</p>
-        <h1>Vendor-agnostic in collection. Opinionated in intelligence.</h1>
+        <h1>One review process across every collection source.</h1>
         <p class="lead">
-          MIAR turns multi-provider imagery into decision-ready ISR. It is not a collection portal
-          clone. It is the layer that converts imagery into usable operational output.
+          Bring current and archive imagery into a common record. Run detections and comparisons,
+          record analyst decisions, and deliver approved findings without tying the workflow to
+          one provider.
         </p>
         <p class="capability-thesis-line">
-          Tasking is not the answer. Intelligence delivered inside the mission window is.
+          Collection changes. Review standards do not.
         </p>
         <div class="mini-links">
           <a href="/#waitlist">Request access</a>
@@ -107,40 +108,18 @@ const capabilities = [
       </div>
 
       <aside class="capabilities-hero-visual" aria-label="Representative MIAR intelligence view">
-        <div class="capability-scene-frame capability-scene-frame-hero">
-          <img
-            src="/imagery/bholari-2026.png"
-            alt="Bholari airbase imagery showing a current MIAR review surface"
-            width="1546"
-            height="1090"
-            loading="eager"
-            fetchpriority="high"
-          />
-          <div class="capability-scene-overlay"></div>
-
-          <div class="capability-scene-card capability-scene-card-top">
-            <span>Current scene</span>
-            <strong>Bholari 2026 is aligned with prior archive context</strong>
-            <p>Fresh collection, archive reference, and analyst review stay in one surface.</p>
+        <div class="capability-register">
+          <div class="capability-register-head">
+            <span>Review register</span>
+            <strong>Bholari / current assessment</strong>
           </div>
-
-          <div class="capability-scene-card capability-scene-card-right">
-            <span>Intelligence cue</span>
-            <strong>Apron shift surfaced for review</strong>
-            <p>Five C-130s and one P-3C are preserved with layout change context.</p>
-          </div>
-
-          <div class="capability-hero-strip" aria-hidden="true">
-            {
-              valueChain.map((item) => (
-                <article>
-                  <span>{item.step}</span>
-                  <strong>{item.title}</strong>
-                  <p>{item.body}</p>
-                </article>
-              ))
-            }
-          </div>
+          <dl>
+            <div><dt>Current scene</dt><dd>03 Jul 2026</dd><span>Aligned</span></div>
+            <div><dt>Selected baseline</dt><dd>26 Jun 2026</dd><span>Loaded</span></div>
+            <div><dt>Visible aircraft</dt><dd>06 candidates</dd><span>Reviewed</span></div>
+            <div><dt>Layout difference</dt><dd>01 observation</dd><span>Open</span></div>
+          </dl>
+          <p>Source, model output, comparison, and analyst state remain attached to the same review.</p>
         </div>
       </aside>
     </section>
@@ -148,7 +127,7 @@ const capabilities = [
     <section class="capability-spine">
       <div class="capability-spine-head">
         <p class="eyebrow eyebrow-compact">Capability Spine</p>
-        <h2>Three moves define the platform: collect, interpret, and deliver.</h2>
+        <h2>Collection in. Reviewed finding out.</h2>
       </div>
 
       <div class="capability-spine-track">
@@ -178,23 +157,17 @@ const capabilities = [
 
           <div class={`capability-visual capability-visual-${capability.key}`}>
             {capability.key === "tactical" && (
-              <div class="capability-scene-frame">
-                <img
-                  src="/imagery/bholari-2026.png"
-                  alt="Current Bholari AOI view used for recurring monitoring"
-                  width="1546"
-                  height="1090"
-                  loading="lazy"
-                />
-                <div class="capability-scene-overlay"></div>
-                <div class="visual-tag visual-tag-top">
-                  <span>Recurring AOI</span>
-                  <strong>Bholari watch is active</strong>
+              <div class="tactical-review-board">
+                <div>
+                  <span>Current pass</span>
+                  <strong>03 Jul / 07:42</strong>
                 </div>
-                <div class="visual-tag visual-tag-bottom">
-                  <span>Current scene</span>
-                  <strong>Aircraft presence and apron activity are surfaced</strong>
-                </div>
+                <ol>
+                  <li><span>Aircraft</span><strong>6 visible</strong></li>
+                  <li><span>Baseline</span><strong>26 Jun selected</strong></li>
+                  <li><span>Review</span><strong>1 layout change open</strong></li>
+                </ol>
+                <p>Every observation remains linked to its scene and review state.</p>
               </div>
             )}
 

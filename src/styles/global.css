@@ -901,75 +901,56 @@ h3 {
 }
 
 .waitlist-visual-frame {
-  position: relative;
-  min-height: 13rem;
-  overflow: hidden;
-  border: 1px solid rgba(183, 200, 225, 0.16);
-  background: #0f1012;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
-.waitlist-visual-frame img,
-.waitlist-visual-overlay {
-  position: absolute;
-  inset: 0;
+.waitlist-sequence-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.9rem;
 }
 
-.waitlist-visual-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: 60% 54%;
-  filter: saturate(0.72) brightness(0.7);
-}
-
-.waitlist-visual-overlay {
-  background:
-    linear-gradient(180deg, rgba(9, 10, 12, 0.18) 0%, rgba(9, 10, 12, 0.52) 100%),
-    linear-gradient(90deg, rgba(9, 10, 12, 0.46) 0%, rgba(9, 10, 12, 0.08) 46%, rgba(9, 10, 12, 0.54) 100%);
-}
-
-.waitlist-visual-card {
-  position: absolute;
-  z-index: 1;
-  max-width: 12rem;
-  padding: 0.72rem 0.82rem;
-  border: 1px solid rgba(183, 200, 225, 0.22);
-  background: rgba(15, 17, 19, 0.88);
-}
-
-.waitlist-visual-card span {
-  display: block;
+.waitlist-sequence-head span,
+.waitlist-sequence small {
   color: var(--text-soft);
-  font-size: 0.68rem;
-  font-weight: 700;
   font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.65rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.waitlist-visual-card strong {
-  display: block;
-  margin-top: 0.4rem;
-  font-size: 0.92rem;
+.waitlist-sequence-head strong {
+  font-size: 0.9rem;
+}
+
+.waitlist-sequence {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.waitlist-sequence li {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.72rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.waitlist-sequence li > span {
+  color: var(--text-soft);
+  font-size: 0.76rem;
+}
+
+.waitlist-sequence li strong {
+  font-size: 0.84rem;
   font-weight: 600;
-  line-height: 1.35;
-}
-
-.waitlist-visual-card p {
-  margin: 0.35rem 0 0;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  line-height: 1.45;
-}
-
-.waitlist-visual-card-top {
-  top: 1rem;
-  left: 1rem;
-}
-
-.waitlist-visual-card-bottom {
-  right: 1rem;
-  bottom: 1rem;
 }
 
 .section-copy,
@@ -1425,6 +1406,127 @@ h3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.8rem;
+}
+
+.capability-spine-step {
+  padding: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--line-strong);
+  background: transparent;
+}
+
+.capability-register {
+  display: grid;
+  align-content: center;
+  min-height: 31rem;
+  padding: clamp(1.2rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  background:
+    linear-gradient(90deg, transparent 49.8%, var(--line) 50%, transparent 50.2%),
+    linear-gradient(transparent 49.8%, var(--line) 50%, transparent 50.2%);
+  background-size: 5rem 5rem;
+}
+
+.capability-register-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  background: var(--background);
+}
+
+.capability-register-head span,
+.capability-register dt,
+.capability-register dl span {
+  color: var(--text-soft);
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.capability-register dl {
+  margin: 0;
+  background: var(--background);
+  border-top: 1px solid var(--line-strong);
+}
+
+.capability-register dl div {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(8rem, 1fr) auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.capability-register dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.capability-register > p {
+  max-width: 35rem;
+  margin: 1rem 0 0;
+  padding: 0.8rem 0;
+  background: var(--background);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.tactical-review-board {
+  display: grid;
+  gap: 1rem;
+  min-height: 23rem;
+  align-content: center;
+  padding: clamp(1.2rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  background:
+    linear-gradient(90deg, transparent 49.8%, var(--line) 50%, transparent 50.2%),
+    linear-gradient(transparent 49.8%, var(--line) 50%, transparent 50.2%);
+  background-size: 4rem 4rem;
+}
+
+.tactical-review-board > div span,
+.tactical-review-board li span {
+  display: block;
+  color: var(--text-soft);
+  font-family: "SFMono-Regular", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tactical-review-board > div strong {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: clamp(1.8rem, 4vw, 3.5rem);
+  letter-spacing: -0.05em;
+}
+
+.tactical-review-board ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--background);
+}
+
+.tactical-review-board li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.tactical-review-board p {
+  max-width: 32rem;
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
 }
 
 .capability-band {
