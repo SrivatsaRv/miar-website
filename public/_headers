@@ -1,0 +1,17 @@
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/imagery/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/social/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/pagefind/*
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/site.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400

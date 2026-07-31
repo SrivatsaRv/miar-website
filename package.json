@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --host 0.0.0.0 --port 3004",
-    "dev:test": "astro dev --host 127.0.0.1 --port 4327",
-    "build": "astro build && pagefind --site dist/client",
+    "dev:test": "astro dev --force --host 127.0.0.1 --port 4327",
+    "build": "npm run optimize:assets && astro build && pagefind --site dist/client && npm run check:performance",
+    "optimize:assets": "node scripts/optimize-assets.mjs",
+    "check:performance": "node scripts/check-performance-budget.mjs",
     "generate:social": "node scripts/generate-social-cards.mjs",
     "test:e2e": "playwright test",
     "preview": "npm run build && wrangler dev",
@@ -22,6 +24,7 @@
   "devDependencies": {
     "@playwright/test": "^1.62.0",
     "pagefind": "^1.5.2",
+    "sharp": "^0.35.3",
     "wrangler": "^4.90.1"
   },
   "overrides": {

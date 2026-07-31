@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import OptimizedPicture from "../../components/OptimizedPicture.astro";
 
 const valueChain = [
   {
@@ -215,11 +216,11 @@ const capabilities = [
                 </div>
                 <div class="compare-images">
                   <figure>
-                    <img src="/imagery/monitored-site-reference-2025.png" alt="Monitored airbase archive view from 2025" width="1564" height="1136" loading="lazy" />
+                    <OptimizedPicture name="monitored-site-reference-2025" alt="Monitored airbase archive view from 2025" width={1564} height={1136} />
                     <figcaption>Prior scene</figcaption>
                   </figure>
                   <figure>
-                    <img src="/imagery/monitored-site-follow-on-2026.png" alt="Monitored airbase follow-on view from 2026" width="1546" height="1090" loading="lazy" />
+                    <OptimizedPicture name="monitored-site-follow-on-2026" alt="Monitored airbase follow-on view from 2026" width={1546} height={1090} />
                     <figcaption>Current scene</figcaption>
                   </figure>
                 </div>

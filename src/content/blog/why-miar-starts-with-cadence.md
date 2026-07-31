@@ -21,7 +21,7 @@ updatedAt: 2026-07-30
 readingMinutes: 6
 featured: false
 noindex: false
-heroImage: "/imagery/monitored-site-reference-2025.png"
+heroImage: "/imagery/monitored-site-reference-2025.webp"
 heroImageAlt: "Earlier satellite imagery of a monitored airbase used as a comparison baseline"
 heroImageWidth: 1564
 heroImageHeight: 1136
@@ -34,12 +34,12 @@ socialDescription: "How baseline selection and repeat imagery create a defensibl
 related:
   - "what-makes-an-imagery-intelligence-capability-credible"
 gallery:
-  - src: "/imagery/monitored-site-reference-2025.png"
+  - src: "/imagery/monitored-site-reference-2025.webp"
     alt: "Monitored airbase satellite imagery from 2025 used as a reference scene"
     caption: "Selected baseline / 2025"
     width: 1564
     height: 1136
-  - src: "/imagery/monitored-site-follow-on-2026.png"
+  - src: "/imagery/monitored-site-follow-on-2026.webp"
     alt: "Monitored airbase satellite imagery from 2026 used as a follow-on scene"
     caption: "Follow-on scene / 2026"
     width: 1546

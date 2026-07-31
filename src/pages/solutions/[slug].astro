@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import OptimizedPicture from "../../components/OptimizedPicture.astro";
 import { solutions, type Solution } from "../../data/solutions";
 
 export function getStaticPaths() {
@@ -37,7 +38,7 @@ const nextSolution = solutions[(currentIndex + 1) % solutions.length];
       {
         solution.visual === "scene" && (
           <>
-            <img src="/imagery/monitored-site-follow-on-2026.png" alt="Current satellite imagery used as a representative recurring site review" width="1546" height="1090" />
+            <OptimizedPicture name="monitored-site-follow-on-2026" alt="Current satellite imagery used as a representative recurring site review" width={1546} height={1090} loading="eager" />
             <div class="solution-evidence-shade"></div>
             <div class="solution-evidence-tag tag-a"><span>Current scene</span><strong>Latest pass aligned</strong></div>
             <div class="solution-evidence-tag tag-b"><span>Analyst cue</span><strong>Apron activity ready for review</strong></div>
@@ -57,9 +58,9 @@ const nextSolution = solutions[(currentIndex + 1) % solutions.length];
       {
         solution.visual === "compare" && (
           <div class="solution-compare">
-            <figure><img src="/imagery/monitored-site-reference-2025.png" alt="Archive satellite imagery from 2025 used as a comparison baseline" width="1564" height="1136" /><figcaption>Baseline / 2025</figcaption></figure>
+            <figure><OptimizedPicture name="monitored-site-reference-2025" alt="Archive satellite imagery from 2025 used as a comparison baseline" width={1564} height={1136} loading="eager" /><figcaption>Baseline / 2025</figcaption></figure>
             <div class="solution-compare-marker"><span>Compare</span><strong>Layout shift</strong><p>Same asset count. Changed apron arrangement.</p></div>
-            <figure><img src="/imagery/monitored-site-follow-on-2026.png" alt="Follow-on satellite imagery from 2026 used for comparison" width="1546" height="1090" /><figcaption>Current / 2026</figcaption></figure>
+            <figure><OptimizedPicture name="monitored-site-follow-on-2026" alt="Follow-on satellite imagery from 2026 used for comparison" width={1546} height={1090} loading="eager" /><figcaption>Current / 2026</figcaption></figure>
           </div>
         )
       }

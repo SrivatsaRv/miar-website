@@ -21,23 +21,23 @@ updatedAt: 2026-07-30
 readingMinutes: 7
 featured: true
 noindex: false
-heroImage: "/imagery/annotated-airfield-scene.png"
+heroImage: "/imagery/operational-airfield-scene.webp"
 heroImageAlt: "Annotated monitored-airfield scene showing aircraft detections and an intelligence summary"
 heroImageWidth: 1752
 heroImageHeight: 898
-socialImage: "/imagery/annotated-airfield-scene.png"
+socialImage: "/social/miar-site-preview.jpg"
 socialImageAlt: "Annotated monitored-airfield scene showing aircraft detections and an intelligence summary"
 socialTitle: "Six tests for an imagery-intelligence system"
 socialDescription: "A practical checklist for evaluating imagery AI beyond a model demonstration."
 related:
   - "why-miar-starts-with-cadence"
 gallery:
-  - src: "/imagery/monitored-site-reference-2025.png"
+  - src: "/imagery/monitored-site-reference-2025.webp"
     alt: "Reference satellite imagery of a monitored airbase from 2025"
     caption: "Reference scene / 2025"
     width: 1564
     height: 1136
-  - src: "/imagery/monitored-site-follow-on-2026.png"
+  - src: "/imagery/monitored-site-follow-on-2026.webp"
     alt: "Follow-on satellite imagery of the same monitored airbase from 2026"
     caption: "Follow-on scene / 2026"
     width: 1546

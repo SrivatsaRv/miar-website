@@ -30,9 +30,9 @@ const {
   current = "home",
   canonicalUrl: canonicalOverride,
   socialImage: socialImageOverride,
-  socialImageAlt = "Annotated MIAR airfield intelligence scene",
-  socialImageWidth = 1752,
-  socialImageHeight = 898,
+  socialImageAlt = "MIAR operational imagery intelligence scene",
+  socialImageWidth = 1200,
+  socialImageHeight = 630,
   socialTitle,
   socialDescription,
   noindex = false,
@@ -45,7 +45,7 @@ const siteOrigin = "https://miar.reachdefence.com";
 const canonicalUrl = canonicalOverride || new URL(Astro.url.pathname, siteOrigin).toString();
 const socialImage = socialImageOverride
   ? new URL(socialImageOverride, siteOrigin).toString()
-  : "https://miar.reachdefence.com/imagery/annotated-airfield-scene.png";
+  : "https://miar.reachdefence.com/social/miar-site-preview.jpg";
 const safeJsonLd = jsonLd ? JSON.stringify(jsonLd).replace(/</g, "\\u003c") : "";
 const navItems = isHome
   ? [
@@ -105,12 +105,7 @@ const navItems = isHome
     <meta name="twitter:image" content={socialImage} />
     <meta name="twitter:image:alt" content={socialImageAlt} />
     {safeJsonLd && <script type="application/ld+json" set:html={safeJsonLd} />}
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
   </head>
   <body data-pagefind-body>
     <div class="site-backdrop" aria-hidden="true">

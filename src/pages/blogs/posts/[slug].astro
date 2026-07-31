@@ -161,13 +161,17 @@ const jsonLd = {
         >
           {post.data.gallery.map((image) => (
             <figure>
-              <img
-                src={image.src}
-                alt={image.alt}
-                width={image.width}
-                height={image.height}
-                loading="eager"
-              />
+              <picture>
+                <source srcset={image.src.replace(/\.webp$/, ".avif")} type="image/avif" />
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                  loading="eager"
+                  decoding="async"
+                />
+              </picture>
               <figcaption>
                 <span>{image.caption}</span>
                 <p>{image.alt}</p>

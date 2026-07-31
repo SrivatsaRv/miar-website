@@ -33,12 +33,12 @@ socialTitle: "A satellite image is not yet intelligence"
 socialDescription: "Why a clear image is only the beginning of an imagery-intelligence assessment."
 related: []
 gallery:
-  - src: "/imagery/monitored-site-reference-2025.png"
+  - src: "/imagery/monitored-site-reference-2025.webp"
     alt: "Reference satellite imagery of a monitored airbase from 2025"
     caption: "Reference scene / 2025"
     width: 1564
     height: 1136
-  - src: "/imagery/monitored-site-follow-on-2026.png"
+  - src: "/imagery/monitored-site-follow-on-2026.webp"
     alt: "Follow-on satellite imagery of the same monitored airbase from 2026"
     caption: "Follow-on scene / 2026"
     width: 1546

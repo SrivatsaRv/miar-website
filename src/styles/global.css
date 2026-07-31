@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Inter";
+  src: url("/fonts/inter-latin-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+}
+
 :root {
   color-scheme: dark;
   --background: #131315;
@@ -2159,7 +2167,7 @@ h3 {
     #101113;
 }
 
-.solution-evidence-scene > img,
+.solution-evidence-scene > picture,
 .solution-evidence-shade {
   position: absolute;
   inset: 0;
@@ -2167,7 +2175,9 @@ h3 {
   height: 100%;
 }
 
-.solution-evidence-scene > img {
+.solution-evidence-scene > picture > img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
   filter: saturate(0.74) brightness(0.72);
 }
@@ -3717,7 +3727,7 @@ h3 {
   }
 
   .hero-stage {
-    height: min(78svh, 32rem);
+    height: clamp(38rem, 86svh, 42rem);
   }
 
   .hero-scene {

@@ -1,0 +1,35 @@
+---
+interface Props {
+  name: string;
+  alt: string;
+  width: number;
+  height: number;
+  class?: string;
+  loading?: "eager" | "lazy";
+  fetchpriority?: "high" | "low" | "auto";
+}
+
+const {
+  name,
+  alt,
+  width,
+  height,
+  class: className,
+  loading = "lazy",
+  fetchpriority = "auto",
+} = Astro.props;
+---
+
+<picture>
+  <source srcset={`/imagery/${name}.avif`} type="image/avif" />
+  <img
+    class={className}
+    src={`/imagery/${name}.webp`}
+    alt={alt}
+    width={width}
+    height={height}
+    loading={loading}
+    fetchpriority={fetchpriority}
+    decoding="async"
+  />
+</picture>

@@ -88,6 +88,27 @@ test("header anchors remain aligned between routes", async ({ page }) => {
   expect(Math.abs(home.navRight - internal.navRight)).toBeLessThanOrEqual(2);
 });
 
+test("homepage prefers compressed imagery without layout instability", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+
+  const hero = page.locator(".hero-scene");
+  await expect(hero).toBeVisible();
+  const image = await hero.evaluate((element) => {
+    const node = element as HTMLImageElement;
+    return {
+      currentSrc: node.currentSrc,
+      naturalWidth: node.naturalWidth,
+      naturalHeight: node.naturalHeight,
+    };
+  });
+
+  expect(image.currentSrc).toMatch(/operational-airfield-scene\.(avif|webp)$/);
+  expect(image.naturalWidth).toBe(1729);
+  expect(image.naturalHeight).toBe(910);
+  await expect(page.locator(".hero-stage")).toHaveCSS("height", "672px");
+});
+
 test("mobile navigation opens, closes, and resets across breakpoint changes", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/solutions/");
