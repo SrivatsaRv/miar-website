@@ -21,24 +21,24 @@ updatedAt: 2026-07-30
 readingMinutes: 7
 featured: true
 noindex: false
-heroImage: "/imagery/hotan-airfield-hero.png"
-heroImageAlt: "Annotated Hotan airfield scene showing aircraft detections and an intelligence summary"
+heroImage: "/imagery/annotated-airfield-scene.png"
+heroImageAlt: "Annotated monitored-airfield scene showing aircraft detections and an intelligence summary"
 heroImageWidth: 1752
 heroImageHeight: 898
-socialImage: "/imagery/hotan-airfield-hero.png"
-socialImageAlt: "Annotated Hotan airfield scene showing aircraft detections and an intelligence summary"
+socialImage: "/imagery/annotated-airfield-scene.png"
+socialImageAlt: "Annotated monitored-airfield scene showing aircraft detections and an intelligence summary"
 socialTitle: "Six tests for an imagery-intelligence system"
 socialDescription: "A practical checklist for evaluating imagery AI beyond a model demonstration."
 related:
   - "why-miar-starts-with-cadence"
 gallery:
-  - src: "/imagery/bholari-2025.png"
-    alt: "Bholari airbase reference satellite imagery from 2025"
+  - src: "/imagery/monitored-site-reference-2025.png"
+    alt: "Reference satellite imagery of a monitored airbase from 2025"
     caption: "Reference scene / 2025"
     width: 1564
     height: 1136
-  - src: "/imagery/bholari-2026.png"
-    alt: "Bholari airbase follow-on satellite imagery from 2026"
+  - src: "/imagery/monitored-site-follow-on-2026.png"
+    alt: "Follow-on satellite imagery of the same monitored airbase from 2026"
     caption: "Follow-on scene / 2026"
     width: 1546
     height: 1090

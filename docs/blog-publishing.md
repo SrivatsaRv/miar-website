@@ -111,6 +111,12 @@ The shared article template emits:
 - gallery `ImageObject` entries with visible captions and descriptions
 - XML sitemap entries through `@astrojs/sitemap`
 - `robots.txt` with the sitemap location
+
+## Imagery disclosure
+
+Public articles and page metadata must describe operational imagery with neutral identifiers such as
+`monitored site`, `reference scene`, and `follow-on scene`. Do not publish site names in copy, alt
+text, captions, structured data, or asset filenames unless release approval explicitly permits it.
 - semantic `<article>`, `<header>`, `<time>`, headings, figures, and captions
 
 ## Listing and sharing

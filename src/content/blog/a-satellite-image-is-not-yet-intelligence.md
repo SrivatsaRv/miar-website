@@ -33,13 +33,13 @@ socialTitle: "A satellite image is not yet intelligence"
 socialDescription: "Why a clear image is only the beginning of an imagery-intelligence assessment."
 related: []
 gallery:
-  - src: "/imagery/bholari-2025.png"
-    alt: "Bholari airbase reference satellite imagery from 2025"
+  - src: "/imagery/monitored-site-reference-2025.png"
+    alt: "Reference satellite imagery of a monitored airbase from 2025"
     caption: "Reference scene / 2025"
     width: 1564
     height: 1136
-  - src: "/imagery/bholari-2026.png"
-    alt: "Bholari airbase follow-on satellite imagery from 2026"
+  - src: "/imagery/monitored-site-follow-on-2026.png"
+    alt: "Follow-on satellite imagery of the same monitored airbase from 2026"
     caption: "Follow-on scene / 2026"
     width: 1546
     height: 1090
@@ -49,7 +49,7 @@ When we started working on MIAR, the first question sounded straightforward: giv
 
 It is easy to underestimate that question. Put two clear images next to each other and the differences appear obvious. Count the aircraft, note where they are parked, and report the result. That works until the images come from different dates, angles, weather conditions, resolutions, or providers. Then the comparison stops being a simple visual exercise.
 
-The two images of Bholari airbase above are a useful example. Both show the same broad area. Both contain visible aircraft. But an analyst needs more than two pictures and two counts to decide whether the activity is significant.
+The two airbase images above are a useful example. Both show the same broad area. Both contain visible aircraft. But an analyst needs more than two pictures and two counts to decide whether the activity is significant.
 
 ## A clear image answers only the first question
 

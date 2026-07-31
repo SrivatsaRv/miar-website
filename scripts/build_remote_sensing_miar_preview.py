@@ -56,12 +56,12 @@ def insert_visuals(body: str) -> str:
       </div>
       <div class="scene-spread-visual">
         <figure>
-          <img src="/Users/one2n/miar-website/public/imagery/bholari-2025.png" alt="Bholari Air Base scene from 2025" />
-          <figcaption>Bholari AOI, earlier scene</figcaption>
+          <img src="/Users/one2n/miar-website/public/imagery/monitored-site-reference-2025.png" alt="Monitored airbase scene from 2025" />
+          <figcaption>Monitored AOI, earlier scene</figcaption>
         </figure>
         <figure>
-          <img src="/Users/one2n/miar-website/public/imagery/bholari-2026.png" alt="Bholari Air Base scene from 2026" />
-          <figcaption>Bholari AOI, later scene</figcaption>
+          <img src="/Users/one2n/miar-website/public/imagery/monitored-site-follow-on-2026.png" alt="Monitored airbase scene from 2026" />
+          <figcaption>Monitored AOI, later scene</figcaption>
         </figure>
       </div>
     </section>
@@ -733,7 +733,7 @@ def build_html(body: str) -> str:
         </div>
 
         <div class="cover-visual">
-          <img src="/Users/one2n/miar-website/public/imagery/bholari-2026.png" alt="Bholari Air Base imagery" />
+          <img src="/Users/one2n/miar-website/public/imagery/monitored-site-follow-on-2026.png" alt="Monitored airbase imagery" />
           <div class="cover-strip">
             <div class="mini-card">
               <span>Focus</span>
@@ -792,7 +792,7 @@ def build_html(body: str) -> str:
         </div>
 
         <div class="closing-visual">
-          <img src="/Users/one2n/miar-website/public/imagery/bholari-2025.png" alt="Bholari Air Base earlier imagery" />
+          <img src="/Users/one2n/miar-website/public/imagery/monitored-site-reference-2025.png" alt="Monitored airbase earlier imagery" />
         </div>
       </div>
 

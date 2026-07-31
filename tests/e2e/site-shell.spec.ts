@@ -230,14 +230,14 @@ test("article imagery exposes visible captions and structured descriptions", asy
   await expect(figures).toHaveCount(2);
   await expect(figures.nth(0).locator("figcaption")).toContainText("Reference scene / 2025");
   await expect(figures.nth(0).locator("figcaption")).toContainText(
-    "Bholari airbase reference satellite imagery from 2025"
+    "Reference satellite imagery of a monitored airbase from 2025"
   );
   await expect(figures.nth(1).locator("figcaption")).toContainText("Follow-on scene / 2026");
 
   const jsonLd = await page.locator('script[type="application/ld+json"]').textContent();
   expect(jsonLd).toContain('"@type":"ImageObject"');
   expect(jsonLd).toContain("Reference scene / 2025");
-  expect(jsonLd).toContain("Bholari airbase follow-on satellite imagery from 2026");
+  expect(jsonLd).toContain("Follow-on satellite imagery of the same monitored airbase from 2026");
 
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",

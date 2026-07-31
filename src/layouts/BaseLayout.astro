@@ -44,7 +44,7 @@ const siteOrigin = "https://miar.reachdefence.com";
 const canonicalUrl = canonicalOverride || new URL(Astro.url.pathname, siteOrigin).toString();
 const socialImage = socialImageOverride
   ? new URL(socialImageOverride, siteOrigin).toString()
-  : "https://miar.reachdefence.com/imagery/hotan-airfield-hero.png";
+  : "https://miar.reachdefence.com/imagery/annotated-airfield-scene.png";
 const safeJsonLd = jsonLd ? JSON.stringify(jsonLd).replace(/</g, "\\u003c") : "";
 const navItems = isHome
   ? [

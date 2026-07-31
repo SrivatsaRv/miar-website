@@ -21,8 +21,8 @@ updatedAt: 2026-07-30
 readingMinutes: 6
 featured: false
 noindex: false
-heroImage: "/imagery/bholari-2025.png"
-heroImageAlt: "Earlier Bholari airbase satellite imagery used as a comparison baseline"
+heroImage: "/imagery/monitored-site-reference-2025.png"
+heroImageAlt: "Earlier satellite imagery of a monitored airbase used as a comparison baseline"
 heroImageWidth: 1564
 heroImageHeight: 1136
 socialImage: "/social/why-repeat-coverage-matters.png"
@@ -34,13 +34,13 @@ socialDescription: "How baseline selection and repeat imagery create a defensibl
 related:
   - "what-makes-an-imagery-intelligence-capability-credible"
 gallery:
-  - src: "/imagery/bholari-2025.png"
-    alt: "Bholari airbase satellite imagery from 2025 used as a reference scene"
+  - src: "/imagery/monitored-site-reference-2025.png"
+    alt: "Monitored airbase satellite imagery from 2025 used as a reference scene"
     caption: "Selected baseline / 2025"
     width: 1564
     height: 1136
-  - src: "/imagery/bholari-2026.png"
-    alt: "Bholari airbase satellite imagery from 2026 used as a follow-on scene"
+  - src: "/imagery/monitored-site-follow-on-2026.png"
+    alt: "Monitored airbase satellite imagery from 2026 used as a follow-on scene"
     caption: "Follow-on scene / 2026"
     width: 1546
     height: 1090
@@ -64,7 +64,7 @@ The useful cadence is the interval at which the activity can change enough to af
 
 ## Counts need spatial context
 
-In the Bholari example, the visible aircraft total can remain stable while the apron arrangement changes. A count-only system reports no difference. A comparison that retains object position and layout gives the analyst something to review.
+In this example, the visible aircraft total can remain stable while the apron arrangement changes. A count-only system reports no difference. A comparison that retains object position and layout gives the analyst something to review.
 
 The reverse is also true. A count may change because part of the site is obscured, outside the frame, or captured under different conditions. The scene and its quality remain part of the evidence.
 
