@@ -113,6 +113,33 @@ test("mobile navigation opens, closes, and resets across breakpoint changes", as
   await expect(page.locator("body")).not.toHaveClass(/nav-open/);
 });
 
+test("site search opens from header and keyboard without breaking navigation", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/solutions/");
+
+  const dialog = page.locator("[data-search-dialog]");
+  await page.getByRole("button", { name: "Search MIAR" }).click();
+  await expect(dialog).toBeVisible();
+  await expect(page.locator("[data-search-input]")).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+
+  await page.keyboard.press("/");
+  await expect(dialog).toBeVisible();
+  await page.locator("[data-search-input]").fill("imagery");
+  await expect(page.locator("[data-search-status]")).toContainText(
+    "Search is unavailable in this preview"
+  );
+
+  await page.getByRole("button", { name: "Close search" }).click();
+  await expect(dialog).toBeHidden();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.getByRole("button", { name: "Search MIAR" })).toBeVisible();
+  await expect(page.locator("[data-nav-toggle]")).toBeVisible();
+});
+
 test("desktop form validates selections and handles a successful request", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.route("**/api/waitlist/", async (route) => {

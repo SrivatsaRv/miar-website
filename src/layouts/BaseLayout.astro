@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import SiteSearch from "../components/SiteSearch.astro";
 
 interface Props {
   title: string;
@@ -111,14 +112,14 @@ const navItems = isHome
       rel="stylesheet"
     />
   </head>
-  <body>
+  <body data-pagefind-body>
     <div class="site-backdrop" aria-hidden="true">
       <div class="backdrop-grid"></div>
       <div class="backdrop-glow backdrop-glow-cool"></div>
       <div class="backdrop-glow backdrop-glow-warm"></div>
     </div>
 
-    <header class:list={["site-header", { "site-header-home": isHome }]}>
+    <header class:list={["site-header", { "site-header-home": isHome }]} data-pagefind-ignore>
       <div class="header-shell">
         <a class="brand" href={isHome ? "#home" : "/"} aria-label="MIAR home">
           <span class="brand-copy">
@@ -127,19 +128,8 @@ const navItems = isHome
           </span>
         </a>
 
-        <button
-          class="nav-toggle"
-          type="button"
-          aria-expanded="false"
-          aria-controls="site-nav"
-          aria-label="Toggle navigation"
-          data-nav-toggle
-        >
-          <span></span>
-          <span></span>
-        </button>
-
-        <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
+        <div class="header-controls">
+          <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
           {
             navItems.map((item) => item.children ? (
               <div class:list={["nav-group", { "is-active": Boolean(item.active) }]}>
@@ -166,13 +156,26 @@ const navItems = isHome
               </a>
             ))
           }
-        </nav>
+          </nav>
+          <SiteSearch />
+          <button
+            class="nav-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="site-nav"
+            aria-label="Toggle navigation"
+            data-nav-toggle
+          >
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </div>
     </header>
 
     <slot />
 
-    <footer class="site-footer">
+    <footer class="site-footer" data-pagefind-ignore>
       <div class="footer-shell">
         <div class="footer-brand">
           <strong>MIAR</strong>

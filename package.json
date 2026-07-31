@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "astro dev --host 0.0.0.0 --port 3004",
     "dev:test": "astro dev --host 127.0.0.1 --port 4327",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist/client",
     "generate:social": "node scripts/generate-social-cards.mjs",
     "test:e2e": "playwright test",
     "preview": "npm run build && wrangler dev",
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.0",
+    "pagefind": "^1.5.2",
     "wrangler": "^4.90.1"
   },
   "overrides": {

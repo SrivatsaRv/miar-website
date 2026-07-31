@@ -1,0 +1,169 @@
+<button
+  class="site-search-trigger"
+  type="button"
+  aria-label="Search MIAR"
+  aria-haspopup="dialog"
+  data-search-open
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="10.8" cy="10.8" r="5.8"></circle>
+    <path d="m15.2 15.2 4.1 4.1"></path>
+  </svg>
+  <span>Search</span>
+  <kbd>⌘K</kbd>
+</button>
+
+<dialog class="site-search-dialog" aria-labelledby="site-search-title" data-search-dialog>
+  <div class="site-search-panel">
+    <header class="site-search-head">
+      <div>
+        <span>Search MIAR</span>
+        <h2 id="site-search-title">Find analysis and capabilities</h2>
+      </div>
+      <button type="button" aria-label="Close search" data-search-close>Close</button>
+    </header>
+
+    <div class="site-search-field">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="10.8" cy="10.8" r="5.8"></circle>
+        <path d="m15.2 15.2 4.1 4.1"></path>
+      </svg>
+      <input
+        type="search"
+        placeholder="Search imagery analysis, monitoring, delivery..."
+        autocomplete="off"
+        spellcheck="false"
+        aria-describedby="site-search-status"
+        data-search-input
+      />
+      <kbd>ESC</kbd>
+    </div>
+
+    <div class="site-search-state" id="site-search-status" aria-live="polite" data-search-status>
+      Start typing to search public MIAR content.
+    </div>
+    <ol class="site-search-results" aria-label="Search results" data-search-results></ol>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector("[data-search-dialog]");
+  const openButtons = document.querySelectorAll("[data-search-open]");
+  const closeButton = document.querySelector("[data-search-close]");
+  const input = document.querySelector("[data-search-input]");
+  const status = document.querySelector("[data-search-status]");
+  const resultsList = document.querySelector("[data-search-results]");
+  let pagefind;
+  let searchTimer;
+  let searchSequence = 0;
+
+  const resultType = (url) => {
+    if (url.startsWith("/blogs/")) return "Analysis";
+    if (url.startsWith("/solutions/")) return "Solution";
+    if (url.startsWith("/capabilities/")) return "Capability";
+    if (url.startsWith("/whitepapers/")) return "Whitepaper";
+    if (["/legal/", "/privacy/", "/terms/"].includes(url)) return "Policy";
+    return "MIAR";
+  };
+
+  const setStatus = (message) => {
+    if (status) status.textContent = message;
+  };
+
+  const openSearch = () => {
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    dialog.showModal();
+    document.body.classList.add("search-open");
+    window.setTimeout(() => input instanceof HTMLInputElement && input.focus(), 0);
+  };
+
+  const closeSearch = () => {
+    if (!(dialog instanceof HTMLDialogElement)) return;
+    dialog.close();
+    document.body.classList.remove("search-open");
+  };
+
+  const loadPagefind = async () => {
+    if (pagefind) return pagefind;
+    const modulePath = "/pagefind/pagefind.js";
+    pagefind = await import(/* @vite-ignore */ modulePath);
+    await pagefind.init();
+    return pagefind;
+  };
+
+  const renderResults = (results) => {
+    if (!(resultsList instanceof HTMLOListElement)) return;
+    resultsList.replaceChildren();
+
+    results.forEach((result, index) => {
+      const item = document.createElement("li");
+      const link = document.createElement("a");
+      const meta = document.createElement("div");
+      const type = document.createElement("span");
+      const number = document.createElement("span");
+      const title = document.createElement("strong");
+      const excerpt = document.createElement("p");
+
+      link.href = result.url;
+      type.textContent = resultType(result.url);
+      number.textContent = String(index + 1).padStart(2, "0");
+      title.textContent = result.meta?.title || "Untitled page";
+      excerpt.innerHTML = result.excerpt || result.meta?.description || "";
+      meta.append(type, number);
+      link.append(meta, title, excerpt);
+      item.append(link);
+      resultsList.append(item);
+    });
+  };
+
+  const runSearch = async (query) => {
+    const sequence = ++searchSequence;
+    const normalizedQuery = query.trim();
+
+    if (normalizedQuery.length < 2) {
+      renderResults([]);
+      setStatus("Enter at least two characters.");
+      return;
+    }
+
+    setStatus("Searching...");
+
+    try {
+      const searchIndex = await loadPagefind();
+      const search = await searchIndex.search(normalizedQuery);
+      const data = await Promise.all(search.results.slice(0, 8).map((result) => result.data()));
+      if (sequence !== searchSequence) return;
+      renderResults(data);
+      setStatus(data.length ? `${data.length} result${data.length === 1 ? "" : "s"}` : `No results for “${normalizedQuery}”.`);
+    } catch {
+      if (sequence !== searchSequence) return;
+      renderResults([]);
+      setStatus("Search is unavailable in this preview. It is generated with the production build.");
+    }
+  };
+
+  openButtons.forEach((button) => button.addEventListener("click", openSearch));
+  closeButton?.addEventListener("click", closeSearch);
+  dialog?.addEventListener("close", () => document.body.classList.remove("search-open"));
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog) closeSearch();
+  });
+
+  input?.addEventListener("input", () => {
+    if (!(input instanceof HTMLInputElement)) return;
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => runSearch(input.value), 160);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    const target = event.target;
+    const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target instanceof HTMLSelectElement || (target instanceof HTMLElement && target.isContentEditable);
+    const commandSearch = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
+    const slashSearch = event.key === "/" && !isTyping;
+
+    if (commandSearch || slashSearch) {
+      event.preventDefault();
+      openSearch();
+    }
+  });
+</script>
