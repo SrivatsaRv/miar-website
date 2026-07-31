@@ -53,7 +53,7 @@
   const input = document.querySelector("[data-search-input]");
   const status = document.querySelector("[data-search-status]");
   const resultsList = document.querySelector("[data-search-results]");
-  let pagefind;
+  let searchIndex;
   let searchTimer;
   let searchSequence = 0;
 
@@ -83,15 +83,70 @@
     document.body.classList.remove("search-open");
   };
 
-  const loadPagefind = async () => {
-    if (pagefind) return pagefind;
-    const modulePath = "/pagefind/pagefind.js";
-    pagefind = await import(/* @vite-ignore */ modulePath);
-    await pagefind.init();
-    return pagefind;
+  const loadSearchIndex = async () => {
+    if (searchIndex) return searchIndex;
+    const response = await fetch("/search-index.json", { credentials: "same-origin" });
+    if (!response.ok) throw new Error("Search index unavailable");
+    searchIndex = await response.json();
+    return searchIndex;
   };
 
-  const renderResults = (results) => {
+  const normalize = (value) => value.toLocaleLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "");
+
+  const excerptFor = (entry, token) => {
+    if (entry.description) return entry.description;
+    const content = entry.content || "";
+    const match = normalize(content).indexOf(token);
+    const start = Math.max(0, match - 80);
+    const excerpt = content.slice(start, start + 220).trim();
+    return `${start > 0 ? "…" : ""}${excerpt}${start + 220 < content.length ? "…" : ""}`;
+  };
+
+  const searchEntries = (entries, query) => {
+    const phrase = normalize(query.trim());
+    const tokens = phrase.split(/\s+/).filter(Boolean);
+
+    return entries
+      .map((entry) => {
+        const title = normalize(entry.title || "");
+        const description = normalize(entry.description || "");
+        const content = normalize(entry.content || "");
+        const combined = `${title} ${description} ${content}`;
+        if (!tokens.every((token) => combined.includes(token))) return null;
+
+        let score = title.includes(phrase) ? 50 : description.includes(phrase) ? 24 : content.includes(phrase) ? 8 : 0;
+        tokens.forEach((token) => {
+          if (title.includes(token)) score += 14;
+          if (description.includes(token)) score += 6;
+          if (content.includes(token)) score += 1;
+        });
+
+        return { ...entry, score, excerpt: excerptFor(entry, tokens[0]) };
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+      .slice(0, 8);
+  };
+
+  const appendHighlighted = (node, value, query) => {
+    const terms = query.trim().split(/\s+/).filter(Boolean).map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    if (!terms.length) {
+      node.textContent = value;
+      return;
+    }
+    const pattern = new RegExp(`(${terms.join("|")})`, "gi");
+    value.split(pattern).forEach((part) => {
+      if (terms.some((term) => part.toLocaleLowerCase() === term.toLocaleLowerCase())) {
+        const mark = document.createElement("mark");
+        mark.textContent = part;
+        node.append(mark);
+      } else {
+        node.append(document.createTextNode(part));
+      }
+    });
+  };
+
+  const renderResults = (results, query = "") => {
     if (!(resultsList instanceof HTMLOListElement)) return;
     resultsList.replaceChildren();
 
@@ -107,8 +162,8 @@
       link.href = result.url;
       type.textContent = resultType(result.url);
       number.textContent = String(index + 1).padStart(2, "0");
-      title.textContent = result.meta?.title || "Untitled page";
-      excerpt.innerHTML = result.excerpt || result.meta?.description || "";
+      title.textContent = result.title || "Untitled page";
+      appendHighlighted(excerpt, result.excerpt || result.description || "", query);
       meta.append(type, number);
       link.append(meta, title, excerpt);
       item.append(link);
@@ -129,11 +184,10 @@
     setStatus("Searching...");
 
     try {
-      const searchIndex = await loadPagefind();
-      const search = await searchIndex.search(normalizedQuery);
-      const data = await Promise.all(search.results.slice(0, 8).map((result) => result.data()));
+      const entries = await loadSearchIndex();
+      const data = searchEntries(entries, normalizedQuery);
       if (sequence !== searchSequence) return;
-      renderResults(data);
+      renderResults(data, normalizedQuery);
       setStatus(data.length ? `${data.length} result${data.length === 1 ? "" : "s"}` : `No results for “${normalizedQuery}”.`);
     } catch {
       if (sequence !== searchSequence) return;
@@ -154,6 +208,13 @@
     window.clearTimeout(searchTimer);
     searchTimer = window.setTimeout(() => runSearch(input.value), 160);
   });
+
+  const warmSearch = () => loadSearchIndex().catch(() => undefined);
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(warmSearch, { timeout: 3000 });
+  } else {
+    window.setTimeout(warmSearch, 1500);
+  }
 
   document.addEventListener("keydown", (event) => {
     const target = event.target;

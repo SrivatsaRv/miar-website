@@ -271,6 +271,28 @@ test("delivery workflow stays compact and content remains reachable", async ({ p
   await expect(page.getByRole("link", { name: "Request access", exact: true }).last()).toBeVisible();
 });
 
+test("asset monitoring register stays compact and aligned", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/solutions/military-asset-monitoring/");
+
+  const evidence = page.locator(".solution-evidence-monitor");
+  const cells = page.locator(".solution-monitor > div");
+  await expect(cells).toHaveCount(4);
+  expect((await evidence.boundingBox())?.height ?? Infinity).toBeLessThan(410);
+
+  const verticalCenters = await cells.evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const rect = node.getBoundingClientRect();
+      return rect.top + rect.height / 2;
+    })
+  );
+  expect(Math.max(...verticalCenters) - Math.min(...verticalCenters)).toBeLessThanOrEqual(1);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect((await evidence.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(470);
+  await expect(page.getByText("Confirmation remains explicit", { exact: true })).toBeVisible();
+});
+
 test("article imagery exposes visible captions and structured descriptions", async ({ page }) => {
   await page.goto("/blogs/posts/a-satellite-image-is-not-yet-intelligence/");
 

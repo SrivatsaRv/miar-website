@@ -29,7 +29,7 @@ for (const file of await walk(path.resolve("public"))) {
 for (const file of await walk(path.resolve("dist/client"))) {
   const { size } = await stat(file);
   const relative = path.relative(process.cwd(), file);
-  if (file.endsWith(".css") && !file.includes("/pagefind/") && size > limits.css) {
+  if (file.endsWith(".css") && size > limits.css) {
     failures.push(`${relative} exceeds the ${limits.css / 1000} KB CSS budget`);
   }
   if (file.endsWith("/site.js") && size > limits.javascript) {

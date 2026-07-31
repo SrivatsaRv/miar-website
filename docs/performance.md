@@ -11,8 +11,8 @@ AVIF and WebP derivatives in `public/imagery` before Astro renders pages.
 - Social previews remain JPEG or PNG because crawler support is broader than AVIF support.
 - Self-hosted Inter replaces the render-blocking Google Fonts stylesheet.
 - Hashed Astro assets, fonts, and versioned imagery receive long-lived immutable cache headers.
-- Pagefind and `site.js` receive shorter stale-while-revalidate policies because their public paths
-  are stable between releases.
+- The search index and `site.js` receive shorter stale-while-revalidate policies because their public
+  paths are stable between releases.
 
 ## Enforced budgets
 
@@ -22,6 +22,6 @@ AVIF and WebP derivatives in `public/imagery` before Astro renders pages.
 - first-party compiled CSS exceeds 100 KB before transfer compression; or
 - `site.js` exceeds 25 KB before transfer compression.
 
-`make ci-local` runs the production build, Pagefind generation, performance budget, and browser tests.
+`make ci-local` runs the production build, search-index generation, performance budget, and browser tests.
 Run Lighthouse against the deployed custom domain for release-level LCP measurements; laboratory LCP
 varies with throttling and edge state and is therefore tracked separately from deterministic CI limits.

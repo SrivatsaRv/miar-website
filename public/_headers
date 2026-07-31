@@ -10,7 +10,7 @@
 /social/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
-/pagefind/*
+/search-index.json
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /site.js

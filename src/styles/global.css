@@ -2236,25 +2236,34 @@ h3 {
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 0.9fr)) minmax(0, 1.3fr);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.solution-evidence-monitor {
+  min-height: clamp(18rem, 28vw, 25rem);
 }
 
 .solution-monitor > div {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   padding: clamp(1rem, 2.5vw, 2.5rem);
   border-right: 1px solid var(--line);
 }
 
-.solution-monitor > div:nth-child(2),
-.solution-monitor > div:nth-child(4) {
-  justify-content: flex-start;
+.solution-monitor > div:last-child {
+  border-right: 0;
 }
 
 .solution-monitor strong {
-  font-size: clamp(2.4rem, 5vw, 5.5rem);
+  font-size: clamp(2.4rem, 4vw, 4.4rem);
   letter-spacing: -0.06em;
+}
+
+.solution-monitor > div:last-child strong {
+  font-size: clamp(2.2rem, 3.5vw, 3.8rem);
 }
 
 .solution-monitor p,
@@ -3549,9 +3558,12 @@ h3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .solution-monitor > div:nth-child(2),
-  .solution-monitor > div:nth-child(4) {
-    justify-content: flex-end;
+  .solution-monitor > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .solution-monitor > div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
   }
 
   .solution-compare {
@@ -3869,12 +3881,20 @@ h3 {
     min-height: 27rem;
   }
 
+  .solution-evidence-monitor {
+    min-height: 30rem;
+  }
+
   .solution-monitor {
     grid-template-columns: 1fr 1fr;
   }
 
   .solution-monitor strong {
     font-size: 2.4rem;
+  }
+
+  .solution-monitor > div:last-child strong {
+    font-size: 2.15rem;
   }
 
   .solution-compare-marker {
