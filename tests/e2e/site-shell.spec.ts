@@ -103,9 +103,9 @@ test("homepage prefers compressed imagery without layout instability", async ({ 
     };
   });
 
-  expect(image.currentSrc).toMatch(/operational-airfield-scene\.(avif|webp)$/);
-  expect(image.naturalWidth).toBe(1729);
-  expect(image.naturalHeight).toBe(910);
+  expect(image.currentSrc).toMatch(/annotated-airfield-scene\.(avif|webp)$/);
+  expect(image.naturalWidth).toBe(1755);
+  expect(image.naturalHeight).toBe(896);
   await expect(page.locator(".hero-stage")).toHaveCSS("height", "672px");
 });
 

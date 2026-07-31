@@ -5,6 +5,7 @@ import sharp from "sharp";
 const sourceDirectory = path.resolve("assets/source-imagery");
 const outputDirectory = path.resolve("public/imagery");
 const sources = [
+  "annotated-airfield-scene",
   "operational-airfield-scene",
   "monitored-site-reference-2025",
   "monitored-site-follow-on-2026",
