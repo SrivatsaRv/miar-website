@@ -1,7 +1,7 @@
 ---
 title: "A satellite image is not yet intelligence"
-description: "An examination of the technical and analytical controls required to produce reliable intelligence from remote-sensing imagery."
-summary: "Satellite imagery becomes operationally useful when sensor limits, temporal context, automated analysis, analyst review, and provenance are handled as one system."
+description: "Why reading change from satellite imagery takes more than a clear picture, and how MIAR keeps context, automation, and analyst judgement together."
+summary: "A clear satellite image can show what is there. The harder question is what changed, whether it matters, and how confidently an analyst can act on it."
 status: "published"
 category: "Analysis"
 tags:
@@ -18,7 +18,7 @@ author:
   organization: "ReachDefence"
 publishedAt: 2026-07-31
 updatedAt: 2026-07-31
-readingMinutes: 7
+readingMinutes: 6
 featured: true
 noindex: false
 heroImage: "/social/a-satellite-image-is-not-yet-intelligence.png"
@@ -30,7 +30,7 @@ socialImageAlt: "MIAR editorial card reading A satellite image is not yet intell
 socialImageWidth: 1200
 socialImageHeight: 630
 socialTitle: "A satellite image is not yet intelligence"
-socialDescription: "The technical and analytical controls required to produce reliable intelligence from remote-sensing imagery."
+socialDescription: "Why a clear image is only the beginning of an imagery-intelligence assessment."
 related: []
 gallery:
   - src: "/imagery/bholari-2025.png"
@@ -45,65 +45,68 @@ gallery:
     height: 1090
 ---
 
-Satellite imagery records the condition of a location at a specific time and under specific collection conditions. Intelligence production begins when that observation is assessed against a defined requirement, placed in context, and supported by evidence that can be reviewed.
+When we started working on MIAR, the first question sounded straightforward: given two satellite images of the same military site, can we tell an analyst what changed?
 
-This distinction is important in the evaluation of imagery-intelligence systems. Image quality and model performance are visible and easy to demonstrate. Operational reliability depends on less visible controls: whether the source is suitable for the question, whether observations can be compared, whether automated results remain within the limits of the imagery, and whether an analyst can verify the resulting assessment.
+It is easy to underestimate that question. Put two clear images next to each other and the differences appear obvious. Count the aircraft, note where they are parked, and report the result. That works until the images come from different dates, angles, weather conditions, resolutions, or providers. Then the comparison stops being a simple visual exercise.
 
-## The collection determines what can be assessed
+The two images of Bholari airbase above are a useful example. Both show the same broad area. Both contain visible aircraft. But an analyst needs more than two pictures and two counts to decide whether the activity is significant.
 
-Ground sample distance is only one measure of image utility. Viewing angle, atmospheric conditions, cloud, shadow, compression, scene coverage, and acquisition geometry all affect interpretation. Temporal, spectral, and radiometric resolution can be as consequential as spatial resolution, depending on the requirement.
+## A clear image answers only the first question
 
-Sensor type also determines the character of the evidence. Electro-optical imagery supports direct visual interpretation in suitable daylight and weather. Synthetic aperture radar can provide day-and-night, all-weather coverage, but introduces different geometry and signal characteristics. Infrared imagery can indicate thermal activity where the sensor, resolution, and collection conditions permit it.
+An image can show what was visible when the satellite passed overhead. It may reveal aircraft on an apron, vehicles near a facility, vessels at a berth, or construction at a known site.
 
-An assessment should therefore state what the available imagery supports. It should not infer a level of identification solely from a nominal resolution figure.
+What it cannot show on its own is whether that activity is normal.
 
-## Temporal context establishes significance
+Five aircraft might represent a buildup, a routine operating day, or a reduction from the previous week. Their position may matter as much as their number. One part of the site may be outside the frame or hidden by cloud. An object may be clear enough to call an aircraft, but not clear enough to name the exact type.
 
-A single scene can establish that an object or condition was visible at the time of collection. It cannot establish whether the observation is routine, exceptional, or part of a developing pattern.
+This is where imagery becomes an analytical problem rather than an image-viewing problem. The useful questions are no longer limited to “What can I see?” They become:
 
-That judgement requires an appropriate baseline. Depending on the mission, the relevant comparison may be the previous collection, the same period in an earlier year, a known low-activity state, or a series of observations describing normal activity. Baseline selection is an analytical decision and should be retained with the result.
+- What was here before?
+- Is the apparent change real, or caused by the image itself?
+- How specific can we be about the objects in view?
+- What evidence supports the assessment?
+- Does an analyst agree with the automated result?
 
-The Bholari scenes shown above demonstrate the value of this context. Each scene can be reviewed independently. When registered as observations of the same location, they also support comparison of visible aircraft, position, and use of the site. The archive is part of the analytical record, not simply a repository for older images.
+## The earlier image is not always the right baseline
 
-## Automated analysis must match the available evidence
+Change depends on what we choose to compare.
 
-Detection, classification, and interpretation are separate analytical steps. A model may detect an object without having sufficient evidence to identify its exact type. The imagery may support a broad class, such as aircraft or transport aircraft, while remaining insufficient for a subtype assessment.
+The previous satellite pass may be the right reference for a fast-moving situation. For a site with seasonal activity, the better comparison may be the same month last year. In other cases, analysts may want to compare against a known quiet period or against several images that describe normal operations.
 
-An operational system should preserve these distinctions. Class labels and confidence should reflect the quality of the source and the level of identification that can be defended. When conditions are poor, reducing specificity is preferable to presenting an unsupported classification.
+That choice changes the conclusion. A site can look busy compared with yesterday and completely routine compared with its normal weekly pattern.
 
-Interpretation requires additional context. A change in count, location, or disposition may be relevant, but it does not explain its own significance. Scene coverage, collection conditions, routine site activity, and other available sources remain part of the analyst's judgement.
+For MIAR, this means the baseline cannot be an image selected silently by the software. The analyst needs to know which image was used, why it was relevant, and what other observations are available. Historical imagery is not background material; it is part of the assessment.
 
-## Change analysis requires controlled comparison
+## AI helps with the volume, not the final judgement
 
-Two images of the same location will often differ even when the site has not materially changed. Viewing geometry, illumination, season, cloud, shadow, sensor mode, and registration can all produce apparent differences. Radar imagery adds effects associated with speckle and acquisition geometry.
+Automated detection is valuable because analysts cannot inspect every object in every new image by hand. A model can locate likely aircraft, vehicles, vessels, or structures. It can produce an initial count and draw attention to objects that appeared, disappeared, or moved.
 
-Reliable change analysis therefore depends on preprocessing, quality assessment, image registration, and a documented baseline. The result should identify the observations compared, the area in which change was measured, the confidence assigned to the result, and any limitations affecting interpretation.
+But the model should be allowed to say only what the image supports.
 
-A change alert without this supporting record is difficult to evaluate. Analysts need direct access to the source scenes and the comparison that produced the alert.
+If an aircraft is visible but the image is not detailed enough to identify its subtype, the result should remain broad. If cloud or shadow affects part of the site, the count should carry that limitation. A confident-looking label does not improve weak evidence.
 
-## Machine findings and analyst assessments are separate records
+We treat automated results as findings for review, not finished intelligence. The analyst can accept a result, correct it, or reject it. That decision remains separate from the model output so another reviewer can see what the machine proposed and what the analyst concluded.
 
-Automated analysis can reduce the volume of imagery requiring manual inspection. It can identify candidate objects, produce counts, compare observations, and prioritise changes for review. These outputs remain machine findings until they have passed the review required by the organisation using them.
+## Comparison is harder than placing images side by side
 
-The system should maintain separate states for model inference, analyst review, and any finding approved for downstream use. Corrections and rejections should remain part of the record. This preserves accountability and provides useful evidence for subsequent model evaluation.
+Satellite images of the same location rarely line up perfectly. They may have been collected from different angles or at different times of day. Shadows move. Seasons change. One image may be sharper than the other. Even when nothing important happened on the ground, the pixels can still look different.
 
-## Provenance supports operational trust
+Before calling something a change, the images have to be aligned and checked for these differences. The system also has to keep the original scenes close to the result. An alert that says “three new aircraft detected” is not enough if the analyst cannot open the relevant images and inspect those aircraft directly.
 
-Every material finding should be traceable to the observation and analytical process that produced it. The record should retain, at minimum:
+The practical output is therefore not just a red box or a changed count. It is a finding with its comparison attached: the current image, the baseline, the objects detected in each, the confidence of the model, and the analyst's review.
 
-- Source scene and acquisition time
-- Sensor and image metadata relevant to interpretation
-- Area of interest and usable scene coverage
-- Model version, proposed class, and confidence
-- Baseline lineage for comparison results
-- Analyst decision, annotation, and review state
+## What we are building into MIAR
 
-This information allows another authorised user to inspect, challenge, reproduce, or revise an assessment. It also prevents counts and classifications from becoming detached from the imagery on which they were based.
+MIAR is designed around the recurring work of monitoring the same sites over time. It brings imagery from different providers into one record, compares new observations with relevant history, and uses models to surface objects and changes for analyst review.
 
-## Building the complete capability
+For each finding, we want the important questions to remain answerable:
 
-An imagery-intelligence capability is a coordinated system of collection access, sensor understanding, preprocessing, temporal analysis, automated exploitation, analyst review, and evidence management. Model accuracy is one measure of that system, but it is not a substitute for the rest.
+- Which image did this come from?
+- When was it collected?
+- What was it compared against?
+- What did the model report?
+- What did the analyst accept?
 
-MIAR is being developed to support this complete workflow across imagery from multiple providers. It maintains source observations, comparison history, machine findings, and analyst decisions as distinct but connected records. The objective is to give defence and intelligence teams a reviewable account of what was observed, what changed, and how each conclusion was reached.
+This may sound less dramatic than a model that claims to recognise everything in a scene. It is also much closer to what an analyst needs when a finding has to be checked, shared, or revisited later.
 
-The standard for imagery intelligence should be clear: an assessment must be supported by suitable collection, bounded by the available evidence, and traceable to its source.
+The image is the starting point. Intelligence comes from understanding what changed, how certain that conclusion is, and whether the evidence holds up when someone else reviews it.
