@@ -25,6 +25,8 @@ const pagePath = `/blogs/posts/${post.id}/`;
 const canonicalUrl = post.data.canonicalUrl || new URL(pagePath, siteOrigin).toString();
 const socialImage = post.data.socialImage || post.data.heroImage;
 const socialImageAlt = post.data.socialImageAlt || post.data.heroImageAlt;
+const socialImageWidth = post.data.socialImageWidth || post.data.heroImageWidth;
+const socialImageHeight = post.data.socialImageHeight || post.data.heroImageHeight;
 const shareUrl = (source: string, medium: string) => {
   const url = new URL(canonicalUrl);
   url.searchParams.set("utm_source", source);
@@ -62,6 +64,8 @@ const structuredImages = [
     "@type": "ImageObject",
     contentUrl: new URL(socialImage, siteOrigin).toString(),
     description: socialImageAlt,
+    width: socialImageWidth,
+    height: socialImageHeight,
   },
   ...post.data.gallery.map((image) => ({
     "@type": "ImageObject",
@@ -105,6 +109,8 @@ const jsonLd = {
   canonicalUrl={canonicalUrl}
   socialImage={socialImage}
   socialImageAlt={socialImageAlt}
+  socialImageWidth={socialImageWidth}
+  socialImageHeight={socialImageHeight}
   socialTitle={post.data.socialTitle}
   socialDescription={post.data.socialDescription}
   noindex={post.data.noindex}

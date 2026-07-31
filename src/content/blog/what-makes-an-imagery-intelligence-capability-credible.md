@@ -2,7 +2,7 @@
 title: "Six tests for an imagery-intelligence system"
 description: "Six practical checks for evaluating the scope, evidence, review boundaries, and deployment claims of an imagery-intelligence system."
 summary: "A practical way to assess scope, labels, resolution limits, evidence, analyst review, and deployment before trusting a model demo."
-status: "published"
+status: "draft"
 category: "Analysis"
 tags:
   - "imagery intelligence"

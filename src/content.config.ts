@@ -30,6 +30,8 @@ const blog = defineCollection({
     heroImageHeight: z.number().int().positive(),
     socialImage: z.string().startsWith("/").optional(),
     socialImageAlt: z.string().min(20).max(180).optional(),
+    socialImageWidth: z.number().int().positive().optional(),
+    socialImageHeight: z.number().int().positive().optional(),
     socialTitle: z.string().max(80).optional(),
     socialDescription: z.string().max(200).optional(),
     related: z.array(z.string()).default([]),

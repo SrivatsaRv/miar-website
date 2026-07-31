@@ -173,7 +173,7 @@ test("blog filters, views, and thumbnails remain consistent", async ({ page }) =
   await page.goto("/blogs/");
 
   const entries = page.locator("[data-blog-entry]");
-  await expect(entries).toHaveCount(2);
+  await expect(entries).toHaveCount(1);
 
   const thumbnailSources = await entries.locator(".blog-live-image img").evaluateAll((images) =>
     images.map((image) => (image as HTMLImageElement).getAttribute("src"))
@@ -188,11 +188,7 @@ test("blog filters, views, and thumbnails remain consistent", async ({ page }) =
   );
 
   await page.getByRole("button", { name: "Tradecraft", exact: true }).click();
-  await expect(entries.filter({ visible: true })).toHaveCount(1);
-  await expect(entries.filter({ visible: true }).first()).toHaveAttribute(
-    "data-category",
-    "Tradecraft"
-  );
+  await expect(entries.filter({ visible: true })).toHaveCount(0);
 
   await page.getByRole("button", { name: "Case Notes", exact: true }).click();
   await expect(entries.filter({ visible: true })).toHaveCount(0);
@@ -228,7 +224,7 @@ test("delivery workflow stays compact and content remains reachable", async ({ p
 });
 
 test("article imagery exposes visible captions and structured descriptions", async ({ page }) => {
-  await page.goto("/blogs/posts/what-makes-an-imagery-intelligence-capability-credible/");
+  await page.goto("/blogs/posts/a-satellite-image-is-not-yet-intelligence/");
 
   const figures = page.locator(".blog-scene-pair figure");
   await expect(figures).toHaveCount(2);
@@ -242,4 +238,11 @@ test("article imagery exposes visible captions and structured descriptions", asy
   expect(jsonLd).toContain('"@type":"ImageObject"');
   expect(jsonLd).toContain("Reference scene / 2025");
   expect(jsonLd).toContain("Bholari airbase follow-on satellite imagery from 2026");
+
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    "https://miar.reachdefence.com/social/a-satellite-image-is-not-yet-intelligence.png"
+  );
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
 });

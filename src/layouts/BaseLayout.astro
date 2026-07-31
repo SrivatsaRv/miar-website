@@ -8,6 +8,8 @@ interface Props {
   canonicalUrl?: string;
   socialImage?: string;
   socialImageAlt?: string;
+  socialImageWidth?: number;
+  socialImageHeight?: number;
   socialTitle?: string;
   socialDescription?: string;
   noindex?: boolean;
@@ -28,6 +30,8 @@ const {
   canonicalUrl: canonicalOverride,
   socialImage: socialImageOverride,
   socialImageAlt = "Annotated MIAR airfield intelligence scene",
+  socialImageWidth = 1752,
+  socialImageHeight = 898,
   socialTitle,
   socialDescription,
   noindex = false,
@@ -85,8 +89,8 @@ const navItems = isHome
     <meta property="og:image" content={socialImage} />
     <meta property="og:image:secure_url" content={socialImage} />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1752" />
-    <meta property="og:image:height" content="898" />
+    <meta property="og:image:width" content={String(socialImageWidth)} />
+    <meta property="og:image:height" content={String(socialImageHeight)} />
     <meta property="og:image:alt" content={socialImageAlt} />
     {article && <meta property="article:published_time" content={article.publishedAt} />}
     {article?.updatedAt && <meta property="article:modified_time" content={article.updatedAt} />}

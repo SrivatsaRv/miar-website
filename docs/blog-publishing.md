@@ -57,6 +57,8 @@ heroImageWidth: 1600
 heroImageHeight: 900
 socialImage: "/imagery/example-social.png" # optional; defaults to heroImage
 socialImageAlt: "Literal description of the social image" # optional
+socialImageWidth: 1200 # required for a purpose-built social card
+socialImageHeight: 630 # required for a purpose-built social card
 socialTitle: "Short social title" # optional
 socialDescription: "Short social description" # optional
 related:
@@ -91,6 +93,7 @@ gallery:
 | `heroImage` | Index and default social image from `public/`. |
 | `heroImageAlt` | Accessible, literal description. Never use keyword lists. |
 | `socialImage` | Optional Open Graph/Twitter override. |
+| `socialImageWidth`, `socialImageHeight` | Exact social-card dimensions. Use `1200 × 630` for dedicated share artwork. |
 | `related` | Markdown filenames without `.md`; drives related-article navigation. |
 | `gallery` | Optional article imagery rendered before the Markdown body. |
 

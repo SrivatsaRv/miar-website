@@ -2,7 +2,7 @@
 title: "Why repeat coverage matters more than a single sharp image"
 description: "A practical note on baselines, repeat satellite coverage, and building a defensible activity record for the same area of interest."
 summary: "One scene can show what is present. A sequence can show whether activity is routine, rising, dispersing, or returning."
-status: "published"
+status: "draft"
 category: "Tradecraft"
 tags:
   - "repeat coverage"
@@ -25,8 +25,10 @@ heroImage: "/imagery/bholari-2025.png"
 heroImageAlt: "Earlier Bholari airbase satellite imagery used as a comparison baseline"
 heroImageWidth: 1564
 heroImageHeight: 1136
-socialImage: "/imagery/bholari-2025.png"
-socialImageAlt: "Earlier Bholari airbase satellite imagery used as a comparison baseline"
+socialImage: "/social/why-repeat-coverage-matters.png"
+socialImageAlt: "MIAR editorial card for Why repeat coverage matters"
+socialImageWidth: 1200
+socialImageHeight: 630
 socialTitle: "Why repeat coverage matters"
 socialDescription: "How baseline selection and repeat imagery create a defensible record of activity at the same AOI."
 related:
