@@ -5,7 +5,7 @@ import SiteSearch from "../components/SiteSearch.astro";
 interface Props {
   title: string;
   description: string;
-  current?: "home" | "solutions" | "capabilities" | "whitepapers" | "blogs" | "docs" | "legal" | "privacy" | "terms";
+  current?: "home" | "solutions" | "capabilities" | "whitepapers" | "blogs" | "legal" | "privacy" | "terms";
   canonicalUrl?: string;
   socialImage?: string;
   socialImageAlt?: string;
@@ -57,7 +57,6 @@ const navItems = isHome
         { href: "/solutions/archive-trend/", label: "Archive + Trend" },
         { href: "/solutions/sovereign-delivery/", label: "Sovereign Delivery" },
       ] },
-      { href: "/docs/", label: "Docs", active: current === "docs" },
       { href: "/blogs/", label: "Blogs" },
       { href: "#waitlist", label: "Request access" },
     ]
@@ -71,7 +70,6 @@ const navItems = isHome
         { href: "/solutions/sovereign-delivery/", label: "Sovereign Delivery" },
       ] },
       { href: "/capabilities/", label: "Capabilities", active: current === "capabilities" },
-      { href: "/docs/", label: "Docs", active: current === "docs" },
       { href: "/blogs/", label: "Blogs", active: current === "blogs" },
     ];
 ---
@@ -184,7 +182,6 @@ const navItems = isHome
           <a href="/#overview">Overview</a>
           <a href="/solutions/">Solutions</a>
           <a href="/capabilities/">Capabilities</a>
-          <a href="/docs/">Docs</a>
           <a href="/blogs/">Blogs</a>
           <a href="/#waitlist">Request access</a>
         </div>
