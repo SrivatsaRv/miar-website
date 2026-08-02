@@ -1,0 +1,95 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+---
+
+<DocsLayout
+  slug="model-packages"
+  title="Governed Model Packages | MIAR Documentation"
+  description="The evidence, limits, checksums, evaluation, and rollback data that MIAR stores with every model release."
+>
+  <section id="not-weights">
+    <h2>A weights file is not a deployable model</h2>
+    <p>
+      A checkpoint can produce predictions, but it cannot explain what classes it learned, what
+      imagery it supports, which corpus produced it, how it performed on held-out sites, or whether
+      anyone approved it. MIAR therefore promotes an immutable evidence bundle, not an isolated
+      <code>best.pt</code> file.
+    </p>
+    <div class="docs-callout docs-callout-warning">
+      <span>Release rule</span>
+      <strong>No weights-only deployment. Missing evidence blocks promotion.</strong>
+    </div>
+  </section>
+
+  <section id="contents">
+    <h2>Minimum model package</h2>
+    <div class="docs-table-wrap">
+      <table class="docs-table">
+        <thead><tr><th>Component</th><th>Required evidence</th></tr></thead>
+        <tbody>
+          <tr><td>Weights</td><td>Immutable checkpoint plus cryptographic checksum</td></tr>
+          <tr><td>Architecture</td><td>Model family, task, configuration, training parameters, and framework versions</td></tr>
+          <tr><td>Input contract</td><td>Sensor/modality, GSD range, dimensions, bands, normalization, and preprocessing</td></tr>
+          <tr><td>Ontology</td><td>Category, type, family, and specific-class mapping with explicit unknown handling</td></tr>
+          <tr><td>Decision policy</td><td>Confidence, calibration, abstention, and unknown thresholds</td></tr>
+          <tr><td>Corpus identity</td><td>DVC revision, manifest checksum, split identity, and source lineage</td></tr>
+          <tr><td>Evaluation</td><td>Held-out metrics, per-class results, operating thresholds, and known failure modes</td></tr>
+          <tr><td>Build identity</td><td>Git commit, dependency lock, hardware context, seed, and runtime configuration</td></tr>
+          <tr><td>Governance</td><td>Review decision, approver, release state, package checksum, and rollback target</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="shape">
+    <h2>Current bundle shape</h2>
+    <p>The physical layout stays deliberately small and inspectable:</p>
+    <pre class="docs-code"><code>weights/best.pt
+evidence/training-run.json
+evidence/benchmark.json
+evidence/model-package.json
+evidence/results.csv
+bundle-manifest.json</code></pre>
+    <p>
+      <code>bundle-manifest.json</code> inventories every file and checksum. The evidence directory
+      describes how the artifact was created and evaluated. A consumer can verify package integrity
+      before loading the weights.
+    </p>
+  </section>
+
+  <section id="states">
+    <h2>Release states are operational controls</h2>
+    <div class="docs-state-grid">
+      <article><span>Experimental</span><p>Research output. Not eligible for operational inference.</p></article>
+      <article><span>Candidate</span><p>Complete package awaiting benchmark and policy gates.</p></article>
+      <article><span>Approved</span><p>Named release permitted for the specified runtime and input contract.</p></article>
+      <article><span>Blocked</span><p>Evidence, quality, security, or policy failure prevents promotion.</p></article>
+      <article><span>Superseded</span><p>Retained for audit and rollback, but no longer the preferred release.</p></article>
+    </div>
+    <p>
+      Approval is scoped. A model approved for high-resolution optical aircraft detection is not
+      automatically approved for SAR, lower-resolution scenes, a new sensor, or type-level
+      identification outside its tested classes.
+    </p>
+  </section>
+
+  <section id="interpretation">
+    <h2>What evaluators should be able to answer</h2>
+    <ul class="docs-checklist">
+      <li>Which exact data, code, and ontology produced this model?</li>
+      <li>Was the test set isolated by site, scene lineage, and time where required?</li>
+      <li>How does performance change by class, GSD, sensor, geography, and image quality?</li>
+      <li>When must the model abstain or return unknown?</li>
+      <li>Who approved the release, what is running now, and how is rollback performed?</li>
+    </ul>
+  </section>
+
+  <section id="references">
+    <h2>Continue reading</h2>
+    <ul class="docs-link-list">
+      <li><a href="/docs/systems-of-record/">Where package evidence and release state live</a></li>
+      <li><a href="/docs/contributor-workflow/">How contributors publish governed artifacts</a></li>
+      <li><a href="https://csrc.nist.gov/pubs/fips/180-4/upd1/final" rel="external">NIST Secure Hash Standard</a></li>
+    </ul>
+  </section>
+</DocsLayout>

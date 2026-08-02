@@ -5,6 +5,8 @@ const routes = [
   "/solutions/",
   "/solutions/archive-trend/",
   "/capabilities/",
+  "/docs/",
+  "/docs/model-packages/",
   "/blogs/",
   "/privacy/",
   "/terms/",
@@ -36,6 +38,8 @@ async function shellMetrics(page: Page) {
 }
 
 test("principal routes fit supported screen sizes", async ({ page }) => {
+  test.setTimeout(90_000);
+
   for (const viewport of viewports) {
     await page.setViewportSize(viewport);
 
@@ -59,6 +63,19 @@ test("principal routes fit supported screen sizes", async ({ page }) => {
       }
     }
   }
+});
+
+test("documentation exposes the ML custody chain and linked guides", async ({ page }) => {
+  await page.goto("/docs/");
+
+  await expect(page.getByRole("heading", { name: "Engineering the evidence behind imagery AI." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Dataset versioning" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Model packages" })).toBeVisible();
+
+  await page.goto("/docs/systems-of-record/");
+  await expect(page.getByRole("heading", { name: "One question, one authoritative answer" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "MLflow" })).toBeVisible();
+  await expect(page.getByText("MLflow says what happened. MIAR decides what may run.")).toBeVisible();
 });
 
 test("header anchors remain aligned between routes", async ({ page }) => {

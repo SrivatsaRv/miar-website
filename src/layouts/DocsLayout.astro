@@ -1,0 +1,92 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { docsPath, docsSections, type DocsSlug } from "../data/docs";
+
+interface Props {
+  slug: DocsSlug;
+  title: string;
+  description: string;
+}
+
+const { slug, title, description } = Astro.props;
+const currentIndex = docsSections.findIndex((section) => section.slug === slug);
+const currentSection = docsSections[currentIndex];
+const previous = currentIndex > 0 ? docsSections[currentIndex - 1] : undefined;
+const next = currentIndex < docsSections.length - 1 ? docsSections[currentIndex + 1] : undefined;
+---
+
+<BaseLayout title={title} description={description} current="docs">
+  <main class="subpage-shell docs-shell">
+    <nav class="docs-breadcrumbs" aria-label="Breadcrumb">
+      <a href="/docs/">Documentation</a>
+      <span aria-hidden="true">/</span>
+      <span>{currentSection.shortTitle}</span>
+    </nav>
+
+    <div class="docs-layout">
+      <aside class="docs-sidebar" data-pagefind-ignore>
+        <p>Engineering guide</p>
+        <nav aria-label="Documentation sections">
+          {
+            docsSections.map((section) => (
+              <a
+                href={docsPath(section.slug)}
+                class:list={{ "is-active": section.slug === slug }}
+                aria-current={section.slug === slug ? "page" : undefined}
+              >
+                <span>{section.number}</span>
+                {section.shortTitle}
+              </a>
+            ))
+          }
+        </nav>
+        <div class="docs-sidebar-note">
+          <span>Product context</span>
+          <a href="/capabilities/">MIAR capability spine</a>
+          <a href="/solutions/sovereign-delivery/">Sovereign delivery</a>
+        </div>
+      </aside>
+
+      <article class="docs-article">
+        <header class="docs-article-header">
+          <p class="eyebrow">{currentSection.eyebrow}</p>
+          <h1>{currentSection.title}</h1>
+          <p class="lead">{currentSection.summary}</p>
+        </header>
+
+        <div class="docs-article-body">
+          <slot />
+        </div>
+
+        <nav class="docs-pagination" aria-label="Documentation pagination">
+          {
+            previous ? (
+              <a href={docsPath(previous.slug)} rel="prev">
+                <span>Previous</span>
+                <strong>{previous.shortTitle}</strong>
+              </a>
+            ) : (
+              <a href="/docs/" rel="prev">
+                <span>Previous</span>
+                <strong>Documentation</strong>
+              </a>
+            )
+          }
+          {
+            next ? (
+              <a href={docsPath(next.slug)} rel="next">
+                <span>Next</span>
+                <strong>{next.shortTitle}</strong>
+              </a>
+            ) : (
+              <a href="/capabilities/" rel="next">
+                <span>Next</span>
+                <strong>MIAR capabilities</strong>
+              </a>
+            )
+          }
+        </nav>
+      </article>
+    </div>
+  </main>
+</BaseLayout>
