@@ -1,0 +1,79 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { docsPath, docsSections } from "../../data/docs";
+
+const custodyFlow = [
+  { label: "Git", detail: "Code, configuration, and DVC pointers" },
+  { label: "DVC + R2", detail: "Versioned corpus identity and binary custody" },
+  { label: "MLflow", detail: "Parameters, metrics, and experiment evidence" },
+  { label: "MIAR registry", detail: "Approval, deployment, and rollback state" },
+];
+---
+
+<BaseLayout
+  title="MIAR Engineering Documentation"
+  description="Engineering guidance for MIAR dataset versioning, model packages, MLOps systems of record, and contributor workflows."
+  current="docs"
+>
+  <main class="subpage-shell docs-index-shell">
+    <section class="docs-index-hero">
+      <div>
+        <p class="eyebrow">Documentation</p>
+        <h1>Engineering the evidence behind imagery AI.</h1>
+      </div>
+      <div>
+        <p class="lead">
+          MIAR must reproduce not only a prediction, but the corpus, code, ontology, model,
+          evaluation, and approval state behind it. These guides define that chain of custody.
+        </p>
+        <a class="text-link" href="/capabilities/">
+          See what the evidence enables <span aria-hidden="true">-&gt;</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="docs-custody" aria-labelledby="custody-title">
+      <div class="docs-section-heading">
+        <p class="eyebrow eyebrow-compact">One chain of custody</p>
+        <h2 id="custody-title">Different tools. One reproducible release.</h2>
+      </div>
+      <ol class="docs-flow">
+        {
+          custodyFlow.map((step, index) => (
+            <li>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{step.label}</strong>
+              <p>{step.detail}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="docs-index-grid" aria-label="Documentation guides">
+      {
+        docsSections.map((section) => (
+          <a class="docs-index-card" href={docsPath(section.slug)}>
+            <span>{section.number} / {section.eyebrow}</span>
+            <h2>{section.shortTitle}</h2>
+            <p>{section.summary}</p>
+            <strong>Open guide <span aria-hidden="true">-&gt;</span></strong>
+          </a>
+        ))
+      }
+    </section>
+
+    <section class="docs-index-close">
+      <p class="eyebrow">Operating principle</p>
+      <h2>Weights can be copied. Trust has to be reconstructed.</h2>
+      <p>
+        A MIAR release is useful only when an evaluator can identify its training data,
+        reproduce its benchmark, verify its package, understand its limits, and roll it back.
+      </p>
+      <div class="mini-links">
+        <a href="/docs/model-packages/">Inspect the package contract</a>
+        <a href="/solutions/sovereign-delivery/">Review sovereign delivery</a>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

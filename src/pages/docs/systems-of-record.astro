@@ -1,0 +1,83 @@
+---
+import DocsLayout from "../../layouts/DocsLayout.astro";
+---
+
+<DocsLayout
+  slug="systems-of-record"
+  title="ML Systems of Record | MIAR Documentation"
+  description="How Git, DVC, Cloudflare R2, MLflow, MIAR's model registry, and runtime state divide MLOps responsibilities."
+>
+  <section id="principle">
+    <h2>One question, one authoritative answer</h2>
+    <p>
+      MIAR does not ask one tool to solve every MLOps problem. Each system owns a bounded record,
+      while stable identifiers connect the corpus, run, package, approval, deployment, and resulting
+      detections.
+    </p>
+  </section>
+
+  <section id="records">
+    <h2>Authoritative systems</h2>
+    <div class="docs-table-wrap">
+      <table class="docs-table">
+        <thead><tr><th>Question</th><th>System of record</th><th>Authoritative object</th></tr></thead>
+        <tbody>
+          <tr><td>What code and data pointer defined the build?</td><td>Git</td><td>Commit and reviewed configuration</td></tr>
+          <tr><td>Which exact corpus was used?</td><td>DVC</td><td>Content-addressed corpus revision</td></tr>
+          <tr><td>Where are large binaries stored?</td><td>Cloudflare R2</td><td>Object checksum and immutable object key</td></tr>
+          <tr><td>What happened during training and evaluation?</td><td>MLflow</td><td>Experiment run, parameters, metrics, and artifacts</td></tr>
+          <tr><td>Is the model approved and deployable?</td><td>MIAR model registry</td><td>Package version, policy result, approval, and rollback state</td></tr>
+          <tr><td>What is serving predictions now?</td><td>MIAR runtime</td><td>Loaded package checksum and health state</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="flow">
+    <h2>Release flow</h2>
+    <ol class="docs-steps">
+      <li><span>01</span><div><strong>Resolve</strong><p>Git and DVC reconstruct the intended code, configuration, labels, and corpus.</p></div></li>
+      <li><span>02</span><div><strong>Observe</strong><p>MLflow records the run identity, parameters, metrics, benchmark evidence, and produced artifacts.</p></div></li>
+      <li><span>03</span><div><strong>Package</strong><p>The release job assembles weights and evidence into a checksummed, immutable bundle in R2.</p></div></li>
+      <li><span>04</span><div><strong>Promote</strong><p>The MIAR registry evaluates policy gates and records approval, rejection, or supersession.</p></div></li>
+      <li><span>05</span><div><strong>Serve</strong><p>The runtime loads an approved checksum and attaches package identity to every inference result.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="mlflow">
+    <h2>What MLflow is, and what it is not</h2>
+    <p>
+      <a href="https://mlflow.org/docs/latest/ml/tracking/" rel="external">MLflow Tracking</a>
+      makes experiments inspectable. It records parameters, metrics, tags, and artifacts for a run,
+      which lets engineers compare training attempts and explain a benchmark result.
+    </p>
+    <p>
+      MLflow is not MIAR's approval authority and is not the durable home for the governed training
+      corpus. A run can exist in MLflow without being safe to deploy. Promotion happens only after
+      the package and policy contract pass in the MIAR registry.
+    </p>
+    <div class="docs-callout">
+      <span>Operational boundary</span>
+      <strong>MLflow says what happened. MIAR decides what may run.</strong>
+    </div>
+  </section>
+
+  <section id="storage">
+    <h2>Why datasets and model releases use separate R2 prefixes</h2>
+    <p>
+      DVC stores dataset objects by content identity and manages their transfer. Released model
+      bundles use named, immutable package paths so operators can inspect, verify, promote, and
+      roll back a human-readable release without navigating DVC's cache layout. Both remain in
+      object storage, but their lifecycle contracts are different.
+    </p>
+  </section>
+
+  <section id="references">
+    <h2>Official references</h2>
+    <ul class="docs-link-list">
+      <li><a href="https://mlflow.org/docs/latest/ml/tracking/" rel="external">MLflow Tracking documentation</a></li>
+      <li><a href="https://doc.dvc.org/user-guide/data-management/remote-storage" rel="external">DVC remote storage guide</a></li>
+      <li><a href="https://developers.cloudflare.com/r2/" rel="external">Cloudflare R2 documentation</a></li>
+    </ul>
+  </section>
+</DocsLayout>
