@@ -55,6 +55,51 @@
   --section-y: clamp(80px, 11vw, 152px);
   --radius: 2px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  --header-bg: rgba(244, 243, 239, 0.88);
+  --placeholder: #92969a;
+  --body-ink: #24292d;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --paper: #0e1214;
+  --paper-raised: #151b1e;
+  --paper-sunk: #1c2327;
+  --ink: #ecebe6;
+  --ink-2: #b7bab8;
+  --ink-3: #868c8f;
+  --rule: #273034;
+  --rule-strong: #3b464b;
+  --night: #080b0d;
+  --night-2: #10161a;
+  --night-3: #182024;
+  --signal-ink: #ff8552;
+  --header-bg: rgba(14, 18, 20, 0.86);
+  --placeholder: #6d7477;
+  --body-ink: #cfd1ce;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1214;
+    --paper-raised: #151b1e;
+    --paper-sunk: #1c2327;
+    --ink: #ecebe6;
+    --ink-2: #b7bab8;
+    --ink-3: #868c8f;
+    --rule: #273034;
+    --rule-strong: #3b464b;
+    --night: #080b0d;
+    --night-2: #10161a;
+    --night-3: #182024;
+    --signal-ink: #ff8552;
+    --header-bg: rgba(14, 18, 20, 0.86);
+    --placeholder: #6d7477;
+    --body-ink: #cfd1ce;
+    color-scheme: dark;
+  }
 }
 
 /* ---------- Reset ---------- */
@@ -366,7 +411,7 @@ h3 {
   top: 0;
   z-index: 50;
   height: var(--header-h);
-  background: rgba(244, 243, 239, 0.86);
+  background: var(--header-bg);
   backdrop-filter: saturate(1.4) blur(14px);
   -webkit-backdrop-filter: saturate(1.4) blur(14px);
   border-bottom: 1px solid var(--rule);
@@ -385,7 +430,7 @@ h3 {
 
 .site-header-home.is-scrolled,
 .site-header-home:has(.is-nav-open) {
-  background: rgba(244, 243, 239, 0.9);
+  background: var(--header-bg);
   border-bottom-color: var(--rule);
   color: var(--ink);
   backdrop-filter: saturate(1.4) blur(14px);
@@ -1024,8 +1069,8 @@ h3 {
     linear-gradient(90deg, rgba(242, 241, 236, 0.045) 1px, transparent 1px);
   background-size: 48px 48px;
   background-position: center top;
-  mask-image: radial-gradient(ellipse 70% 80% at 72% 45%, #000 20%, transparent 78%);
-  -webkit-mask-image: radial-gradient(ellipse 70% 80% at 72% 45%, #000 20%, transparent 78%);
+  mask-image: radial-gradient(ellipse 60% 70% at var(--mx, 72%) var(--my, 45%), #000 16%, transparent 72%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 70% at var(--mx, 72%) var(--my, 45%), #000 16%, transparent 72%);
 }
 
 .hero-grid-bg::after {
@@ -2473,7 +2518,7 @@ h3 {
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #9a9ea2;
+  color: var(--placeholder);
 }
 
 .field input:hover,
@@ -2487,7 +2532,7 @@ h3 {
 .field select:focus {
   outline: none;
   border-color: var(--ink);
-  background: #fff;
+  background: var(--paper-raised);
   box-shadow: 0 0 0 3px rgba(14, 17, 19, 0.08);
 }
 
@@ -2523,7 +2568,7 @@ h3 {
 
 .select-wrap select:invalid,
 .select-wrap select.is-placeholder {
-  color: #85898d;
+  color: var(--placeholder);
 }
 
 .chips {
@@ -4171,7 +4216,7 @@ h3 {
   margin-inline: auto;
   font-size: 18.5px;
   line-height: 1.72;
-  color: #24292d;
+  color: var(--body-ink);
 }
 
 .article-body > * + * {
@@ -5104,5 +5149,194 @@ h3 {
     border-right: 0;
     border-bottom: 1px solid var(--night-rule);
     font-size: 12px;
+  }
+}
+
+
+/* ---------- Theme toggle ---------- */
+
+.theme-toggle {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: var(--radius);
+  background: transparent;
+  opacity: 0.86;
+}
+
+.theme-toggle:hover {
+  opacity: 1;
+  border-color: color-mix(in srgb, currentColor 50%, transparent);
+}
+
+.theme-toggle svg {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  transition: opacity 0.25s var(--ease), transform 0.35s var(--ease);
+}
+
+.theme-toggle .icon-moon {
+  opacity: 0;
+  transform: rotate(-40deg) scale(0.7);
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-sun {
+  opacity: 0;
+  transform: rotate(40deg) scale(0.7);
+}
+
+:root[data-theme="dark"] .theme-toggle .icon-moon {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .icon-sun {
+    opacity: 0;
+    transform: rotate(40deg) scale(0.7);
+  }
+
+  :root:not([data-theme="light"]) .theme-toggle .icon-moon {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Plates keep their edge against a dark page. */
+:root[data-theme="dark"] .plate,
+:root[data-theme="dark"] .compare {
+  border-color: var(--rule-strong);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .plate,
+  :root:not([data-theme="light"]) .compare {
+    border-color: var(--rule-strong);
+  }
+}
+
+
+/* ---------- Reactive reveals (option 2) ---------- */
+
+.section {
+  position: relative;
+}
+
+.js .section .section-head,
+.js .section .matrix-intro,
+.js .section .record-layout > *,
+.js .section .problem-grid,
+.js .section .detectors,
+.js .section .users,
+.js .section .cases,
+.js .section .pillars,
+.js .section .sovereign {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.8s var(--ease), transform 0.9s var(--ease);
+}
+
+.js .section.is-in .section-head,
+.js .section.is-in .matrix-intro,
+.js .section.is-in .record-layout > *,
+.js .section.is-in .problem-grid,
+.js .section.is-in .detectors,
+.js .section.is-in .users,
+.js .section.is-in .cases,
+.js .section.is-in .pillars,
+.js .section.is-in .sovereign {
+  opacity: 1;
+  transform: none;
+}
+
+.js .section.is-in .problem-grid,
+.js .section.is-in .detectors,
+.js .section.is-in .users,
+.js .section.is-in .cases,
+.js .section.is-in .pillars,
+.js .section.is-in .record-layout > :last-child {
+  transition-delay: 0.15s;
+}
+
+.js .section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: -1px;
+  height: 1px;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, var(--signal) 50%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.js .section.is-in::after {
+  animation: section-sweep 1.6s var(--ease) forwards;
+}
+
+@keyframes section-sweep {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  70% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+.js .contract.is-animated .c-line {
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+  transition-delay: calc(0.35s + var(--i) * 110ms);
+}
+
+.js .section.is-in .contract.is-animated .c-line {
+  opacity: 1;
+}
+
+.js .section .contract-effects div {
+  opacity: 0;
+  transform: translateX(12px);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+
+.js .section.is-in .contract-effects div {
+  opacity: 1;
+  transform: none;
+}
+
+.js .section.is-in .contract-effects div:nth-child(1) { transition-delay: 1.5s; }
+.js .section.is-in .contract-effects div:nth-child(2) { transition-delay: 1.7s; }
+.js .section.is-in .contract-effects div:nth-child(3) { transition-delay: 1.9s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .section .section-head,
+  .js .section .matrix-intro,
+  .js .section .record-layout > *,
+  .js .section .problem-grid,
+  .js .section .detectors,
+  .js .section .users,
+  .js .section .cases,
+  .js .section .pillars,
+  .js .section .sovereign,
+  .js .contract.is-animated .c-line,
+  .js .section .contract-effects div {
+    opacity: 1;
+    transform: none;
   }
 }

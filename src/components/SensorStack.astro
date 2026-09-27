@@ -274,13 +274,13 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
       const [, bottom] = project(c.pos[0], c.pos[1], layerY.fused);
       return (
         <g class="ss-probe" data-probe={c.id} aria-hidden="true">
-          <line class="ss-beam" x1={bx} y1={top} x2={bx} y2={bottom} />
+          <line class="ss-beam" x1={bx} y1={top} x2={bx} y2={bottom} data-y1={top} data-y2={bottom} />
           {sensorIds.map((id) => {
             const [x, y] = project(c.pos[0], c.pos[1], layerY[id]);
             const reading = c.readings[id];
             const label = `${reading.ok ? "✓" : "✕"} ${reading.short}`;
             return (
-              <g class:list={["ss-reading", reading.ok ? "is-ok" : "is-no"]} data-reading={id}>
+              <g class:list={["ss-reading", reading.ok ? "is-ok" : "is-no"]} data-reading={id} data-shift={id}>
                 <path class="ss-hit" d={`M${x} ${y - 9}L${x + 15} ${y}L${x} ${y + 9}L${x - 15} ${y}Z`} />
                 <g transform={`translate(${x + 22} ${y - 13})`}>
                   <rect width={tagWidth(label)} height="24" />
@@ -289,12 +289,12 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
               </g>
             );
           })}
-          <g class="ss-finding" transform={`translate(${bx} ${bottom})`}>
+          <g class="ss-shift" data-shift="fused"><g class="ss-finding" transform={`translate(${bx} ${bottom})`}>
             <circle class="ss-ping" r="16" />
             <path d="M0 18V52H24" fill="none" />
             <rect x="24" y="38" width={tagWidth(c.tag) + 4} height="28" />
             <text x="36" y="57">{c.tag}</text>
-          </g>
+          </g></g>
         </g>
       );
     })}
@@ -303,19 +303,19 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     {candidates.map((c) =>
       (["eo", "fused"] as const).map((id) => {
         const [x, y] = project(c.pos[0], c.pos[1], layerY[id]);
-        return <circle class="ss-target" data-select={c.id} cx={x} cy={y} r="18" />;
+        return <circle class="ss-target ss-shift" data-shift={id} data-select={c.id} cx={x} cy={y} r="18" />;
       })
     )}
 
     {layerTags.map((layer) => {
       const [x, y] = project(400, 0, layerY[layer.id]);
       return (
-        <g class="ss-tag" data-tag={layer.id} data-peel={layer.id} transform={`translate(${x + 14} ${y - 6})`}>
+        <g class="ss-shift" data-shift={layer.id}><g class="ss-tag" data-tag={layer.id} data-peel={layer.id} transform={`translate(${x + 14} ${y - 6})`}>
           <rect x="-14" y="-14" width="130" height="44" fill="transparent" />
           <line x1="-12" y1="6" x2="0" y2="6" />
           <text x="4" y="4" class="ss-tag-code">{layer.code}</text>
           <text x="4" y="21" class="ss-tag-name">{layer.name}</text>
-        </g>
+        </g></g>
       );
     })}
   </svg>
@@ -375,8 +375,37 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     overflow: visible;
   }
 
-  .ss-layer {
+  .ss-layer,
+  .ss-shift,
+  .ss-reading {
+    transform: translateY(calc(var(--lift, 0px) + var(--spread, 0) * var(--k, 0) * 1px));
     transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+  }
+
+  [data-layer="eo"],
+  [data-shift="eo"] {
+    --k: -46;
+  }
+
+  [data-layer="sar"],
+  [data-shift="sar"] {
+    --k: -15;
+  }
+
+  [data-layer="hsi"],
+  [data-shift="hsi"] {
+    --k: 15;
+  }
+
+  [data-layer="fused"],
+  [data-shift="fused"] {
+    --k: 46;
+  }
+
+  .sensor-stack.is-spreading .ss-layer,
+  .sensor-stack.is-spreading .ss-shift,
+  .sensor-stack.is-spreading .ss-reading {
+    transition: opacity 0.45s var(--ease);
   }
 
   .ss-edge {
@@ -398,7 +427,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   [data-active="sar"] [data-layer="sar"],
   [data-active="hsi"] [data-layer="hsi"],
   [data-active="fused"] [data-layer="fused"] {
-    transform: translateY(-8px);
+    --lift: -8px;
   }
 
   [data-active="eo"] [data-layer="eo"] .ss-edge,
@@ -907,7 +936,28 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
       });
     });
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const beams = [...root.querySelectorAll<SVGLineElement>(".ss-beam")];
+    const hero = root.closest<HTMLElement>(".hero");
+    if (hero && !reducedMotion) {
+      // Explode the stack as the reader scrolls out of the hero.
+      let settle = 0;
+      const spread = () => {
+        const progress = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.55)));
+        root.style.setProperty("--spread", progress.toFixed(3));
+        root.classList.add("is-spreading");
+        window.clearTimeout(settle);
+        settle = window.setTimeout(() => root.classList.remove("is-spreading"), 120);
+        beams.forEach((beam) => {
+          beam.setAttribute("y1", String(Number(beam.dataset.y1) - 46 * progress));
+          beam.setAttribute("y2", String(Number(beam.dataset.y2) + 46 * progress));
+        });
+      };
+      window.addEventListener("scroll", () => requestAnimationFrame(spread), { passive: true });
+      spread();
+    }
+
+    if (reducedMotion) return;
 
     // Idle tour through the candidates until the visitor takes over.
     let step = 0;

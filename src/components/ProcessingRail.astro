@@ -1,0 +1,271 @@
+---
+// Fixed "scene packet" that follows the reader down the page. Sections declare
+// data-stage (0–4) and data-status; the rail reflects whichever section is in view.
+const stages = ["Receive", "Register", "Exploit", "Qualify", "Publish"];
+---
+
+<nav class="rail" data-rail aria-label="Scene processing progress" hidden>
+  <div class="rail-packet">
+    <span class="rail-thumb" aria-hidden="true"><i></i></span>
+    <div class="rail-text">
+      <strong>SCN-0642Z · EO · Site 014</strong>
+      <span data-rail-status aria-live="polite">Received from provider</span>
+    </div>
+  </div>
+  <ol class="rail-stages">
+    {stages.map((stage, index) => (
+      <li><button type="button" data-rail-stage={index}><i aria-hidden="true"></i><span>{stage}</span></button></li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .rail {
+    position: fixed;
+    left: 50%;
+    bottom: 16px;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    width: min(820px, calc(100% - 24px));
+    padding: 8px 10px 8px 8px;
+    transform: translate(-50%, 0);
+    background: rgba(11, 14, 16, 0.9);
+    color: #f2f1ec;
+    border: 1px solid rgba(242, 241, 236, 0.16);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+  }
+
+  .rail[data-hidden="true"] {
+    opacity: 0;
+    transform: translate(-50%, 24px);
+    pointer-events: none;
+  }
+
+  .rail-packet {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    flex: 0 1 280px;
+  }
+
+  .rail-thumb {
+    position: relative;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background:
+      linear-gradient(135deg, rgba(242, 241, 236, 0.12) 25%, transparent 25%) 0 0 / 8px 8px,
+      #1a2226;
+    border: 1px solid rgba(242, 241, 236, 0.2);
+    overflow: hidden;
+  }
+
+  .rail-thumb i {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid #e4571e;
+  }
+
+  .rail-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 6px;
+    background: rgba(242, 241, 236, 0.35);
+    animation: rail-scan 2.4s linear infinite;
+  }
+
+  @keyframes rail-scan {
+    from {
+      transform: translateX(-8px);
+    }
+    to {
+      transform: translateX(40px);
+    }
+  }
+
+  .rail-text {
+    display: grid;
+    min-width: 0;
+  }
+
+  .rail-text strong {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: rgba(242, 241, 236, 0.6);
+    white-space: nowrap;
+  }
+
+  .rail-text span {
+    font-size: 13.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rail-stages {
+    position: relative;
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .rail-stages::before,
+  .rail-stages::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    top: 8px;
+    height: 1px;
+    background: rgba(242, 241, 236, 0.2);
+    width: 80%;
+  }
+
+  .rail-stages::after {
+    background: #e4571e;
+    width: calc(80% * var(--progress, 0));
+    transition: width 0.5s var(--ease);
+  }
+
+  .rail-stages button {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: rgba(242, 241, 236, 0.5);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.3s var(--ease);
+  }
+
+  .rail-stages i {
+    width: 11px;
+    height: 11px;
+    margin-top: 3px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(242, 241, 236, 0.4);
+    background: #0b0e10;
+    transition: background 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+
+  .rail-stages button.is-done {
+    color: rgba(242, 241, 236, 0.75);
+  }
+
+  .rail-stages button.is-done i {
+    background: #e4571e;
+    border-color: #e4571e;
+  }
+
+  .rail-stages button.is-current {
+    color: #f2f1ec;
+  }
+
+  .rail-stages button.is-current i {
+    transform: scale(1.35);
+    box-shadow: 0 0 0 4px rgba(228, 87, 30, 0.25);
+  }
+
+  .rail-stages button:hover {
+    color: #f2f1ec;
+  }
+
+  @media (max-width: 720px) {
+    .rail {
+      bottom: 10px;
+      gap: 10px;
+    }
+
+    .rail-packet {
+      flex: 1 1 auto;
+    }
+
+    .rail-text strong {
+      display: none;
+    }
+
+    .rail-stages {
+      flex: 0 0 132px;
+    }
+
+    .rail-stages span {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rail-thumb::after {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const rail = document.querySelector<HTMLElement>("[data-rail]");
+  const sections = [...document.querySelectorAll<HTMLElement>("[data-stage]")];
+  const status = rail?.querySelector<HTMLElement>("[data-rail-status]");
+  const stageButtons = [...(rail?.querySelectorAll<HTMLButtonElement>("[data-rail-stage]") ?? [])];
+  const stagesList = rail?.querySelector<HTMLElement>(".rail-stages");
+  const stopAt = document.getElementById("waitlist");
+
+  if (rail && sections.length) {
+    rail.hidden = false;
+    rail.dataset.hidden = "true";
+
+    const render = () => {
+      const probe = window.innerHeight * 0.45;
+      const firstTop = sections[0].getBoundingClientRect().top;
+      const stopTop = stopAt?.getBoundingClientRect().top ?? Infinity;
+      const visible = firstTop < window.innerHeight * 0.7 && stopTop > window.innerHeight * 0.75;
+      rail.dataset.hidden = String(!visible);
+      if (!visible) return;
+
+      let current = sections[0];
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= probe) current = section;
+      }
+      const stage = Number(current.dataset.stage ?? 0);
+      if (status && status.textContent !== current.dataset.status) status.textContent = current.dataset.status ?? "";
+      stageButtons.forEach((button, index) => {
+        button.classList.toggle("is-done", index < stage);
+        button.classList.toggle("is-current", index === stage);
+        button.setAttribute("aria-current", index === stage ? "step" : "false");
+      });
+      stagesList?.style.setProperty("--progress", String(stage / (stageButtons.length - 1)));
+    };
+
+    stageButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const target = sections.find((section) => Number(section.dataset.stage) === Number(button.dataset.railStage));
+        target?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+
+    let frame = 0;
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(render);
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    render();
+  }
+</script>

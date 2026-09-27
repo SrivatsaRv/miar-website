@@ -329,3 +329,35 @@ test("article imagery exposes visible captions and structured descriptions", asy
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
 });
+
+test("theme toggle switches and remembers light and dark", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/");
+  const html = page.locator("html");
+  await page.locator("[data-theme-toggle]").click();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  const background = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  expect(background).toBe("rgb(14, 18, 20)");
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await page.locator("[data-theme-toggle]").click();
+  await expect(html).toHaveAttribute("data-theme", "light");
+});
+
+test("fragmentation widget resolves into MIAR and the rail follows the page", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const frag = page.locator("[data-frag]");
+  await frag.getByRole("button", { name: "Through MIAR" }).click();
+  await expect(frag).toHaveAttribute("data-step", "3");
+  await expect(frag.locator("[data-frag-stat]").first()).toHaveText("1");
+  await frag.getByRole("button", { name: "Fragmented today" }).click();
+  await expect(frag).toHaveAttribute("data-step", "1");
+  await expect(frag.locator("[data-frag-stat]").first()).toHaveText("9");
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.locator("#overview").scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollBy(0, 200));
+  await expect(page.locator("[data-rail]")).toHaveAttribute("data-hidden", "false");
+});

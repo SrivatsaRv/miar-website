@@ -1,0 +1,705 @@
+---
+// Scroll-driven explainer: a fragmented post-reception tool chain collapses into MIAR,
+// which publishes one intelligence contract downstream. Steps: 0 sources, 1 fragmented,
+// 2 collapse into MIAR, 3 contract delivered. Illustrative figures.
+
+type Box = { id: string; x: number; y: number; w: number; h: number; title: string; sub: string };
+
+const sources: Box[] = [
+  { id: "s1", title: "Commercial EO", sub: "Portal A · GeoTIFF" },
+  { id: "s2", title: "Commercial SAR", sub: "Portal B · SICD / GRD" },
+  { id: "s3", title: "Hyperspectral", sub: "Portal C · ENVI cube" },
+  { id: "s4", title: "National collection", sub: "Ground station · NITF" },
+  { id: "s5", title: "Public missions", sub: "Sentinel · Landsat · SAFE" },
+].map((s, i) => ({ ...s, x: 0, y: 20 + i * 108, w: 220, h: 70 }));
+
+const tools: Box[] = [
+  { id: "t1", x: 320, y: 40, title: "Object storage", sub: "Provider A bucket" },
+  { id: "t2", x: 320, y: 250, title: "SFTP drop", sub: "Ground station" },
+  { id: "t3", x: 320, y: 440, title: "Cloud bucket", sub: "Provider C" },
+  { id: "t4", x: 530, y: 110, title: "GIS desktop", sub: "Manual co-registration" },
+  { id: "t5", x: 530, y: 250, title: "SAR processor", sub: "Separate licence" },
+  { id: "t6", x: 530, y: 390, title: "Spectral toolkit", sub: "Cube analysis" },
+  { id: "t7", x: 740, y: 30, title: "Training notebook", sub: "Detector team copy" },
+  { id: "t8", x: 740, y: 250, title: "Spreadsheet", sub: "Hand counts" },
+  { id: "t9", x: 740, y: 460, title: "Slides and email", sub: "Dissemination" },
+].map((t) => ({ ...t, w: 170, h: 50 }));
+
+const consumers: Box[] = [
+  { id: "c1", title: "Operational picture", sub: "ORBAT system, e.g. SHIELD" },
+  { id: "c2", title: "GIS feature services", sub: "OGC API · WFS" },
+  { id: "c3", title: "Briefings", sub: "Command and partners" },
+  { id: "c4", title: "Collection management", sub: "Next tasking" },
+].map((c, i) => ({ ...c, x: 980, y: 40 + i * 130, w: 220, h: 70 }));
+
+const all = [...sources, ...tools, ...consumers];
+const byId = Object.fromEntries(all.map((b) => [b.id, b]));
+const right = (b: Box) => [b.x + b.w, b.y + b.h / 2];
+const left = (b: Box) => [b.x, b.y + b.h / 2];
+const curve = ([x1, y1]: number[], [x2, y2]: number[]) => {
+  const dx = (x2 - x1) / 2;
+  return `M${x1} ${y1}C${x1 + dx} ${y1} ${x2 - dx} ${y2} ${x2} ${y2}`;
+};
+
+const fragmented = [
+  ["s1", "t1"], ["s1", "t4"], ["s2", "t2"], ["s2", "t5"], ["s3", "t3"], ["s3", "t6"], ["s4", "t2"], ["s5", "t1"],
+  ["t1", "t4"], ["t1", "t7"], ["t2", "t5"], ["t3", "t6"], ["t4", "t8"], ["t5", "t8"], ["t6", "t8"],
+  ["t8", "t9"], ["t4", "c2"], ["t9", "c3"], ["t9", "c1"],
+].map(([a, b], i) => ({ d: curve(right(byId[a]), left(byId[b])), i }));
+
+const core = { x: 470, y: 118, w: 290, h: 324 };
+const coreCenter = [core.x + core.w / 2, core.y + core.h / 2];
+const contract = { x: 790, y: 250, w: 160, h: 60 };
+
+const intoCore = sources.map((s, i) => curve(right(s), [core.x, core.y + 70 + i * 46]));
+const coreOut = curve([core.x + core.w, contract.y + contract.h / 2], [contract.x, contract.y + contract.h / 2]);
+const toConsumers = consumers.map((c) => curve([contract.x + contract.w, contract.y + contract.h / 2], left(c)));
+
+const stages = [
+  ["Register", "Orthorectify · co-register"],
+  ["Exploit", "Detect · compare · correlate"],
+  ["Qualify", "Analyst decision"],
+  ["Publish", "Intelligence contract"],
+];
+---
+
+<div class="frag" data-frag data-step="0">
+  <div class="frag-sticky">
+    <div class="frag-controls">
+      <div class="frag-modes" role="group" aria-label="Choose a view">
+        <button type="button" data-frag-go="1" aria-pressed="false">Fragmented today</button>
+        <button type="button" data-frag-go="3" aria-pressed="false">Through MIAR</button>
+      </div>
+      <p class="frag-caption" data-frag-caption aria-live="polite">Five collection sources, each with its own portal, delivery path and format.</p>
+    </div>
+
+    <div class="frag-grid">
+      <div class="frag-figure">
+        <svg viewBox="0 0 1200 560" role="img" aria-labelledby="frag-title">
+          <title id="frag-title">
+            Today, imagery from five sources passes through nine separate tools before reaching briefings by hand,
+            and nothing feeds back to collection management. Through MIAR, all five sources feed one exploitation
+            layer that publishes one intelligence contract to the operational picture, GIS, briefings and collection
+            management.
+          </title>
+
+          <g class="frag-edges-frag">
+            {fragmented.map((edge) => (
+              <path class="ff-edge" d={edge.d} pathLength="1" style={`--i: ${edge.i}`} />
+            ))}
+          </g>
+
+          <g class="frag-edges-miar">
+            {intoCore.map((d, i) => (
+              <g>
+                <path class="ff-edge ff-edge-miar" d={d} pathLength="1" style={`--i: ${i}`} />
+                <path class="ff-flow" d={d} />
+              </g>
+            ))}
+          </g>
+
+          <g class="frag-edges-out">
+            <path class="ff-edge ff-edge-miar" d={coreOut} pathLength="1" style="--i: 0" />
+            {toConsumers.map((d, i) => (
+              <g>
+                <path class="ff-edge ff-edge-miar" d={d} pathLength="1" style={`--i: ${i + 1}`} />
+                <path class="ff-flow" d={d} />
+              </g>
+            ))}
+          </g>
+
+          {sources.map((b) => (
+            <g class="ff-node ff-source">
+              <rect x={b.x} y={b.y} width={b.w} height={b.h} />
+              <text class="ff-title" x={b.x + 16} y={b.y + 30}>{b.title}</text>
+              <text class="ff-sub" x={b.x + 16} y={b.y + 52}>{b.sub}</text>
+            </g>
+          ))}
+
+          {tools.map((t) => (
+            <g
+              class="ff-node ff-tool"
+              style={`--dx: ${coreCenter[0] - (t.x + t.w / 2)}px; --dy: ${coreCenter[1] - (t.y + t.h / 2)}px`}
+            >
+              <rect x={t.x} y={t.y} width={t.w} height={t.h} />
+              <text class="ff-title" x={t.x + 12} y={t.y + 21}>{t.title}</text>
+              <text class="ff-sub" x={t.x + 12} y={t.y + 39}>{t.sub}</text>
+            </g>
+          ))}
+
+          <g class="ff-core">
+            <rect class="ff-core-box" x={core.x} y={core.y} width={core.w} height={core.h} />
+            <text class="ff-core-title" x={core.x + 20} y={core.y + 38}>MIAR</text>
+            <text class="ff-core-kicker" x={core.x + core.w - 20} y={core.y + 36} text-anchor="end">POST-RECEPTION LAYER</text>
+            {stages.map(([title, sub], i) => (
+              <g transform={`translate(${core.x + 20} ${core.y + 62 + i * 58})`}>
+                <rect class="ff-stage" width={core.w - 40} height="48" />
+                <text class="ff-stage-num" x="12" y="29">0{i + 1}</text>
+                <text class="ff-stage-title" x="44" y="22">{title}</text>
+                <text class="ff-stage-sub" x="44" y="38">{sub}</text>
+              </g>
+            ))}
+          </g>
+
+          <g class="ff-contract">
+            <rect x={contract.x} y={contract.y} width={contract.w} height={contract.h} />
+            <text class="ff-contract-k" x={contract.x + 14} y={contract.y + 24}>INTELLIGENCE</text>
+            <text class="ff-contract-k" x={contract.x + 14} y={contract.y + 42}>CONTRACT</text>
+          </g>
+
+          {consumers.map((b) => (
+            <g class="ff-node ff-consumer" data-consumer={b.id}>
+              <rect x={b.x} y={b.y} width={b.w} height={b.h} />
+              <text class="ff-title" x={b.x + 16} y={b.y + 30}>{b.title}</text>
+              <text class="ff-sub" x={b.x + 16} y={b.y + 52}>{b.sub}</text>
+            </g>
+          ))}
+
+          <g class="ff-gap" transform={`translate(${consumers[3].x - 40} ${consumers[3].y + 35})`}>
+            <circle r="15" />
+            <text y="6" text-anchor="middle">?</text>
+          </g>
+        </svg>
+      </div>
+
+      <aside class="frag-side">
+        <dl class="frag-stats">
+          <div><dt>Separate tools</dt><dd data-frag-stat data-a="9" data-b="1">9</dd></div>
+          <div><dt>Manual handoffs</dt><dd data-frag-stat data-a="19" data-b="0">19</dd></div>
+          <div><dt>Formats to handle</dt><dd data-frag-stat data-a="7" data-b="1">7</dd></div>
+          <div><dt>Context kept</dt><dd data-frag-stat data-a="None" data-b="Site record">None</dd></div>
+        </dl>
+
+        <div class="frag-cue">
+          <span class="label">Next collection · Site 014 · cloud 80%</span>
+          <p class="frag-cue-a">Check four provider portals, three catalogues and a weather feed, then decide where to task by hand.</p>
+          <ol class="frag-cue-b">
+            <li><span>Archived licensed scene</span><strong>EO, 2 days old</strong><em>Baseline</em></li>
+            <li class="is-pick"><span>Fresh tasking</span><strong>SAR tonight, cloud-independent</strong><em>Task</em></li>
+            <li><span>Public cueing lane</span><strong>Sentinel-1 wide-area check</strong><em>Cue</em></li>
+          </ol>
+        </div>
+      </aside>
+    </div>
+    <p class="frag-note">Illustrative tool chain. Figures show a typical multi-provider workflow, not a specific customer.</p>
+  </div>
+</div>
+
+<style>
+  .frag {
+    --frag-bg: var(--night);
+    position: relative;
+    height: 280vh;
+  }
+
+  .frag-sticky {
+    position: sticky;
+    top: calc(var(--header-h) + 16px);
+    display: grid;
+    gap: 14px;
+  }
+
+  .frag-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .frag-modes {
+    display: inline-flex;
+    border: 1px solid var(--ink);
+  }
+
+  .frag-modes button {
+    min-height: 40px;
+    padding: 0 16px;
+    border: 0;
+    background: transparent;
+    font-size: 14px;
+    color: var(--ink-2);
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  }
+
+  .frag-modes button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .frag-caption {
+    flex: 1;
+    min-width: 240px;
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+
+  .frag-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    border: 1px solid var(--ink);
+    background: var(--frag-bg);
+    color: var(--on-night);
+  }
+
+  .frag-figure {
+    padding: 20px;
+    border-right: 1px solid var(--night-rule);
+  }
+
+  .frag-figure svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: calc(100svh - 260px);
+  }
+
+  /* Nodes */
+  .ff-node rect {
+    fill: var(--night-2);
+    stroke: var(--night-rule);
+    transition: stroke 0.4s var(--ease), fill 0.4s var(--ease);
+  }
+
+  .ff-title {
+    fill: var(--on-night);
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .ff-sub {
+    fill: var(--on-night-3);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+
+  .ff-tool {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.9s var(--ease), opacity 0.6s var(--ease);
+    opacity: 0.35;
+  }
+
+  .ff-tool rect {
+    stroke-dasharray: 4 3;
+  }
+
+  [data-step="1"] .ff-tool {
+    opacity: 1;
+  }
+
+  [data-step="1"] .ff-tool rect {
+    stroke: rgba(228, 87, 30, 0.55);
+  }
+
+  [data-step="2"] .ff-tool,
+  [data-step="3"] .ff-tool {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(0.2);
+  }
+
+  /* Edges */
+  .ff-edge {
+    fill: none;
+    stroke: rgba(228, 87, 30, 0.7);
+    stroke-width: 1.3;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.8s var(--ease), opacity 0.5s var(--ease);
+    transition-delay: calc(var(--i) * 35ms);
+  }
+
+  .ff-edge-miar {
+    stroke: var(--on-night-2);
+    stroke-width: 1.5;
+  }
+
+  [data-step="1"] .frag-edges-frag .ff-edge {
+    stroke-dashoffset: 0;
+  }
+
+  [data-step="2"] .frag-edges-frag .ff-edge,
+  [data-step="3"] .frag-edges-frag .ff-edge {
+    opacity: 0;
+  }
+
+  [data-step="2"] .frag-edges-miar .ff-edge,
+  [data-step="3"] .frag-edges-miar .ff-edge,
+  [data-step="3"] .frag-edges-out .ff-edge {
+    stroke-dashoffset: 0;
+    transition-delay: calc(0.35s + var(--i) * 60ms);
+  }
+
+  .ff-flow {
+    fill: none;
+    stroke: #e4571e;
+    stroke-width: 2;
+    stroke-dasharray: 3 12;
+    opacity: 0;
+    transition: opacity 0.4s var(--ease) 0.9s;
+    animation: ff-flow 1.4s linear infinite;
+  }
+
+  [data-step="2"] .frag-edges-miar .ff-flow,
+  [data-step="3"] .frag-edges-miar .ff-flow,
+  [data-step="3"] .frag-edges-out .ff-flow {
+    opacity: 1;
+  }
+
+  @keyframes ff-flow {
+    to {
+      stroke-dashoffset: -30;
+    }
+  }
+
+  /* Core */
+  .ff-core {
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0.85);
+    transition: opacity 0.6s var(--ease) 0.25s, transform 0.8s var(--ease) 0.25s;
+  }
+
+  [data-step="2"] .ff-core,
+  [data-step="3"] .ff-core {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ff-core-box {
+    fill: #f2f1ec;
+  }
+
+  .ff-core-title {
+    fill: #0b0e10;
+    font-family: var(--sans);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .ff-core-kicker {
+    fill: #b8400f;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+  }
+
+  .ff-stage {
+    fill: #e7e5de;
+    stroke: rgba(11, 14, 16, 0.12);
+  }
+
+  .ff-stage-num {
+    fill: #b8400f;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .ff-stage-title {
+    fill: #0b0e10;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+
+  .ff-stage-sub {
+    fill: #5d6368;
+    font-family: var(--mono);
+    font-size: 10.5px;
+  }
+
+  .ff-contract {
+    opacity: 0;
+    transition: opacity 0.5s var(--ease) 0.4s;
+  }
+
+  [data-step="3"] .ff-contract {
+    opacity: 1;
+  }
+
+  .ff-contract rect {
+    fill: #e4571e;
+  }
+
+  .ff-contract-k {
+    fill: #fff;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  [data-step="3"] .ff-consumer rect {
+    stroke: #f2f1ec;
+  }
+
+  .ff-gap {
+    opacity: 0;
+    transition: opacity 0.4s var(--ease);
+  }
+
+  [data-step="1"] .ff-gap {
+    opacity: 1;
+  }
+
+  .ff-gap circle {
+    fill: none;
+    stroke: #e4571e;
+    stroke-dasharray: 3 3;
+  }
+
+  .ff-gap text {
+    fill: #e4571e;
+    font-family: var(--mono);
+    font-size: 16px;
+  }
+
+  /* Side panel */
+  .frag-side {
+    display: grid;
+    align-content: start;
+  }
+
+  .frag-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--night-rule);
+  }
+
+  .frag-stats div {
+    display: grid;
+    gap: 4px;
+    padding: 16px 18px;
+  }
+
+  .frag-stats div:nth-child(odd) {
+    border-right: 1px solid var(--night-rule);
+  }
+
+  .frag-stats div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--night-rule);
+  }
+
+  .frag-stats dt {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--on-night-3);
+  }
+
+  .frag-stats dd {
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    color: #ff8a5c;
+    transition: color 0.4s var(--ease);
+  }
+
+  [data-step="2"] .frag-stats dd,
+  [data-step="3"] .frag-stats dd {
+    color: #5fd3b0;
+  }
+
+  .frag-stats div:last-child dd {
+    font-size: 17px;
+    padding-top: 6px;
+  }
+
+  .frag-cue {
+    display: grid;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .frag-cue .label {
+    color: var(--on-night-3);
+  }
+
+  .frag-cue-a {
+    font-size: 14.5px;
+    color: var(--on-night-2);
+  }
+
+  .frag-cue-b {
+    display: none;
+    gap: 6px;
+  }
+
+  [data-step="2"] .frag-cue-a,
+  [data-step="3"] .frag-cue-a {
+    display: none;
+  }
+
+  [data-step="2"] .frag-cue-b,
+  [data-step="3"] .frag-cue-b {
+    display: grid;
+  }
+
+  .frag-cue-b li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--night-rule);
+    font-size: 13.5px;
+  }
+
+  .frag-cue-b span {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--on-night-3);
+  }
+
+  .frag-cue-b strong {
+    grid-column: 1;
+    font-weight: 500;
+    color: var(--on-night);
+  }
+
+  .frag-cue-b em {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--on-night-2);
+  }
+
+  .frag-cue-b .is-pick {
+    border-color: #e4571e;
+  }
+
+  .frag-cue-b .is-pick em {
+    color: #e4571e;
+  }
+
+  .frag-note {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 1080px) {
+    .frag {
+      height: auto;
+    }
+
+    .frag-sticky {
+      position: static;
+    }
+
+    .frag-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .frag-figure {
+      border-right: 0;
+      border-bottom: 1px solid var(--night-rule);
+      overflow-x: auto;
+    }
+
+    .frag-figure svg {
+      min-width: 820px;
+      max-height: none;
+    }
+
+    .frag-side {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .frag-stats {
+      border-bottom: 0;
+      border-right: 1px solid var(--night-rule);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .frag-side {
+      grid-template-columns: 1fr;
+    }
+
+    .frag-stats {
+      border-right: 0;
+      border-bottom: 1px solid var(--night-rule);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ff-flow {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-frag]").forEach((root) => {
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-frag-go]")];
+    const caption = root.querySelector<HTMLElement>("[data-frag-caption]");
+    const stats = [...root.querySelectorAll<HTMLElement>("[data-frag-stat]")];
+    const captions = [
+      "Five collection sources, each with its own portal, delivery path and format.",
+      "Today: nine separate tools and nineteen manual handoffs. Nothing feeds back to collection management.",
+      "Through MIAR: every source lands in one exploitation layer with a persistent site record.",
+      "One intelligence contract reaches every downstream system, including the next collection cue.",
+    ];
+    let step = -1;
+
+    const setStep = (next: number) => {
+      if (next === step) return;
+      step = next;
+      root.dataset.step = String(next);
+      if (caption) caption.textContent = captions[next];
+      buttons.forEach((b) => b.setAttribute("aria-pressed", String((next >= 2 ? "3" : "1") === b.dataset.fragGo && next > 0)));
+      stats.forEach((node) => {
+        node.textContent = (next >= 2 ? node.dataset.b : node.dataset.a) ?? "";
+      });
+    };
+
+    const scrollDriven = () => window.matchMedia("(min-width: 1081px)").matches;
+
+    const onScroll = () => {
+      if (!scrollDriven()) return;
+      const rect = root.getBoundingClientRect();
+      const span = rect.height - window.innerHeight;
+      const p = Math.min(1, Math.max(0, -rect.top / Math.max(1, span)));
+      setStep(p < 0.1 ? 0 : p < 0.42 ? 1 : p < 0.66 ? 2 : 3);
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const target = Number(button.dataset.fragGo);
+        if (!scrollDriven()) {
+          setStep(target);
+          return;
+        }
+        const rect = root.getBoundingClientRect();
+        const span = rect.height - window.innerHeight;
+        const p = target === 1 ? 0.26 : 0.86;
+        window.scrollTo({ top: window.scrollY + rect.top + span * p, behavior: "smooth" });
+      });
+    });
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    setStep(scrollDriven() ? 0 : 1);
+    onScroll();
+
+    if (!scrollDriven() && "IntersectionObserver" in window) {
+      // On small screens, play the story once when the figure comes into view.
+      const observer = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        window.setTimeout(() => setStep(2), 2600);
+        window.setTimeout(() => setStep(3), 4200);
+      }, { threshold: 0.5 });
+      observer.observe(root);
+    }
+  });
+</script>

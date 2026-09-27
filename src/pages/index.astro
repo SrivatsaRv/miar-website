@@ -8,6 +8,8 @@ import SensorMatrix from "../components/SensorMatrix.astro";
 import EvidenceRecord from "../components/EvidenceRecord.astro";
 import IntelligenceContract from "../components/IntelligenceContract.astro";
 import RequestForm from "../components/RequestForm.astro";
+import FragmentationFlow from "../components/FragmentationFlow.astro";
+import ProcessingRail from "../components/ProcessingRail.astro";
 import { solutions } from "../data/solutions";
 
 const latest = (await getCollection("blog"))
@@ -79,7 +81,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section" id="overview">
+    <section class="section" id="overview" data-stage="0" data-status="Received from provider portal">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">01</span> The operational gap</span>
@@ -109,7 +111,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="1" data-status="Co-registered to last usable scene">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">02</span> Where MIAR sits</span>
@@ -123,40 +125,12 @@ const users = [
             </p>
           </div>
         </div>
-        <div class="position">
-          <div class="position-col">
-            <span class="label">Upstream · you keep</span>
-            <ul>
-              <li>Provider tasking and ordering portals</li>
-              <li>Ground segment and reception</li>
-              <li>Archive and licensed catalogues</li>
-              <li>Basemaps, ORBAT and identity</li>
-            </ul>
-          </div>
-          <div class="position-core">
-            <span class="label">MIAR</span>
-            <ol>
-              <li><strong>Register</strong>Orthorectify and co-register to the site baseline</li>
-              <li><strong>Exploit</strong>Detect, classify, compare, correlate</li>
-              <li><strong>Qualify</strong>Analyst accepts, rejects or annotates</li>
-              <li><strong>Publish</strong>Governed intelligence contract</li>
-            </ol>
-          </div>
-          <div class="position-col">
-            <span class="label">Downstream · you gain</span>
-            <ul>
-              <li>ORBAT and operational picture systems</li>
-              <li>GIS and feature services</li>
-              <li>Briefing and reporting</li>
-              <li>Collection management and cueing</li>
-            </ul>
-          </div>
-        </div>
+        <FragmentationFlow />
         <p class="formats"><span>Imagery</span> GeoTIFF / COG · NITF · JPEG 2000 · STAC <span>Basemaps</span> ArcGIS · WMS / WMTS · XYZ <span>Layers</span> GeoJSON · KML · GeoPackage · OGC API</p>
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="2" data-status="6 aircraft · 3 in new positions">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">03</span> Same site, one year apart</span>
@@ -174,7 +148,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section" id="how-it-works">
+    <section class="section" id="how-it-works" data-stage="2" data-status="Change correlated with installation and ORBAT">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">04</span> How it works</span>
@@ -194,7 +168,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="2" data-status="Classified · fighter, transport, rotary">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">05</span> Detection models</span>
@@ -233,7 +207,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="2" data-status="Corroborated with SAR pass 02:10Z">
       <div class="wrap matrix-layout">
         <div class="matrix-intro">
           <span class="label"><span class="label-index">06</span> Every sensor, one record</span>
@@ -250,7 +224,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="3" data-status="Qualified by analyst 07">
       <div class="wrap record-layout">
         <EvidenceRecord />
         <div class="section-head-body">
@@ -267,7 +241,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="4" data-status="Published · contract F-0152">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">08</span> The output</span>
@@ -280,11 +254,11 @@ const users = [
             </p>
           </div>
         </div>
-        <IntelligenceContract />
+        <IntelligenceContract animated />
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="4" data-status="Delivered to the operational picture">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">09</span> Who it's for</span>
@@ -304,7 +278,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" data-stage="4" data-status="Delivered to the operational picture">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">10</span> Use cases</span>
@@ -325,7 +299,7 @@ const users = [
       </div>
     </section>
 
-    <section class="section on-night">
+    <section class="section on-night" data-stage="4" data-status="Exported locally · network disconnected">
       <div class="wrap">
         <div class="section-head">
           <span class="label"><span class="label-index">11</span> Sovereign operation</span>
@@ -416,4 +390,5 @@ const users = [
       </div>
     </section>
   </main>
+  <ProcessingRail />
 </BaseLayout>
