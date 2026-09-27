@@ -2175,13 +2175,7 @@ h3 {
   letter-spacing: -0.01em;
 }
 
-.case-q::before {
-  content: "“";
-}
 
-.case-q::after {
-  content: "”";
-}
 
 .case-arrow {
   justify-self: end;
@@ -3167,15 +3161,7 @@ h3 {
   max-width: 900px;
 }
 
-.solution-thesis blockquote::before {
-  content: "“";
-  color: var(--signal);
-}
 
-.solution-thesis blockquote::after {
-  content: "”";
-  color: var(--signal);
-}
 
 @media (max-width: 860px) {
   .solution-thesis {
@@ -5633,4 +5619,15 @@ body:has(.field-hero.is-flow) .site-header-home:not(.is-scrolled) {
   border-bottom-color: var(--night-rule);
   backdrop-filter: saturate(1.4) blur(14px);
   -webkit-backdrop-filter: saturate(1.4) blur(14px);
+}
+
+
+/* Solution pages: a worked example in place of a pull quote. */
+.solution-example {
+  max-width: 820px;
+  font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+  line-height: 1.55;
+  color: var(--ink);
+  padding-left: 20px;
+  border-left: 2px solid var(--signal);
 }
