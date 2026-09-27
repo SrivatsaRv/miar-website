@@ -2,6 +2,8 @@ export type Solution = {
   slug: string;
   number: string;
   eyebrow: string;
+  name: string;
+  question: string;
   title: string;
   summary: string;
   thesis: string;
@@ -20,6 +22,8 @@ export const solutions: Solution[] = [
     slug: "tactical-isr",
     number: "01",
     eyebrow: "Tactical ISR",
+    name: "Tactical ISR",
+    question: "What is at the site right now?",
     title: "See what is happening at a monitored site now.",
     summary:
       "Review the latest imagery of an airfield, base, port, route, or launch area against what was there before.",
@@ -30,7 +34,7 @@ export const solutions: Solution[] = [
       "An image may show aircraft, vehicles, equipment, or construction. It does not say which activity is new, whether it is routine, or what deserves attention. That judgement requires comparison and review.",
     approachTitle: "Review the latest pass against a known baseline.",
     approach: [
-      "Place current and earlier scenes of the same AOI in one review sequence.",
+      "Place current and earlier images of the same site in one review sequence.",
       "Surface visible objects and scene differences for analyst confirmation.",
       "Keep the source image, comparison, confidence, and review decision together.",
     ],
@@ -48,7 +52,9 @@ export const solutions: Solution[] = [
   {
     slug: "military-asset-monitoring",
     number: "02",
-    eyebrow: "Military Asset Monitoring",
+    eyebrow: "Asset Monitoring",
+    name: "Asset monitoring",
+    question: "How many, of what, and exactly where?",
     title: "Maintain a current picture of assets at high-value sites.",
     summary:
       "Count and locate visible aircraft, vessels, vehicles, and equipment across repeated coverage of the same site.",
@@ -77,7 +83,9 @@ export const solutions: Solution[] = [
   {
     slug: "change-posture",
     number: "03",
-    eyebrow: "Change + Posture",
+    eyebrow: "Change and Posture",
+    name: "Change and posture",
+    question: "Is this routine movement, or something new?",
     title: "Separate routine movement from a change in posture.",
     summary:
       "Compare two scenes, identify the objects involved, and review whether the difference matters.",
@@ -106,8 +114,10 @@ export const solutions: Solution[] = [
   {
     slug: "archive-trend",
     number: "04",
-    eyebrow: "Archive + Trend",
-    title: "Follow activity at the same AOI over time.",
+    eyebrow: "Archive and Trends",
+    name: "Archive and trends",
+    question: "Is activity building up or winding down?",
+    title: "Follow activity at the same site over time.",
     summary:
       "Use earlier scenes and reviewed detections to see how a site changes across days, weeks, or longer periods.",
     thesis:
@@ -117,12 +127,12 @@ export const solutions: Solution[] = [
       "Reviewing each delivery in isolation makes it difficult to spot buildup, dispersal, recurring activity, or a change in the mix of assets at a site.",
     approachTitle: "Use the same classes and questions across each review.",
     approach: [
-      "Select and align historical scenes for the AOI.",
+      "Select and align historical images of the site.",
       "Record confirmed detections using a consistent class structure.",
       "Plot presence by type while keeping every data point linked to its source scene.",
     ],
     outputs: [
-      "Scene history for the AOI",
+      "Image history for the site",
       "Asset presence by type",
       "Buildup and dispersal observations",
       "Before-and-after comparisons",
@@ -136,6 +146,8 @@ export const solutions: Solution[] = [
     slug: "sovereign-delivery",
     number: "05",
     eyebrow: "Sovereign Delivery",
+    name: "Sovereign delivery",
+    question: "Can we run this inside our own boundary?",
     title: "Keep mission data and reviewed outputs under customer control.",
     summary:
       "Support controlled deployment and delivery where the customer retains authority over imagery, review, models, and approved findings.",

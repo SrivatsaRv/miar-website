@@ -1,0 +1,62 @@
+---
+const sources = ["Commercial optical", "Commercial SAR", "Hyperspectral", "National collection"];
+const outputs = [
+  { title: "Analyst briefs", text: "PDF and slide-ready" },
+  { title: "Mission systems", text: "API and data feeds" },
+  { title: "Collection planning", text: "Next-look requests" },
+];
+const rowY = (i: number, n: number, top: number, h: number) => top + (h / n) * (i + 0.5);
+---
+
+<div class="plate solution-evidence solution-evidence-delivery">
+  <div class="plate-head"><span>Deployment · <strong>Inside your boundary</strong></span><span>Provider-neutral</span></div>
+  <div class="delivery-figure">
+    <svg class="delivery-desktop" viewBox="0 0 1000 340" role="img" aria-label="Imagery from four kinds of provider flows into MIAR inside the customer's boundary, where it is detected, compared and reviewed, then delivered to briefs, mission systems and collection planning with evidence attached.">
+      <text x="0" y="16" class="df-mono">IMAGERY SOURCES</text>
+      {sources.map((source, i) => {
+        const cy = rowY(i, sources.length, 36, 290);
+        return (
+          <g>
+            <rect class="df-box" x="0" y={cy - 26} width="220" height="52" />
+            <text class="df-title" x="18" y={cy + 5}>{source}</text>
+            <path class="df-line" d={`M220 ${cy}C300 ${cy} 300 181 372 181`} />
+            <path class="df-flow" d={`M220 ${cy}C300 ${cy} 300 181 372 181`} />
+          </g>
+        );
+      })}
+
+      <rect class="df-boundary" x="352" y="28" width="330" height="306" />
+      <text x="368" y="52" class="df-mono-signal">YOUR BOUNDARY · ON-PREMISE OR SOVEREIGN</text>
+      <rect class="df-core" x="372" y="82" width="290" height="160" />
+      <text class="df-core-title" x="392" y="118">MIAR</text>
+      <text class="df-core-text" x="392" y="150">Detect · Compare · Review</text>
+      <text class="df-core-text" x="392" y="174">Analyst approves every finding</text>
+      <path d="M392 204h250" stroke="#0b0e10" stroke-opacity="0.2" />
+      <text class="df-core-text" x="392" y="228" style="font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em">NOTHING LEAVES WITHOUT APPROVAL</text>
+      <rect class="df-box" x="372" y="262" width="290" height="52" />
+      <text class="df-title" x="392" y="293">Evidence record and audit log</text>
+      <path class="df-line" d="M517 242V262" />
+
+      <text x="780" y="16" class="df-mono">APPROVED OUTPUT</text>
+      {outputs.map((output, i) => {
+        const cy = rowY(i, outputs.length, 36, 290);
+        return (
+          <g>
+            <path class="df-line" d={`M662 162C720 162 720 ${cy} 780 ${cy}`} />
+            <path class="df-flow" d={`M662 162C720 162 720 ${cy} 780 ${cy}`} />
+            <rect class="df-box" x="780" y={cy - 34} width="220" height="68" />
+            <text class="df-title" x="798" y={cy - 4}>{output.title}</text>
+            <text class="df-text" x="798" y={cy + 18}>{output.text}</text>
+          </g>
+        );
+      })}
+    </svg>
+
+    <ol class="delivery-mobile">
+      <li><span class="df-step">Imagery sources</span><strong>Multi-provider imagery</strong><p>{sources.join(", ")}</p></li>
+      <li class="is-core"><span class="df-step">Inside your boundary</span><strong>MIAR: detect, compare, review</strong><p>Imagery, models and analyst decisions stay in your environment.</p></li>
+      <li><span class="df-step">Approved output</span><strong>Approved operational output</strong><p>{outputs.map((o) => o.title).join(", ")}, with evidence attached.</p></li>
+    </ol>
+    <p class="sr-only">Multi-provider imagery in. Approved operational output out.</p>
+  </div>
+</div>

@@ -90,25 +90,27 @@ test("header anchors remain aligned between routes", async ({ page }) => {
   expect(Math.abs(home.navRight - internal.navRight)).toBeLessThanOrEqual(2);
 });
 
-test("homepage prefers compressed imagery without layout instability", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
+test("hero workbench lets a visitor review a candidate like an analyst", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
-  const hero = page.locator(".hero-scene");
-  await expect(hero).toBeVisible();
-  const image = await hero.evaluate((element) => {
-    const node = element as HTMLImageElement;
-    return {
-      currentSrc: node.currentSrc,
-      naturalWidth: node.naturalWidth,
-      naturalHeight: node.naturalHeight,
-    };
-  });
+  const stack = page.locator("[data-sensor-stack]");
+  await expect(stack).toBeVisible();
+  expect(await page.locator(".hero img").count(), "hero should be vector, not raster").toBe(0);
 
-  expect(image.currentSrc).toMatch(/annotated-airfield-scene\.(avif|webp)$/);
-  expect(image.naturalWidth).toBe(1755);
-  expect(image.naturalHeight).toBe(896);
-  await expect(page.locator(".hero-stage")).toHaveCSS("height", "672px");
+  await stack.getByRole("button", { name: "C-3", exact: true }).click();
+  await expect(stack).toHaveAttribute("data-cand-active", "C-3");
+  const panel = stack.locator('[data-panel="C-3"]');
+  await expect(panel).toBeVisible();
+  await expect(panel).toContainText("Likely decoy");
+  await expect(panel).toContainText("No metal return");
+
+  await panel.locator('[data-peel="sar"]').hover();
+  await expect(stack).toHaveAttribute("data-active", "sar");
+
+  await panel.getByRole("button", { name: "Accept", exact: true }).click();
+  await expect(panel.locator("[data-log]")).toContainText("Accepted");
+  await expect(panel.getByRole("button", { name: /Next: C-/ })).toBeVisible();
 });
 
 test("mobile navigation opens, closes, and resets across breakpoint changes", async ({ page }) => {
@@ -177,24 +179,23 @@ test("desktop form validates selections and handles a successful request", async
   await page.getByLabel("Work email").fill("analyst@example.org");
   await page.getByRole("button", { name: "Request access", exact: true }).last().click();
   await expect(page.locator("#form-status")).toContainText("Select a primary workflow");
+  await expect(page.locator('[data-error-for="interest"]')).toBeVisible();
 
-  const selects = page.locator("[data-custom-select]");
-  await selects.nth(0).locator("[data-custom-select-trigger]").click();
-  await selects.nth(0).getByRole("button", { name: "Tactical ISR", exact: true }).click();
-  await selects.nth(1).locator("[data-custom-select-trigger]").click();
-  await selects
-    .nth(1)
-    .getByRole("button", { name: "Aircraft presence by type", exact: true })
-    .click();
+  await page.locator("label.chip", { hasText: "Tactical ISR" }).click();
+  await page.locator('select[name="focus"]').selectOption("aircraft-presence-by-type");
+  await page.locator("label.chip", { hasText: "0–3 months" }).click();
 
   await page.getByRole("button", { name: "Request access", exact: true }).last().click();
   await expect(page.locator("#form-status")).toHaveText("Request recorded.");
   await expect(page.locator("#waitlist-form")).toHaveAttribute("aria-busy", "false");
+  await expect(page.locator('input[name="interest"]:checked')).toHaveCount(0);
 });
 
-test("mobile form uses native controls and keeps values synchronized", async ({ page }) => {
+test("mobile form submits the same fields as before", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  let body = "";
   await page.route("**/api/waitlist/", async (route) => {
+    body = route.request().postData() || "";
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -203,19 +204,19 @@ test("mobile form uses native controls and keeps values synchronized", async ({ 
   });
   await page.goto("/#waitlist");
 
-  const nativeSelects = page.locator(".mobile-select");
-  await expect(nativeSelects.nth(0)).toBeVisible();
-  await expect(page.locator("[data-custom-select]").nth(0)).toBeHidden();
-
-  await nativeSelects.nth(0).selectOption("tactical-isr");
-  await nativeSelects.nth(1).selectOption("aircraft-presence-by-type");
   await page.getByLabel("Work email").fill("analyst@example.org");
+  await page.locator("label.chip", { hasText: "Military asset monitoring" }).click();
+  await page.locator('select[name="focus"]').selectOption("before-after-compare");
 
-  await expect(page.locator('input[name="interest"]')).toHaveValue("tactical-isr");
-  await expect(page.locator('input[name="focus"]')).toHaveValue("aircraft-presence-by-type");
+  await expect(page.locator('input[name="interest"]:checked')).toHaveValue("military-asset-monitoring");
 
   await page.getByRole("button", { name: "Request access", exact: true }).last().click();
   await expect(page.locator("#form-status")).toHaveText("Request recorded.");
+  for (const field of ["email", "interest", "focus", "name", "organization", "role", "mission", "website"]) {
+    expect(body, `payload includes ${field}`).toContain(`name="${field}"`);
+  }
+  expect(body).toContain("military-asset-monitoring");
+  expect(body).toContain("before-after-compare");
 });
 
 test("blog filters, views, and thumbnails remain consistent", async ({ page }) => {
@@ -260,10 +261,14 @@ test("delivery workflow stays compact and content remains reachable", async ({ p
 
   const evidence = page.locator(".solution-evidence-delivery");
   await expect(evidence).toBeVisible();
-  expect((await evidence.boundingBox())?.height ?? Infinity).toBeLessThan(420);
+  expect((await evidence.boundingBox())?.height ?? Infinity).toBeLessThan(560);
+  await expect(evidence.getByText("Evidence record and audit log", { exact: true })).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
   await expect(evidence.getByText("Multi-provider imagery", { exact: true })).toBeVisible();
   await expect(evidence.getByText("Approved operational output", { exact: true })).toBeVisible();
 
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/capabilities/");
   await expect(
     page.getByRole("heading", {
@@ -273,15 +278,12 @@ test("delivery workflow stays compact and content remains reachable", async ({ p
   await expect(page.getByRole("link", { name: "Request access", exact: true }).last()).toBeVisible();
 });
 
-test("asset monitoring register stays compact and aligned", async ({ page }) => {
+test("asset monitoring register stays aligned", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/solutions/military-asset-monitoring/");
 
-  const evidence = page.locator(".solution-evidence-monitor");
   const cells = page.locator(".solution-monitor > div");
   await expect(cells).toHaveCount(4);
-  expect((await evidence.boundingBox())?.height ?? Infinity).toBeLessThan(410);
-
   const verticalCenters = await cells.evaluateAll((nodes) =>
     nodes.map((node) => {
       const rect = node.getBoundingClientRect();
@@ -291,8 +293,17 @@ test("asset monitoring register stays compact and aligned", async ({ page }) => 
   expect(Math.max(...verticalCenters) - Math.min(...verticalCenters)).toBeLessThanOrEqual(1);
 
   await page.setViewportSize({ width: 390, height: 844 });
-  expect((await evidence.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(470);
   await expect(page.getByText("Confirmation remains explicit", { exact: true })).toBeVisible();
+});
+
+test("compare slider responds to the keyboard", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/solutions/change-posture/");
+  const range = page.locator("[data-compare-range]");
+  await range.focus();
+  await range.fill("80");
+  const width = await page.locator("[data-clip-before]").getAttribute("width");
+  expect(Number(width)).toBeCloseTo(944, 0);
 });
 
 test("article imagery exposes visible captions and structured descriptions", async ({ page }) => {

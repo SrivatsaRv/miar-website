@@ -1,0 +1,51 @@
+---
+// Schematic site map (plan view) + register. Positions are in the 2026 apron layout.
+const apron = "M40 60H520V250H330V300H40Z";
+const assets = [
+  { x: 150, y: 160, cls: "transport" },
+  { x: 330, y: 120, cls: "patrol" },
+  { x: 380, y: 122, cls: "transport" },
+  { x: 505, y: 150, cls: "transport", moved: true },
+  { x: 320, y: 215, cls: "transport" },
+  { x: 230, y: 285, cls: "transport", moved: true },
+  { x: 330, y: 262, cls: "rotary", moved: true },
+];
+const color = { transport: "#1e6fc0", patrol: "#1a9c80", rotary: "#e4571e" } as const;
+---
+
+<div class="plate solution-evidence solution-evidence-monitor">
+  <div class="plate-head"><span>Asset register · <strong>Site 014</strong></span><span>Illustrative</span></div>
+  <div class="solution-monitor">
+    <div><span>Aircraft</span><strong>07</strong><p>Visible in current review</p></div>
+    <div><span>Transport</span><strong>05</strong><p>Large fixed-wing</p></div>
+    <div><span>Patrol</span><strong>01</strong><p>Maritime patrol type</p></div>
+    <div><span>Review</span><strong>Analyst</strong><p>Confirmation remains explicit</p></div>
+  </div>
+  <div class="asset-register">
+    <div class="asset-register-map">
+      <svg viewBox="0 0 560 340" role="img" aria-label="Plan of the apron showing where each aircraft is parked, with three in new positions">
+        <path d={apron} fill="rgba(242,241,236,0.04)" stroke="rgba(242,241,236,0.3)" stroke-dasharray="4 4" />
+        <path d="M220 300V340M280 300V340" stroke="rgba(242,241,236,0.2)" />
+        <text x="48" y="84" class="df-mono">APRON</text>
+        <text x="228" y="332" class="df-mono">TAXIWAY</text>
+        {assets.map((a) => (
+          <g>
+            {a.moved && <circle cx={a.x} cy={a.y} r="17" fill="none" stroke="#e4571e" stroke-width="1.5" stroke-dasharray="3 3" />}
+            <circle cx={a.x} cy={a.y} r="8" fill={color[a.cls]} stroke="#0b0e10" stroke-width="2" />
+          </g>
+        ))}
+      </svg>
+    </div>
+    <table class="register-table">
+      <thead>
+        <tr><th>Class</th><th>Count</th><th>vs baseline</th><th>Where</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="legend-dot" style="background:#1e6fc0"></span>Transport</td><td class="num">5</td><td>No change</td><td>2 moved stands</td></tr>
+        <tr><td><span class="legend-dot" style="background:#1a9c80"></span>Patrol</td><td class="num">1</td><td>No change</td><td>North row</td></tr>
+        <tr><td><span class="legend-dot" style="background:#e4571e"></span>Rotary</td><td class="num">1</td><td class="is-change">+1 new</td><td>South apron</td></tr>
+        <tr><td>Spacing</td><td class="num">—</td><td class="is-change">More dispersed</td><td>East hardstand used</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

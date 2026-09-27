@@ -1,332 +1,177 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import OptimizedPicture from "../../components/OptimizedPicture.astro";
+import ChangeCompare from "../../components/ChangeCompare.astro";
+import TacticalScene from "../../components/TacticalScene.astro";
 
-const valueChain = [
-  {
-    step: "01",
-    title: "Collect",
-    body: "Load current and archive scenes from the available providers.",
-  },
-  {
-    step: "02",
-    title: "Interpret",
-    body: "Run detection and comparison, then record the analyst decision.",
-  },
-  {
-    step: "03",
-    title: "Deliver",
-    body: "Send reviewed findings to the systems and teams that use them.",
-  },
-];
-
-const capabilities = [
-  {
-    key: "tactical",
-    eyebrow: "Tactical ISR",
-    title: "Review the latest pass against the site history.",
-    body:
-      "Open the current scene beside earlier coverage and check aircraft, vehicles, equipment, construction, and site activity.",
-    points: [
-      "Recurring AOI monitoring for current operational questions",
-      "Current-scene review with classed detections and analyst confirmation",
-      "Evidence-backed outputs that help teams move from scene receipt to decision support",
-    ],
-  },
-  {
-    key: "assets",
-    eyebrow: "Military Asset Monitoring",
-    title: "Count assets and preserve where they were found.",
-    body:
-      "Record visible assets by class while retaining their position, spacing, and distribution across the site.",
-    points: [
-      "Detection and tabulation of aircraft, vessels, vehicles, equipment, and other visible assets",
-      "Structured summaries that surface changes in deployment, density, and configuration",
-      "Analyst review loop for separating machine suggestion from approved output",
-    ],
-  },
-  {
-    key: "posture",
-    eyebrow: "Change + Posture",
-    title: "Show the difference, then record the analyst's judgement.",
-    body:
-      "Align two scenes, identify the objects involved, and separate routine movement from a difference that needs review.",
-    points: [
-      "Scene-to-scene compare for visible asset movement and structural change",
-      "Support for posture interpretation rather than simple binary change flags",
-      "Evidence trail that preserves source scene, model output, confidence, and analyst decision",
-    ],
-  },
-  {
-    key: "trend",
-    eyebrow: "Archive + Trend",
-    title: "Build a site history from repeated observations.",
-    body:
-      "Use consistent classes and review questions across each pass so counts and layout changes can be compared over time.",
-    points: [
-      "Historical scene access for longer-run comparison and pattern development",
-      "Trend views such as aircraft presence by type across the same AOI",
-      "Before-and-after analysis for activity surges, buildup, dispersal, and recovery",
-    ],
-  },
-  {
-    key: "delivery",
-    eyebrow: "Sovereign Delivery",
-    title: "Keep data, review, and delivery under customer control.",
-    body:
-      "Keep source imagery, analyst actions, model output, and approved findings inside the required deployment boundary.",
-    points: [
-      "Vendor-agnostic collection intake with MIAR-native intelligence extraction downstream",
-      "Secure delivery and integration posture for operational consumers",
-      "Deployment patterns aligned with sovereign, on-premise, or controlled environments where required",
-    ],
-  },
+const passes = [
+  { time: "06:42Z", provider: "Provider A", sensor: "EO", note: "Clear, 0.5 m", state: "Ready" },
+  { time: "02:10Z", provider: "Provider B", sensor: "SAR", note: "Night pass", state: "Ready" },
+  { time: "Yesterday", provider: "Provider C", sensor: "HSI", note: "Material map", state: "Ready" },
+  { time: "Yesterday", provider: "Provider A", sensor: "EO", note: "80% cloud", state: "Low value" },
+  { time: "2025", provider: "Archive", sensor: "EO", note: "Baseline", state: "Baseline" },
 ];
 ---
 
 <BaseLayout
-  title="MIAR Capabilities | Decision-Ready ISR"
-  description="Tactical ISR, military asset monitoring, change and posture detection, archive trend intelligence, and sovereign delivery through MIAR."
+  title="How it works | MIAR"
+  description="How MIAR takes imagery from any provider through detection, comparison and analyst review to an approved finding with its evidence attached."
   current="capabilities"
 >
-  <main class="subpage-shell capabilities-shell">
-    <section class="capabilities-hero-stage">
-      <div class="capabilities-hero-copy">
-        <p class="eyebrow">Capabilities</p>
-        <h1>One review process across every collection source.</h1>
-        <p class="lead">
-          Bring current and archive imagery into a common record. Run detections and comparisons,
-          record analyst decisions, and deliver approved findings without tying the workflow to
-          one provider.
-        </p>
-        <p class="capability-thesis-line">
-          Collection changes. Review standards do not.
-        </p>
-        <div class="mini-links">
-          <a href="/#waitlist">Request access</a>
-          <a href="/legal/">Legal notice</a>
-        </div>
-      </div>
-
-      <aside class="capabilities-hero-visual" aria-label="Representative MIAR intelligence view">
-        <div class="capability-register">
-          <div class="capability-register-head">
-            <span>Review register</span>
-            <strong>Monitored site / current assessment</strong>
+  <main class="subpage-shell">
+    <div class="wrap">
+      <section class="page-hero">
+        <span class="label"><span class="label-index">—</span> How it works</span>
+        <div class="page-hero-body">
+          <h1>From new image to approved finding, with nothing lost on the way.</h1>
+          <p class="lead">
+            MIAR brings every image of a site into one record, finds and compares what matters, and
+            puts each finding in front of an analyst with its evidence. Only approved findings leave.
+          </p>
+          <div class="page-hero-actions">
+            <a class="button button-primary" href="/#waitlist">Request access <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="button button-secondary" href="/solutions/">See use cases</a>
           </div>
-          <dl>
-            <div><dt>Current scene</dt><dd>03 Jul 2026</dd><span>Aligned</span></div>
-            <div><dt>Selected baseline</dt><dd>26 Jun 2026</dd><span>Loaded</span></div>
-            <div><dt>Visible aircraft</dt><dd>06 candidates</dd><span>Reviewed</span></div>
-            <div><dt>Layout difference</dt><dd>01 observation</dd><span>Open</span></div>
-          </dl>
-          <p>Source, model output, comparison, and analyst state remain attached to the same review.</p>
         </div>
-      </aside>
-    </section>
+      </section>
 
-    <section class="capability-spine">
-      <div class="capability-spine-head">
-        <p class="eyebrow eyebrow-compact">Capability Spine</p>
-        <h2>Collection in. Reviewed finding out.</h2>
-      </div>
-
-      <div class="capability-spine-track">
-        {
-          valueChain.map((item) => (
-            <article class="capability-spine-step">
-              <span>{item.step}</span>
-              <strong>{item.title}</strong>
-              <p>{item.body}</p>
-            </article>
-          ))
-        }
-      </div>
-    </section>
-
-    {
-      capabilities.map((capability, index) => (
-        <section class:list={["capability-band", index % 2 === 1 && "is-reversed"]}>
-          <div class="capability-copy">
-            <p class="eyebrow">{capability.eyebrow}</p>
-            <h2>{capability.title}</h2>
-            <p>{capability.body}</p>
-            <ul class="capability-points-list">
-              {capability.points.map((point) => <li>{point}</li>)}
+      <div class="stages">
+        <section class="stage">
+          <div class="stage-copy">
+            <span class="num">01 · Ingest</span>
+            <h2>Every image of the site, in one queue.</h2>
+            <p>New and archive imagery arrives from whichever providers you use. MIAR files each pass against the right site, so analysts start from a list, not a download folder.</p>
+            <ul class="check-list">
+              <li>Commercial and national sources side by side</li>
+              <li>Optical, radar, hyperspectral and thermal</li>
+              <li>Low-value passes, such as heavy cloud, flagged before anyone opens them</li>
             </ul>
           </div>
-
-          <div class={`capability-visual capability-visual-${capability.key}`}>
-            {capability.key === "tactical" && (
-              <div class="tactical-review-board">
-                <div>
-                  <span>Current pass</span>
-                  <strong>03 Jul / 07:42</strong>
-                </div>
-                <ol>
-                  <li><span>Aircraft</span><strong>6 visible</strong></li>
-                  <li><span>Baseline</span><strong>26 Jun selected</strong></li>
-                  <li><span>Review</span><strong>1 layout change open</strong></li>
-                </ol>
-                <p>Every observation remains linked to its scene and review state.</p>
-              </div>
-            )}
-
-            {capability.key === "assets" && (
-              <div class="monitor-board">
-                <div class="monitor-board-head">
-                  <span>Asset watch</span>
-                  <strong>Monitored airbase summary</strong>
-                </div>
-                <div class="monitor-board-grid">
-                  <article>
-                    <span>Aircraft</span>
-                    <strong>06</strong>
-                    <p>Visible aircraft in current review</p>
-                  </article>
-                  <article>
-                    <span>C-130</span>
-                    <strong>05</strong>
-                    <p>Transport aircraft detected</p>
-                  </article>
-                  <article>
-                    <span>P-3C</span>
-                    <strong>01</strong>
-                    <p>Maritime patrol aircraft detected</p>
-                  </article>
-                  <article>
-                    <span>Confidence</span>
-                    <strong>0.9137</strong>
-                    <p>Aggregate scene confidence</p>
-                  </article>
-                </div>
-                <div class="monitor-board-callout">
-                  <span>Review note</span>
-                  <strong>Counts alone are not the story. Placement and spacing matter too.</strong>
-                  <p>Analyst review separates machine suggestion from approved output.</p>
-                </div>
-              </div>
-            )}
-
-            {capability.key === "posture" && (
-              <div class="compare-board">
-                <div class="compare-board-head">
-                  <span>Compare</span>
-                  <strong>Reference 2025 vs follow-on 2026</strong>
-                </div>
-                <div class="compare-images">
-                  <figure>
-                    <OptimizedPicture name="monitored-site-reference-2025" alt="Monitored airbase archive view from 2025" width={1564} height={1136} />
-                    <figcaption>Prior scene</figcaption>
-                  </figure>
-                  <figure>
-                    <OptimizedPicture name="monitored-site-follow-on-2026" alt="Monitored airbase follow-on view from 2026" width={1546} height={1090} />
-                    <figcaption>Current scene</figcaption>
-                  </figure>
-                </div>
-                <div class="compare-panels">
-                  <article>
-                    <span>Prior</span>
-                    <strong>Five C-130s + one P-3C</strong>
-                    <p>Aircraft presence is steady, but the apron arrangement is different.</p>
-                  </article>
-                  <article>
-                    <span>Latest</span>
-                    <strong>Apron shift</strong>
-                    <p>MIAR preserves the same count while surfacing a changed spatial layout.</p>
-                  </article>
-                </div>
-                <div class="compare-deltas">
-                  <div>
-                    <span>Shift</span>
-                    <strong>Apron layout changed</strong>
-                  </div>
-                  <div>
-                    <span>Counts</span>
-                    <strong>No aircraft count delta</strong>
-                  </div>
-                  <div>
-                    <span>Compare confidence</span>
-                    <strong>0.9067 with provenance attached</strong>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {capability.key === "trend" && (
-              <div class="trend-board">
-                <div class="trend-board-head">
-                  <span>Trend intelligence</span>
-                  <strong>Repeat observations become an activity record</strong>
-                </div>
-                <div class="trend-bars" aria-hidden="true">
-                  <article>
-                    <span>2025</span>
-                    <div><i class="is-primary" style="height: 68%"></i><i style="height: 18%"></i><i class="is-accent" style="height: 14%"></i></div>
-                  </article>
-                  <article>
-                    <span>2026</span>
-                    <div><i class="is-primary" style="height: 68%"></i><i style="height: 18%"></i><i class="is-accent" style="height: 14%"></i></div>
-                  </article>
-                </div>
-                <div class="trend-legend">
-                  <span><i></i> C-130 presence</span>
-                  <span><i class="is-secondary"></i> P-3C presence</span>
-                  <span><i class="is-accent"></i> Layout-change marker</span>
-                </div>
-                <p class="trend-caption">
-                  Plot presence by type and preserve scene-to-scene change context instead of
-                  treating every image as an isolated event.
-                </p>
-              </div>
-            )}
-
-            {capability.key === "delivery" && (
-              <div class="delivery-board">
-                <div class="delivery-board-head">
-                  <span>Delivery posture</span>
-                  <strong>Secure downstream handoff with MIAR as the interpretation layer</strong>
-                </div>
-                <div class="delivery-lane" aria-hidden="true">
-                  <article>
-                    <span>Collection intake</span>
-                    <strong>Multi-provider scenes</strong>
-                  </article>
-                  <div class="delivery-arrow"></div>
-                  <article>
-                    <span>MIAR layer</span>
-                    <strong>Detection, compare, review</strong>
-                  </article>
-                  <div class="delivery-arrow"></div>
-                  <article>
-                    <span>Operational consumer</span>
-                    <strong>Secure brief, API, and controlled delivery</strong>
-                  </article>
-                </div>
-                <div class="delivery-flags">
-                  <span>On-premise options</span>
-                  <span>Controlled review</span>
-                  <span>Provenance attached</span>
-                  <span>National authority retained</span>
-                </div>
-              </div>
-            )}
+          <div class="stage-visual plate plate-light">
+            <div class="plate-head"><span>Incoming passes · <strong>Site 014</strong></span><span>Illustrative</span></div>
+            <table class="register-table pass-table">
+              <thead><tr><th>Received</th><th>Source</th><th>Sensor</th><th>Note</th><th>Status</th></tr></thead>
+              <tbody>
+                {passes.map((pass) => (
+                  <tr>
+                    <td class="num">{pass.time}</td>
+                    <td>{pass.provider}</td>
+                    <td><span class="sensor-chip">{pass.sensor}</span></td>
+                    <td>{pass.note}</td>
+                    <td class:list={[pass.state === "Low value" && "is-change"]}>{pass.state}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
-      ))
-    }
 
-    <section class="capability-close">
-      <p class="eyebrow eyebrow-compact">Request Access</p>
-      <h2>Review recurring military sites with the source evidence attached.</h2>
-      <p>
-        Talk to us if your team reviews repeat imagery of airfields, bases, ports, launch
-        areas, or operating zones and needs detections, comparisons, and analyst decisions
-        kept in one record.
-      </p>
-      <p>
-        <a class="button button-primary" href="/#waitlist">Request access</a>
-      </p>
-    </section>
+        <section class="stage">
+          <div class="stage-copy">
+            <span class="num">02 · Detect</span>
+            <h2>Find what is on the ground, with a confidence you can see.</h2>
+            <p>Aircraft, vessels, vehicles, equipment and structures are detected and classed. Every detection carries its confidence score. None is hidden, and none is rounded up.</p>
+          </div>
+          <div class="stage-visual"><TacticalScene /></div>
+        </section>
+
+        <section class="stage">
+          <div class="stage-copy">
+            <span class="num">03 · Compare</span>
+            <h2>Separate real change from cloud, shadow and season.</h2>
+            <p>The new pass is lined up against the site's baseline and history. MIAR compares objects and their positions, not just pixels, so a reorganised apron is caught even when the count is the same.</p>
+          </div>
+          <div class="stage-visual"><ChangeCompare id="caps-compare" summary={false} /></div>
+        </section>
+
+        <section class="stage">
+          <div class="stage-copy">
+            <span class="num">04 · Review</span>
+            <h2>An analyst makes every call.</h2>
+            <p>Each finding arrives with its imagery, the model's reading and what the other sensors show. The analyst accepts, rejects or annotates it. That decision is recorded against their name.</p>
+            <ul class="check-list">
+              <li>Readings from every sensor shown side by side</li>
+              <li>Disagreements between sensors are highlighted, not averaged away</li>
+              <li>Notes and decisions are kept with the finding</li>
+            </ul>
+          </div>
+          <div class="stage-visual plate">
+            <div class="plate-head"><span>Review · <strong>Candidate C-3</strong></span><span>Illustrative</span></div>
+            <div class="review-ui">
+              <div class="review-ui-finding">
+                <svg viewBox="420 545 150 94" aria-hidden="true">
+                  <image href="/imagery/monitored-site-follow-on-2026.webp" x="2" y="78" width="1546" height="1090" />
+                </svg>
+                <div>
+                  <strong>Aircraft-shaped object, south apron</strong>
+                  <p>Optical sees an aircraft. Radar shows no metal return. Hyperspectral reads polymer fabric.</p>
+                </div>
+              </div>
+              <div class="review-ui-actions">
+                <span class="is-chosen">Accept as decoy</span>
+                <span>Reject</span>
+                <span>Escalate</span>
+              </div>
+              <p class="review-ui-note"><span>Analyst note · 09:18Z</span>Consistent with an inflatable decoy. Recheck with the next SAR pass.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="stage">
+          <div class="stage-copy">
+            <span class="num">05 · Report</span>
+            <h2>Approved findings go where they are needed, with their proof.</h2>
+            <p>Findings go out as briefs, as data for mission systems, or as the next collection request. Every output links back to the imagery and the decision behind it.</p>
+          </div>
+          <div class="stage-visual plate">
+            <div class="plate-head"><span>Outputs · <strong>Finding F-0147</strong></span><span>Illustrative</span></div>
+            <div class="output-cards">
+              <article>
+                <span>Brief</span>
+                <strong>Weekly site summary</strong>
+                <p>Images, change notes and analyst sign-off, ready to present.</p>
+              </article>
+              <article>
+                <span>API</span>
+                <pre>{`{
+  "finding": "F-0147",
+  "class": "aircraft",
+  "change": `}<b>"new_position"</b>{`,
+  "confidence": 0.91,
+  "approved_by": "analyst-07"
+}`}</pre>
+              </article>
+              <article>
+                <span>Collection</span>
+                <strong>Next-look request</strong>
+                <p>Revisit Site 014 with SAR within 48 hours to confirm the decoy assessment.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="section-tight">
+        <div class="section-head" style="margin-bottom: 40px">
+          <span class="label">What stays constant</span>
+          <div class="section-head-body"><h2>Imagery sources change. Review standards don't.</h2></div>
+        </div>
+        <div class="principles">
+          <article><h3>Provider-neutral</h3><p>Switch or add imagery suppliers without retraining your analysts.</p></article>
+          <article><h3>Evidence first</h3><p>No finding exists without the imagery and comparison behind it.</p></article>
+          <article><h3>People decide</h3><p>Model output is a suggestion until an analyst approves it.</p></article>
+          <article><h3>Your boundary</h3><p>Deploy in controlled, on-premise or sovereign environments.</p></article>
+        </div>
+      </section>
+
+      <section class="cta-band">
+        <div>
+          <h2>Review recurring military sites with the source evidence attached.</h2>
+          <p>Talk to us if your team reviews repeat imagery of airfields, bases, ports or operating areas.</p>
+        </div>
+        <div class="cta-band-actions">
+          <a class="button button-primary" href="/#waitlist">Request access</a>
+        </div>
+      </section>
+    </div>
   </main>
 </BaseLayout>

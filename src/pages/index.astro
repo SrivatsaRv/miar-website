@@ -1,309 +1,264 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import OptimizedPicture from "../components/OptimizedPicture.astro";
-import SolutionsGraphic from "../components/SolutionsGraphic.astro";
-import WaitlistVisual from "../components/WaitlistVisual.astro";
+import SensorStack from "../components/SensorStack.astro";
+import ChangeCompare from "../components/ChangeCompare.astro";
+import WorkflowDiagram from "../components/WorkflowDiagram.astro";
+import SensorMatrix from "../components/SensorMatrix.astro";
+import EvidenceRecord from "../components/EvidenceRecord.astro";
+import RequestForm from "../components/RequestForm.astro";
+import { solutions } from "../data/solutions";
+
+const latest = (await getCollection("blog"))
+  .filter((post) => post.data.status === "published")
+  .sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf())[0];
+
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", year: "numeric" }).format(date);
 ---
 
 <BaseLayout
-  title="MIAR | Operational Imagery Intelligence"
-  description="MIAR helps analysts compare repeat imagery, detect visible equipment and activity, and keep the evidence behind every finding."
+  title="MIAR | Know what changed at every site you watch"
+  description="MIAR compares new satellite imagery with each site's history, shows analysts what changed, and keeps the evidence behind every finding they approve."
   current="home"
 >
   <main>
-    <section class="hero section-anchor" id="home">
-      <div class="hero-stage">
-        <OptimizedPicture
-          class="hero-scene"
-          name="annotated-airfield-scene"
-          alt="Annotated satellite image of a monitored airfield with aircraft detections and intelligence summary"
-          width={1755}
-          height={896}
-          loading="eager"
-          fetchpriority="high"
-        />
-
-        <div class="hero-shell">
-          <div class="hero-overlay">
-            <p class="eyebrow hero-eyebrow">Military-grade imagery intelligence, delivered at operational tempo</p>
-            <h1>Know what changed before the next image arrives.</h1>
-            <p class="hero-lead">
-              MIAR helps analysts compare repeat imagery, detect visible equipment and
-              activity, and keep the evidence behind every finding.
-            </p>
-
-            <div class="hero-actions">
-              <a class="button button-primary" href="#waitlist">Request access</a>
-              <a class="button button-secondary" href="#overview">View capability flow</a>
-            </div>
+    <section class="hero on-night" id="home">
+      <div class="hero-grid-bg" aria-hidden="true"></div>
+      <div class="hero-content wrap">
+        <div class="hero-copy">
+          <span class="label">Imagery intelligence for defence analysts</span>
+          <h1 class="display">Know what changed at every site you watch.</h1>
+          <p class="lead">
+            MIAR reads optical, radar and hyperspectral imagery of the same site, compares it with
+            the site's history, and gives your analysts one finding, with the evidence from every
+            sensor attached.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#waitlist">Request access <span class="arrow" aria-hidden="true">→</span></a>
+            <a class="button button-secondary" href="#how-it-works">See how it works</a>
           </div>
+        </div>
+        <div class="hero-visual">
+          <p class="hero-hint"><span></span>Try it: you're the analyst on this pass</p>
+          <SensorStack />
+        </div>
+      </div>
+
+      <div class="wrap">
+        <ul class="hero-facts" aria-label="At a glance">
+          <li><strong>Any imagery provider</strong>Commercial or national</li>
+          <li><strong>EO · SAR · HSI · IR</strong>Every major sensor type</li>
+          <li><strong>Analyst sign-off</strong>On every reported finding</li>
+          <li><strong>Your environment</strong>Sovereign and on-premise options</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="overview">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label"><span class="label-index">01</span> The problem</span>
+          <div class="section-head-body">
+            <h2>A new image shows what is there. It doesn't tell you what changed.</h2>
+          </div>
+        </div>
+        <div class="problem-grid">
+          <article>
+            <span class="num">A</span>
+            <h3>More images than analysts</h3>
+            <p>Revisit rates keep rising while analyst hours don't. Every new pass competes for the same limited attention.</p>
+          </article>
+          <article>
+            <span class="num">B</span>
+            <h3>Change needs a baseline</h3>
+            <p>Cloud, shadow, season and viewing angle all look like change. Without the site's history, analysts sort that noise by hand.</p>
+          </article>
+          <article>
+            <span class="num">C</span>
+            <h3>Findings lose their proof</h3>
+            <p>By the time a finding reaches a brief, the image, the comparison and the analyst's reasoning have usually been left behind.</p>
+          </article>
         </div>
       </div>
     </section>
 
-    <div class="page-shell">
-      <section class="band band-split section-anchor" id="overview">
-        <div class="section-copy">
-          <p class="eyebrow">What It Does</p>
-          <h2>Built for military sites, operating areas, and assets under repeated monitoring.</h2>
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label"><span class="label-index">02</span> Same site, one year apart</span>
+          <div class="section-head-body">
+            <h2>Six aircraft in both images. Half of them have moved.</h2>
+            <p class="lead">
+              A simple count would report no change. MIAR compares where each aircraft stands, so the
+              analyst sees that the apron has been reorganised, one aircraft is on the taxiway and a
+              helicopter has arrived.
+            </p>
+          </div>
+        </div>
+        <ChangeCompare id="home-compare" />
+        <p class="figure-note">Drag across the image to compare. Imagery of a monitored airbase, 2025 and 2026, with identifying details removed.</p>
+      </div>
+    </section>
+
+    <section class="section" id="how-it-works">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label"><span class="label-index">03</span> How it works</span>
+          <div class="section-head-body">
+            <h2>From new image to signed-off finding, in five steps.</h2>
+            <p class="lead">
+              Software does the searching and comparing. Analysts make the decisions. Every step is
+              recorded.
+            </p>
+          </div>
+        </div>
+        <WorkflowDiagram />
+        <div class="flow-foot">
+          <p>The same process works for a single site or a watchlist of hundreds, whichever providers you buy imagery from.</p>
+          <a class="text-link" href="/capabilities/">Explore the workflow <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap matrix-layout">
+        <div class="matrix-intro">
+          <span class="label"><span class="label-index">04</span> Every sensor, one record</span>
+          <h2>Works when the weather doesn't.</h2>
           <p>
-            MIAR is built for teams monitoring airfields, bases, ports, logistics routes,
-            launch areas, forward positions, and other areas of military interest. It helps
-            analysts understand what is present, what has changed, what needs review, and
-            what should be tasked next.
+            No single sensor sees everything. Optical shows shape, radar sees through cloud and at night,
+            hyperspectral shows what things are made of. MIAR puts them in the same site record, so
+            a cloudy week or a decoy doesn't leave a gap in the picture.
           </p>
+        </div>
+        <div>
+          <SensorMatrix />
+        </div>
+      </div>
+    </section>
 
-          <div class="capability-list">
-            <article class="capability-item">
-              <span>Detection</span>
-              <p>Identify aircraft, vehicles, equipment, structures, and visible activity in the scene, with confidence scores and analyst review built into the workflow.</p>
-            </article>
+    <section class="section">
+      <div class="wrap record-layout">
+        <EvidenceRecord />
+        <div class="section-head-body">
+          <span class="label"><span class="label-index">05</span> Evidence</span>
+          <h2>Every finding keeps its evidence.</h2>
+          <p class="lead">When a finding reaches a commander, a partner or an auditor, the proof travels with it.</p>
+          <ol class="record-notes">
+            <li><span class="pin" aria-hidden="true">1</span><div><strong>The source imagery</strong><p>The current image and the baseline it was compared with, exactly as the analyst saw them.</p></div></li>
+            <li><span class="pin" aria-hidden="true">2</span><div><strong>The model's confidence</strong><p>What was detected and how certain the model was. Shown in full, never rounded into a yes or no.</p></div></li>
+            <li><span class="pin" aria-hidden="true">3</span><div><strong>The analyst's decision</strong><p>Who accepted or rejected the finding, and why. Nothing is reported without it.</p></div></li>
+            <li><span class="pin" aria-hidden="true">4</span><div><strong>The full history</strong><p>Every step from image receipt to brief, so anyone relying on the finding can check it.</p></div></li>
+          </ol>
+        </div>
+      </div>
+    </section>
 
-            <article class="capability-item">
-              <span>Compare</span>
-              <p>Compare the latest image against earlier imagery of the same site to separate routine movement from meaningful change.</p>
-            </article>
-
-            <article class="capability-item">
-              <span>Fusion</span>
-              <p>Correlate EO, SAR, IR, and other available sources so analysts are not limited to one image type or one collection condition.</p>
-            </article>
-
-            <article class="capability-item">
-              <span>Evidence</span>
-              <p>Preserve the source image, detection, comparison result, confidence score, analyst decision, and audit trail behind every finding.</p>
-            </article>
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label"><span class="label-index">06</span> Use cases</span>
+          <div class="section-head-body">
+            <h2>Built around the questions analysts are actually asked.</h2>
           </div>
         </div>
+        <div class="cases">
+          {solutions.map((solution) => (
+            <a class="case-row" href={`/solutions/${solution.slug}/`}>
+              <span class="num">{solution.number}</span>
+              <h3>{solution.name}</h3>
+              <p class="case-q">{solution.question}</p>
+              <span class="case-arrow" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
 
-        <SolutionsGraphic />
-      </section>
-
-      <section class="band section-anchor" id="insights">
-        <div class="about-shell">
-          <div class="section-head">
-            <p class="eyebrow">Multi-Payload</p>
-            <h2>Multi-payload change detection for real-world collection conditions.</h2>
-            <p>
-              Military imagery is rarely perfect. EO may be blocked by cloud cover. SAR may
-              reveal metallic objects or structural change when optical imagery is unavailable.
-              IR may indicate recent activity through heat signatures. Non-imaging sources can
-              add context around movement, alerts, and operating patterns.
+    <section class="section on-night">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label"><span class="label-index">07</span> Control</span>
+          <div class="section-head-body">
+            <h2>Your imagery. Your models. Your authority.</h2>
+            <p class="lead">
+              MIAR sits between your imagery suppliers and the people who act on the results. It
+              doesn't own your collection, and it never makes the final call.
             </p>
           </div>
-
-          <WaitlistVisual />
         </div>
-
-        <div class="insight-grid">
-          <article class="insight-item">
-            <span>EO</span>
-            <h3>EO imagery</h3>
-            <p>High-resolution visual review for clear-weather, daytime detection and classification.</p>
+        <div class="pillars">
+          <article>
+            <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="8" cy="9" r="3"/><circle cx="8" cy="18" r="3"/><circle cx="8" cy="27" r="3"/><path d="M11 9c7 0 7 9 14 9M11 27c7 0 7-9 14-9M11 18h14"/><rect x="25" y="14" width="8" height="8"/></svg>
+            <h3>Provider-neutral</h3>
+            <p>Use imagery from any commercial or national source. Change suppliers without changing how your analysts work.</p>
           </article>
-
-          <article class="insight-item">
-            <span>SAR</span>
-            <h3>SAR imagery</h3>
-            <p>All-weather, day/night sensing for structural change, metallic signatures, and activity under poor optical conditions.</p>
+          <article>
+            <svg viewBox="0 0 36 36" aria-hidden="true"><path d="M18 3l12 5v9c0 8-5 13-12 16C11 30 6 25 6 17V8z"/><rect x="13" y="15" width="10" height="8"/><path d="M15 15v-3a3 3 0 016 0v3"/></svg>
+            <h3>Deploy where you need it</h3>
+            <p>Run in a controlled, on-premise or sovereign environment, so imagery and findings stay inside your boundary.</p>
           </article>
-
-          <article class="insight-item">
-            <span>IR</span>
-            <h3>IR imagery</h3>
-            <p>Heat-based indicators for active engines, recently moved equipment, and thermal activity.</p>
-          </article>
-
-          <article class="insight-item">
-            <span>OSINT</span>
-            <h3>Contextual signals</h3>
-            <p>Support from non-imaging sources such as ADS-B, AIS, NOTAMs, and other contextual feeds through the wider ReachDefence stack.</p>
+          <article>
+            <svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="11" r="6"/><path d="M6 33c0-7 5-11 12-11s12 4 12 11"/><path d="M13 27l3.5 3.5L24 24"/></svg>
+            <h3>People make the call</h3>
+            <p>Model output stays a suggestion until an analyst approves it. Every decision is logged against a named reviewer.</p>
           </article>
         </div>
+      </div>
+    </section>
 
-      </section>
-
-      <section class="band waitlist-band section-anchor" id="waitlist">
-        <div class="waitlist-shell">
-          <div class="waitlist-copy">
-            <p class="eyebrow">Request access</p>
-            <h2>For teams that need to monitor military activity over time.</h2>
-            <p>
-              MIAR is being built for defence analysts, geospatial intelligence teams,
-              research groups, program teams, and platform owners working on military
-              imagery analysis and change detection. If your team monitors military sites,
-              operating areas, assets, or activity over time, we would like to speak with you.
-            </p>
+    {latest && (
+      <section class="section section-tight">
+        <div class="wrap">
+          <div class="section-head" style="margin-bottom: 40px">
+            <span class="label"><span class="label-index">08</span> Insights</span>
+            <div class="section-head-body" style="grid-template-columns: 1fr auto; align-items: end; max-width: none">
+              <h2>From the ReachDefence team.</h2>
+              <a class="text-link" href="/blogs/">All articles <span aria-hidden="true">→</span></a>
+            </div>
           </div>
-
-          <div class="waitlist-card">
-            <form class="waitlist-form" id="waitlist-form" method="post" action="/api/waitlist/">
-              <div class="honeypot-field" aria-hidden="true">
-                <label>
-                  Website
-                  <input type="text" name="website" tabindex="-1" autocomplete="off" />
-                </label>
+          <a class="insight-feature" href={`/blogs/posts/${latest.id}/`}>
+            <div class="insight-feature-image">
+              <img src={latest.data.gallery.at(-1)?.src ?? latest.data.heroImage} alt={latest.data.gallery.at(-1)?.alt ?? latest.data.heroImageAlt} width={latest.data.gallery.at(-1)?.width ?? latest.data.heroImageWidth} height={latest.data.gallery.at(-1)?.height ?? latest.data.heroImageHeight} loading="lazy" decoding="async" />
+            </div>
+            <div class="insight-feature-copy">
+              <div class="meta-row">
+                <span>{latest.data.category}</span>
+                <time datetime={latest.data.publishedAt.toISOString()}>{formatDate(latest.data.publishedAt)}</time>
+                <span>{latest.data.readingMinutes} min read</span>
               </div>
-
-              <label>
-                Full name
-                <input type="text" name="name" autocomplete="name" placeholder="Asha Menon" />
-              </label>
-
-              <label>
-                Work email
-                <input
-                  type="email"
-                  name="email"
-                  autocomplete="email"
-                  placeholder="asha@organization.com"
-                  required
-                />
-              </label>
-
-              <label>
-                Organization
-                <input
-                  type="text"
-                  name="organization"
-                  autocomplete="organization"
-                  placeholder="Program office, defense lab, ISR team, platform company"
-                />
-              </label>
-
-              <label>
-                Role or team
-                <input
-                  type="text"
-                  name="role"
-                  autocomplete="organization-title"
-                  placeholder="Program lead, analyst, product owner, GEOINT team"
-                />
-              </label>
-
-              <label>
-                What do you need to monitor?
-                <div class="select-shell">
-                  <input type="hidden" name="interest" value="" required data-custom-select-input />
-                  <select class="mobile-select" data-custom-select-mobile>
-                    <option value="">Select one</option>
-                    <option value="tactical-isr">Tactical ISR</option>
-                    <option value="military-asset-monitoring">Military asset monitoring</option>
-                    <option value="change-posture-monitoring">Change and posture monitoring</option>
-                    <option value="archive-trend-analysis">Archive and trend analysis</option>
-                    <option value="force-protection">Force protection</option>
-                    <option value="delivery-integration">Secure delivery and integration</option>
-                  </select>
-                  <div class="custom-select" data-custom-select>
-                    <button
-                      class="custom-select-trigger is-placeholder"
-                      type="button"
-                      aria-expanded="false"
-                      data-custom-select-trigger
-                    >
-                      <span data-custom-select-value>Select one</span>
-                    </button>
-                    <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="tactical-isr">Tactical ISR</button>
-                      <button type="button" data-value="military-asset-monitoring">Military asset monitoring</button>
-                      <button type="button" data-value="change-posture-monitoring">Change and posture monitoring</button>
-                      <button type="button" data-value="archive-trend-analysis">Archive and trend analysis</button>
-                      <button type="button" data-value="force-protection">Force protection</button>
-                      <button type="button" data-value="delivery-integration">Secure delivery and integration</button>
-                    </div>
-                  </div>
-                </div>
-              </label>
-
-              <label>
-                Primary area of interest
-                <div class="select-shell">
-                  <input type="hidden" name="focus" value="" required data-custom-select-input />
-                  <select class="mobile-select" data-custom-select-mobile>
-                    <option value="">Select one</option>
-                    <option value="aircraft-presence-by-type">Aircraft presence by type</option>
-                    <option value="vessel-vehicle-equipment-detection">Vessel, vehicle, or equipment detection</option>
-                    <option value="site-posture-and-readiness">Site posture and readiness</option>
-                    <option value="before-after-compare">Before-and-after compare</option>
-                    <option value="trendlines-over-time">Trendlines over time</option>
-                    <option value="analyst-review-and-provenance">Analyst review and provenance</option>
-                    <option value="downstream-delivery">Downstream delivery</option>
-                  </select>
-                  <div class="custom-select" data-custom-select>
-                    <button
-                      class="custom-select-trigger is-placeholder"
-                      type="button"
-                      aria-expanded="false"
-                      data-custom-select-trigger
-                    >
-                      <span data-custom-select-value>Select one</span>
-                    </button>
-                    <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="aircraft-presence-by-type">Aircraft presence by type</button>
-                      <button type="button" data-value="vessel-vehicle-equipment-detection">Vessel, vehicle, or equipment detection</button>
-                      <button type="button" data-value="site-posture-and-readiness">Site posture and readiness</button>
-                      <button type="button" data-value="before-after-compare">Before-and-after compare</button>
-                      <button type="button" data-value="trendlines-over-time">Trendlines over time</button>
-                      <button type="button" data-value="analyst-review-and-provenance">Analyst review and provenance</button>
-                      <button type="button" data-value="downstream-delivery">Downstream delivery</button>
-                    </div>
-                  </div>
-                </div>
-              </label>
-
-              <label>
-                When do you need this capability?
-                <div class="select-shell">
-                  <input type="hidden" name="timeline" value="" data-custom-select-input />
-                  <select class="mobile-select" data-custom-select-mobile>
-                    <option value="">Select one</option>
-                    <option value="evaluating-now">Evaluating now</option>
-                    <option value="0-3-months">0 to 3 months</option>
-                    <option value="3-6-months">3 to 6 months</option>
-                    <option value="researching-for-later">Researching for later</option>
-                  </select>
-                  <div class="custom-select" data-custom-select>
-                    <button
-                      class="custom-select-trigger is-placeholder"
-                      type="button"
-                      aria-expanded="false"
-                      data-custom-select-trigger
-                    >
-                      <span data-custom-select-value>Select one</span>
-                    </button>
-                    <div class="custom-select-menu" hidden data-custom-select-menu>
-                      <button type="button" data-value="evaluating-now">Evaluating now</button>
-                      <button type="button" data-value="0-3-months">0 to 3 months</button>
-                      <button type="button" data-value="3-6-months">3 to 6 months</button>
-                      <button type="button" data-value="researching-for-later">Researching for later</button>
-                    </div>
-                  </div>
-                </div>
-              </label>
-
-              <label>
-                What should we know about your use case?
-                <textarea
-                  name="mission"
-                  rows="4"
-                  placeholder="Describe the monitoring problem, site set, or imagery review workflow you need to support."
-                ></textarea>
-              </label>
-
-              <p class="form-disclosure">
-                By submitting, you acknowledge the <a href="/legal/">MIAR legal notice</a> and
-                confirm this request is for a lawful organizational use case.
-              </p>
-
-              <button class="button button-primary submit-button" type="submit">
-                Request access
-              </button>
-
-              <p class="form-status" id="form-status" aria-live="polite"></p>
-            </form>
-          </div>
+              <h3>{latest.data.title}</h3>
+              <p>{latest.data.summary}</p>
+              <span class="text-link">Read the article <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
         </div>
       </section>
-    </div>
+    )}
+
+    <section class="section" id="waitlist">
+      <div class="wrap request">
+        <div class="request-copy">
+          <span class="label"><span class="label-index">09</span> Request access</span>
+          <h2>Tell us what you need to watch.</h2>
+          <p>
+            MIAR is available to defence and government analysts, geospatial intelligence teams,
+            research groups and programme teams. Tell us about your sites and imagery, and we'll
+            come back to you directly.
+          </p>
+          <ol class="next-steps">
+            <li><span class="num">01</span><div><strong>We review your request</strong><p>Every request is checked for fit and eligibility.</p></div></li>
+            <li><span class="num">02</span><div><strong>A short call</strong><p>If there's a match, we talk through your sites, sources and current workflow.</p></div></li>
+            <li><span class="num">03</span><div><strong>A scoped evaluation</strong><p>Together we agree an evaluation built around your use case.</p></div></li>
+          </ol>
+          <p class="request-note">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 6v5M10 13.5v.5"/></svg>
+            Please don't include classified, export-controlled or operationally sensitive information in this form.
+          </p>
+        </div>
+        <RequestForm />
+      </div>
+    </section>
   </main>
 </BaseLayout>

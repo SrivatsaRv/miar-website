@@ -1,63 +1,75 @@
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import sharp from "sharp";
 
 const outputDirectory = path.resolve("public/social");
 
+// Right-hand plate: a darkened crop of the 2026 follow-on scene, centred on the eastern hardstand.
+const plate = await sharp(await readFile(path.resolve("assets/source-imagery/monitored-site-follow-on-2026.png")))
+  .extract({ left: 1010, top: 250, width: 520, height: 546 })
+  .resize(540, 630)
+  .modulate({ brightness: 0.78, saturation: 0.7 })
+  .jpeg({ quality: 82 })
+  .toBuffer();
+const plateUri = `data:image/jpeg;base64,${plate.toString("base64")}`;
+
 const cards = [
   {
     file: "a-satellite-image-is-not-yet-intelligence.png",
-    eyebrow: "IMAGERY INTELLIGENCE / ANALYSIS",
-    lines: ["A satellite image", "is not yet intelligence."],
-    footer: "SENSOR  /  TIME  /  EVIDENCE  /  REVIEW",
+    eyebrow: "ANALYSIS",
+    lines: ["A satellite image", "is not yet", "intelligence."],
   },
   {
     file: "why-repeat-coverage-matters.png",
-    eyebrow: "IMAGERY INTELLIGENCE / TRADECRAFT",
-    lines: ["Why repeat coverage", "matters."],
-    footer: "BASELINE  /  CADENCE  /  CHANGE  /  CONTEXT",
+    eyebrow: "TRADECRAFT",
+    lines: ["Why repeat", "coverage matters."],
+  },
+  {
+    file: "miar-site-preview.jpg",
+    eyebrow: "IMAGERY INTELLIGENCE",
+    lines: ["Know what", "changed at every", "site you watch."],
   },
 ];
 
 const escapeXml = (value) =>
   value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
-const cardSvg = ({ eyebrow, lines, footer }) => `
-<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#20252c"/>
-      <stop offset="0.46" stop-color="#141517"/>
-      <stop offset="1" stop-color="#0d0e10"/>
-    </linearGradient>
-    <radialGradient id="signal" cx="0" cy="0" r="1" gradientTransform="translate(1030 92) rotate(135) scale(480)">
-      <stop stop-color="#7896a4" stop-opacity="0.22"/>
-      <stop offset="1" stop-color="#7896a4" stop-opacity="0"/>
-    </radialGradient>
-    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-      <path d="M 48 0 L 0 0 0 48" fill="none" stroke="#d8dde2" stroke-opacity="0.055" stroke-width="1"/>
-    </pattern>
-  </defs>
-  <rect width="1200" height="630" fill="url(#background)"/>
-  <rect width="1200" height="630" fill="url(#signal)"/>
-  <rect x="720" width="480" height="630" fill="url(#grid)"/>
-  <path d="M835 130h205v205H835z M887 182h101v101H887z" fill="none" stroke="#a7bcc6" stroke-opacity="0.24"/>
-  <path d="M760 408h365M760 430h250M760 452h312" stroke="#a7bcc6" stroke-opacity="0.2"/>
-  <circle cx="1025" cy="224" r="7" fill="#c5d7df"/>
-  <path d="M1025 224 1114 155" stroke="#c5d7df" stroke-opacity="0.7"/>
-  <text x="68" y="66" fill="#f1f0ef" font-family="Avenir Next, Avenir, sans-serif" font-size="24" font-weight="700" letter-spacing="5">MIAR</text>
-  <text x="68" y="91" fill="#92979e" font-family="Avenir Next, Avenir, sans-serif" font-size="14" font-weight="500" letter-spacing="2">BY REACHDEFENCE</text>
-  <line x1="68" y1="137" x2="1132" y2="137" stroke="#777c82" stroke-opacity="0.38"/>
-  <text x="68" y="190" fill="#aeb4ba" font-family="JetBrains Mono, Menlo, monospace" font-size="15" font-weight="600" letter-spacing="2">${escapeXml(eyebrow)}</text>
-  <text x="68" y="292" fill="#f1f0ef" font-family="Avenir Next, Avenir, sans-serif" font-size="67" font-weight="600" letter-spacing="-2.6">${escapeXml(lines[0])}</text>
-  <text x="68" y="371" fill="#f1f0ef" font-family="Avenir Next, Avenir, sans-serif" font-size="67" font-weight="600" letter-spacing="-2.6">${escapeXml(lines[1])}</text>
-  <line x1="68" y1="526" x2="1132" y2="526" stroke="#777c82" stroke-opacity="0.38"/>
-  <text x="68" y="572" fill="#9da3a9" font-family="JetBrains Mono, Menlo, monospace" font-size="14" font-weight="600" letter-spacing="1.7">${escapeXml(footer)}</text>
-  <text x="1132" y="572" text-anchor="end" fill="#d2d7db" font-family="JetBrains Mono, Menlo, monospace" font-size="14">MIAR.REACHDEFENCE.COM</text>
+const sans = "Helvetica Neue, Helvetica, Arial, sans-serif";
+const mono = "SF Mono, Menlo, monospace";
+
+const cardSvg = ({ eyebrow, lines }) => `
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <rect width="1200" height="630" fill="#f4f3ef"/>
+  <image x="660" y="0" width="540" height="630" preserveAspectRatio="xMidYMid slice" xlink:href="${plateUri}"/>
+  <line x1="660" y1="0" x2="660" y2="630" stroke="#0e1113" stroke-width="2"/>
+  <path d="M990 294v-18h18M1048 276h18v18M1066 334v18h-18M1008 352h-18v-18" fill="none" stroke="#e4571e" stroke-width="4"/>
+  <rect x="990" y="364" width="146" height="30" fill="#e4571e"/>
+  <text x="1002" y="385" fill="#ffffff" font-family="${mono}" font-size="15" letter-spacing="1.5">NEW POSITION</text>
+
+  <path d="M64 76V60h16M104 60h16v16M120 100v16h-16M80 116H64v-16" fill="none" stroke="#0e1113" stroke-width="3.2"/>
+  <rect x="82" y="78" width="20" height="20" fill="#e4571e"/>
+  <text x="140" y="97" fill="#0e1113" font-family="${sans}" font-size="30" font-weight="700" letter-spacing="1">MIAR</text>
+  <text x="236" y="96" fill="#6b7176" font-family="${mono}" font-size="14" letter-spacing="1.5">BY REACHDEFENCE</text>
+
+  <text x="64" y="${lines.length === 3 ? 238 : 290}" fill="#b8400f" font-family="${mono}" font-size="17" letter-spacing="2">${escapeXml(eyebrow)}</text>
+  ${lines
+    .map(
+      (line, index) =>
+        `<text x="62" y="${(lines.length === 3 ? 318 : 370) + index * 74}" fill="#0e1113" font-family="${sans}" font-size="68" font-weight="500" letter-spacing="-2.4">${escapeXml(line)}</text>`
+    )
+    .join("\n  ")}
+  <line x1="64" y1="548" x2="596" y2="548" stroke="#0e1113" stroke-width="1.5"/>
+  <text x="64" y="584" fill="#3f454a" font-family="${mono}" font-size="15" letter-spacing="1">MIAR.REACHDEFENCE.COM</text>
 </svg>`;
 
 await mkdir(outputDirectory, { recursive: true });
 
 for (const card of cards) {
-  await sharp(Buffer.from(cardSvg(card))).png({ compressionLevel: 9 }).toFile(path.join(outputDirectory, card.file));
+  const image = sharp(Buffer.from(cardSvg(card)));
+  const output = path.join(outputDirectory, card.file);
+  if (card.file.endsWith(".jpg")) {
+    await image.jpeg({ quality: 86, mozjpeg: true }).toFile(output);
+  } else {
+    await image.png({ compressionLevel: 9, palette: true, quality: 90 }).toFile(output);
+  }
 }

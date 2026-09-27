@@ -1,6 +1,8 @@
 ---
 import "../styles/global.css";
 import SiteSearch from "../components/SiteSearch.astro";
+import Logo from "../components/Logo.astro";
+import { requestHref, solutionLinks } from "../data/site";
 
 interface Props {
   title: string;
@@ -47,31 +49,12 @@ const socialImage = socialImageOverride
   ? new URL(socialImageOverride, siteOrigin).toString()
   : "https://miar.reachdefence.com/social/miar-site-preview.jpg";
 const safeJsonLd = jsonLd ? JSON.stringify(jsonLd).replace(/</g, "\\u003c") : "";
-const navItems = isHome
-  ? [
-      { href: "#overview", label: "Overview" },
-      { href: "/solutions/", label: "Solutions", active: current === "solutions", children: [
-        { href: "/solutions/tactical-isr/", label: "Tactical ISR" },
-        { href: "/solutions/military-asset-monitoring/", label: "Military Asset Monitoring" },
-        { href: "/solutions/change-posture/", label: "Change + Posture" },
-        { href: "/solutions/archive-trend/", label: "Archive + Trend" },
-        { href: "/solutions/sovereign-delivery/", label: "Sovereign Delivery" },
-      ] },
-      { href: "/blogs/", label: "Blogs" },
-      { href: "#waitlist", label: "Request access" },
-    ]
-  : [
-      { href: "/", label: "Home", active: current === "home" },
-      { href: "/solutions/", label: "Solutions", active: current === "solutions", children: [
-        { href: "/solutions/tactical-isr/", label: "Tactical ISR" },
-        { href: "/solutions/military-asset-monitoring/", label: "Military Asset Monitoring" },
-        { href: "/solutions/change-posture/", label: "Change + Posture" },
-        { href: "/solutions/archive-trend/", label: "Archive + Trend" },
-        { href: "/solutions/sovereign-delivery/", label: "Sovereign Delivery" },
-      ] },
-      { href: "/capabilities/", label: "Capabilities", active: current === "capabilities" },
-      { href: "/blogs/", label: "Blogs", active: current === "blogs" },
-    ];
+const navItems = [
+  { href: "/solutions/", label: "Solutions", active: current === "solutions", children: solutionLinks },
+  { href: "/capabilities/", label: "How it works", active: current === "capabilities" },
+  { href: "/blogs/", label: "Insights", active: current === "blogs" },
+];
+const year = new Date().getFullYear();
 ---
 
 <!doctype html>
@@ -82,7 +65,7 @@ const navItems = isHome
     <title>{title}</title>
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
-    <meta name="theme-color" content="#131315" />
+    <meta name="theme-color" content="#f4f3ef" />
     <meta property="og:title" content={socialTitle || title} />
     <meta property="og:description" content={socialDescription || description} />
     <meta property="og:type" content={article ? "article" : "website"} />
@@ -105,18 +88,14 @@ const navItems = isHome
     <meta name="twitter:image" content={socialImage} />
     <meta name="twitter:image:alt" content={socialImageAlt} />
     {safeJsonLd && <script type="application/ld+json" set:html={safeJsonLd} />}
-    <link rel="preload" href="/fonts/inter-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/geist-latin-variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body data-pagefind-body>
-    <div class="site-backdrop" aria-hidden="true">
-      <div class="backdrop-grid"></div>
-      <div class="backdrop-glow backdrop-glow-cool"></div>
-      <div class="backdrop-glow backdrop-glow-warm"></div>
-    </div>
-
-    <header class:list={["site-header", { "site-header-home": isHome }]} data-pagefind-ignore>
+    <header class:list={["site-header", { "site-header-home": isHome }]} data-site-header data-pagefind-ignore>
       <div class="header-shell">
-        <a class="brand" href={isHome ? "#home" : "/"} aria-label="MIAR home">
+        <a class="brand" href="/" aria-label="MIAR home">
+          <Logo />
           <span class="brand-copy">
             <strong>MIAR</strong>
             <span>by ReachDefence</span>
@@ -125,9 +104,25 @@ const navItems = isHome
 
         <div class="header-controls">
           <nav class="site-nav" id="site-nav" aria-label="Primary navigation">
-          {
-            navItems.map((item) => item.children ? (
-              <div class:list={["nav-group", { "is-active": Boolean(item.active) }]}>
+            {
+              navItems.map((item) => item.children ? (
+                <div class:list={["nav-group", { "is-active": Boolean(item.active) }]}>
+                  <a
+                    href={item.href}
+                    class:list={{ "is-active": Boolean(item.active) }}
+                    aria-current={item.active ? "page" : undefined}
+                  >
+                    {item.label}
+                  </a>
+                  <button class="nav-group-toggle" type="button" aria-label="Open Solutions menu" aria-expanded="false" data-nav-group-toggle></button>
+                  <div class="nav-submenu">
+                    {item.children.map((child) => (
+                      <a href={child.href}>{child.label}<span>{child.number}</span></a>
+                    ))}
+                    <a class="nav-submenu-all" href={item.href}>All solutions <span aria-hidden="true">→</span></a>
+                  </div>
+                </div>
+              ) : (
                 <a
                   href={item.href}
                   class:list={{ "is-active": Boolean(item.active) }}
@@ -135,24 +130,12 @@ const navItems = isHome
                 >
                   {item.label}
                 </a>
-                <button class="nav-group-toggle" type="button" aria-label="Open Solutions menu" aria-expanded="false" data-nav-group-toggle></button>
-                <div class="nav-submenu">
-                  <a class="nav-submenu-all" href={item.href}>All solutions</a>
-                  {item.children.map((child) => <a href={child.href}>{child.label}</a>)}
-                </div>
-              </div>
-            ) : (
-              <a
-                href={item.href}
-                class:list={{ "is-active": Boolean(item.active) }}
-                aria-current={item.active ? "page" : undefined}
-              >
-                {item.label}
-              </a>
-            ))
-          }
+              ))
+            }
+            <a class="nav-mobile-cta" href={requestHref}>Request access</a>
           </nav>
           <SiteSearch />
+          <a class="button button-primary header-cta" href={requestHref}>Request access</a>
           <button
             class="nav-toggle"
             type="button"
@@ -171,26 +154,50 @@ const navItems = isHome
     <slot />
 
     <footer class="site-footer" data-pagefind-ignore>
-      <div class="footer-shell">
-        <div class="footer-brand">
-          <strong>MIAR</strong>
-          <span>by ReachDefence</span>
-          <p>Restricted access for evaluated users and approved workflows.</p>
+      <div class="wrap">
+        {!isHome && (
+          <div class="footer-cta on-night">
+            <h2>See what changed at your sites. <span>Talk to the MIAR team.</span></h2>
+            <a class="button button-primary" href={requestHref}>Request access <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        )}
+
+        <div class="footer-grid">
+          <div class="footer-brand">
+            <a class="brand" href="/" aria-label="MIAR home">
+              <Logo />
+              <span class="brand-copy">
+                <strong>MIAR</strong>
+                <span>by ReachDefence</span>
+              </span>
+            </a>
+            <p>Change detection and evidence records for teams that monitor military sites from satellite imagery.</p>
+          </div>
+
+          <div class="footer-col">
+            <h3>Product</h3>
+            <a href="/capabilities/">How it works</a>
+            <a href="/solutions/">Solutions</a>
+            <a href="/blogs/">Insights</a>
+            <a href={requestHref}>Request access</a>
+          </div>
+
+          <div class="footer-col">
+            <h3>Solutions</h3>
+            {solutionLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+          </div>
+
+          <div class="footer-col">
+            <h3>Policies</h3>
+            <a href="/privacy/">Privacy</a>
+            <a href="/terms/">Website terms</a>
+            <a href="/legal/">Legal</a>
+          </div>
         </div>
 
-        <div class="footer-links">
-          <a href="/#overview">Overview</a>
-          <a href="/solutions/">Solutions</a>
-          <a href="/capabilities/">Capabilities</a>
-          <a href="/blogs/">Blogs</a>
-          <a href="/#waitlist">Request access</a>
-        </div>
-
-        <div class="footer-policy-links">
-          <span>Website policies</span>
-          <a href="/privacy/">Privacy</a>
-          <a href="/terms/">Website terms</a>
-          <a href="/legal/">Legal</a>
+        <div class="footer-base">
+          <span>© {year} ReachDefence. All rights reserved.</span>
+          <span>Access is limited to approved organizations and lawful use.</span>
         </div>
       </div>
     </footer>

@@ -1,0 +1,47 @@
+---
+type Level = "full" | "part" | "none";
+
+const columns = ["Daylight", "Night", "Through cloud", "Fine detail", "Material type", "Recent activity"];
+const rows: { name: string; note: string; values: Level[] }[] = [
+  { name: "Optical (EO)", note: "Visible-light imagery", values: ["full", "none", "none", "full", "none", "part"] },
+  { name: "Radar (SAR)", note: "Synthetic aperture radar", values: ["full", "full", "full", "part", "part", "part"] },
+  { name: "Hyperspectral (HSI)", note: "Hundreds of narrow colour bands", values: ["full", "none", "none", "part", "full", "part"] },
+  { name: "Thermal (IR)", note: "Infrared heat signatures", values: ["full", "full", "none", "none", "none", "full"] },
+];
+
+const words: Record<Level, string> = { full: "Strong", part: "Partial", none: "Limited" };
+---
+
+<div class="matrix-scroll">
+  <table class="matrix">
+    <caption class="sr-only">What each imagery type can typically show, by collection condition</caption>
+    <thead>
+      <tr>
+        <th scope="col">Imagery</th>
+        {columns.map((column) => <th scope="col">{column}</th>)}
+      </tr>
+    </thead>
+    <tbody>
+      {rows.map((row) => (
+        <tr>
+          <th scope="row"><strong>{row.name}</strong><span>{row.note}</span></th>
+          {row.values.map((value) => (
+            <td>
+              <span class:list={["dot", `dot-${value}`]} role="img" aria-label={words[value]} title={words[value]}></span>
+            </td>
+          ))}
+        </tr>
+      ))}
+      <tr class="matrix-context">
+        <th scope="row"><strong>Context feeds</strong><span>ADS-B, AIS, NOTAMs</span></th>
+        <td colspan="6">Movement, schedule and notice data from the wider ReachDefence stack, added to the same site record.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="matrix-legend" aria-hidden="true">
+  <span><i class="dot dot-full"></i> Strong</span>
+  <span><i class="dot dot-part"></i> Partial</span>
+  <span><i class="dot dot-none"></i> Limited</span>
+  <span>Typical strengths. Actual results depend on resolution, provider and conditions.</span>
+</div>

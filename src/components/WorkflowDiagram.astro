@@ -1,0 +1,49 @@
+---
+const steps = [
+  {
+    title: "Ingest",
+    tag: "Any provider",
+    body: "Bring in new and archive imagery from any source: optical, radar or thermal.",
+    icon: `<path d="M4 11l12-6 12 6-12 6z"/><path d="M4 16l12 6 12-6"/><path d="M4 21l12 6 12-6"/>`,
+  },
+  {
+    title: "Detect",
+    tag: "Automated",
+    body: "Find aircraft, vessels, vehicles, equipment and structures, each with a confidence score.",
+    icon: `<path d="M4 10V4h6M22 4h6v6M28 22v6h-6M10 28H4v-6"/><rect x="11" y="11" width="10" height="10"/>`,
+  },
+  {
+    title: "Compare",
+    tag: "Automated",
+    body: "Line the scene up against the site's baseline and history to isolate real change.",
+    icon: `<rect x="4" y="7" width="15" height="15"/><rect x="13" y="11" width="15" height="15"/>`,
+  },
+  {
+    title: "Review",
+    tag: "Analyst decides",
+    human: true,
+    body: "An analyst accepts, rejects or annotates each finding. Nothing is reported without sign-off.",
+    icon: `<circle cx="16" cy="10" r="5"/><path d="M6 28c0-5.5 4.5-9 10-9s10 3.5 10 9"/><path d="M20 24l2.5 2.5L27 22"/>`,
+  },
+  {
+    title: "Report",
+    tag: "Evidence attached",
+    body: "Send approved findings to briefs, downstream systems or the next collection request.",
+    icon: `<path d="M8 4h11l6 6v18H8z"/><path d="M19 4v6h6"/><path d="M12 17h9M12 22h6"/>`,
+  },
+];
+---
+
+<ol class="flow" aria-label="MIAR workflow">
+  {steps.map((step, index) => (
+    <li class:list={["flow-step", step.human && "is-human"]}>
+      <div class="flow-rail" aria-hidden="true">
+        <span class="flow-icon"><svg viewBox="0 0 32 32" set:html={step.icon} /></span>
+      </div>
+      <span class="num">0{index + 1}</span>
+      <h3>{step.title}</h3>
+      <p>{step.body}</p>
+      <span class="flow-tag">{step.tag}</span>
+    </li>
+  ))}
+</ol>

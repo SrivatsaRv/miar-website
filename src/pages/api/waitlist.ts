@@ -129,17 +129,20 @@ function buildHtmlResponse(message: string) {
           min-height: 100vh;
           display: grid;
           place-items: center;
-          background: linear-gradient(180deg, #06101d, #0a1b30);
-          color: #eef7ff;
+          padding: 24px;
+          background: #f4f3ef;
+          color: #0e1113;
           font-family: "Helvetica Neue", Arial, sans-serif;
         }
         .card {
           max-width: 36rem;
-          padding: 2rem;
-          border: 1px solid rgba(178, 210, 255, 0.18);
-          background: rgba(10, 24, 46, 0.82);
+          padding: 2.5rem;
+          border: 1px solid #0e1113;
+          background: #fbfaf7;
         }
-        a { color: #7bf7ff; }
+        h1 { margin: 0 0 1rem; font-weight: 500; letter-spacing: -0.02em; }
+        p { color: #3f454a; line-height: 1.6; }
+        a { color: #0e1113; }
       </style>
     </head>
     <body>

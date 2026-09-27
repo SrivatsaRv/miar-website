@@ -1,0 +1,140 @@
+---
+// Illustrative data: aircraft seen on the apron by type, across twelve reviewed passes.
+const passes = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const series = [
+  { key: "transport", label: "Transport", color: "var(--series-1)", values: [4, 5, 5, 4, 5, 5, 6, 5, 5, 5, 4, 5] },
+  { key: "patrol", label: "Patrol", color: "var(--series-2)", values: [1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1] },
+  { key: "rotary", label: "Rotary-wing", color: "var(--series-3)", values: [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 2] },
+];
+
+const width = 760;
+const height = 300;
+const pad = { top: 36, right: 12, bottom: 30, left: 30 };
+const max = 10;
+const plotW = width - pad.left - pad.right;
+const plotH = height - pad.top - pad.bottom;
+const band = plotW / passes.length;
+const barW = Math.min(34, band * 0.56);
+const y = (value: number) => pad.top + plotH - (value / max) * plotH;
+const ticks = [0, 2, 4, 6, 8, 10];
+const gap = 2;
+
+const bars = passes.map((pass, index) => {
+  let base = 0;
+  const cx = pad.left + band * index + band / 2;
+  const segments = series
+    .map((s) => {
+      const value = s.values[index];
+      const segment = { key: s.key, color: s.color, value, y0: y(base), y1: y(base + value) };
+      base += value;
+      return segment;
+    })
+    .filter((segment) => segment.value > 0);
+  return { pass, cx, total: base, segments };
+});
+
+const firstRotary = series[2].values.findIndex((v) => v > 0);
+const annotX = pad.left + band * firstRotary + band / 2;
+---
+
+<div class="plate plate-light solution-evidence solution-evidence-trend">
+  <div class="plate-head"><span>Trend · <strong>Site 014, aircraft on apron by type</strong></span><span>Illustrative data</span></div>
+  <div class="trend">
+    <div class="trend-head">
+      <div>
+        <h3>Rotary-wing presence began in September and has grown since.</h3>
+        <p>Every bar links back to the reviewed image it was counted from.</p>
+      </div>
+      <div class="legend" aria-hidden="true">
+        {series.map((s) => <span><i style={`background:${s.color}`}></i>{s.label}</span>)}
+      </div>
+    </div>
+    <div class="trend-chart" data-trend>
+      <svg viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Stacked bar chart of aircraft on the apron by type across twelve monthly passes. Transport aircraft hold at four to six, one patrol aircraft is usually present, and rotary-wing aircraft appear from September, reaching two by December.">
+        {ticks.map((t) => (
+          <g>
+            <line class="grid-line" x1={pad.left} x2={width - pad.right} y1={y(t)} y2={y(t)} />
+            <text class="axis-text" x={pad.left - 8} y={y(t) + 4} text-anchor="end">{t}</text>
+          </g>
+        ))}
+        <line class="annot-line" x1={annotX} x2={annotX} y1={pad.top - 20} y2={y(0)} />
+        <text class="annot-text" x={annotX + 8} y={pad.top - 8}>Rotary-wing first seen</text>
+        {bars.map((bar, index) => (
+          <g class="bar-group" data-index={index}>
+            <rect class="bar-hit" x={bar.cx - band / 2} y={pad.top} width={band} height={plotH} />
+            {bar.segments.map((segment, sIndex) => {
+              const isTop = sIndex === bar.segments.length - 1;
+              const h = Math.max(0, segment.y0 - segment.y1 - (sIndex > 0 ? gap : 0));
+              const top = segment.y1;
+              return isTop ? (
+                <path
+                  fill={segment.color}
+                  d={`M${bar.cx - barW / 2} ${top + h}V${top + 4}Q${bar.cx - barW / 2} ${top} ${bar.cx - barW / 2 + 4} ${top}H${bar.cx + barW / 2 - 4}Q${bar.cx + barW / 2} ${top} ${bar.cx + barW / 2} ${top + 4}V${top + h}Z`}
+                />
+              ) : (
+                <rect fill={segment.color} x={bar.cx - barW / 2} y={top} width={barW} height={h} />
+              );
+            })}
+            <text class="axis-text" x={bar.cx} y={height - 8} text-anchor="middle">{bar.pass}</text>
+          </g>
+        ))}
+      </svg>
+      <div class="chart-tooltip" data-tooltip hidden></div>
+    </div>
+    <details class="trend-table">
+      <summary>View as table</summary>
+      <table>
+        <thead><tr><th>Pass</th>{series.map((s) => <th>{s.label}</th>)}<th>Total</th></tr></thead>
+        <tbody>
+          {passes.map((pass, index) => (
+            <tr><td>{pass}</td>{series.map((s) => <td>{s.values[index]}</td>)}<td>{bars[index].total}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
+  </div>
+  <script type="application/json" data-trend-data set:html={JSON.stringify({ passes, series: series.map(({ label, color, values }) => ({ label, color, values })) })} />
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-trend]").forEach((chart) => {
+    const tooltip = chart.querySelector<HTMLElement>("[data-tooltip]");
+    const raw = chart.closest(".plate")?.querySelector("[data-trend-data]")?.textContent;
+    if (!tooltip || !raw) return;
+    const data = JSON.parse(raw) as { passes: string[]; series: { label: string; color: string; values: number[] }[] };
+    const svg = chart.querySelector("svg");
+
+    chart.querySelectorAll<SVGGElement>(".bar-group").forEach((group) => {
+      const index = Number(group.dataset.index);
+      group.addEventListener("pointerenter", () => {
+        if (!svg) return;
+        const total = data.series.reduce((sum, s) => sum + s.values[index], 0);
+        tooltip.replaceChildren();
+        const title = document.createElement("strong");
+        title.textContent = `${data.passes[index]} pass · ${total} aircraft`;
+        tooltip.append(title);
+        data.series.forEach((s) => {
+          const row = document.createElement("div");
+          const name = document.createElement("span");
+          const swatch = document.createElement("i");
+          swatch.style.background = s.color;
+          name.append(swatch, s.label);
+          const value = document.createElement("b");
+          value.textContent = String(s.values[index]);
+          row.append(name, value);
+          tooltip.append(row);
+        });
+        const box = group.getBBox();
+        const scale = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+        const topSegment = group.querySelector("path");
+        const topY = topSegment ? topSegment.getBBox().y : box.y + box.height;
+        tooltip.style.left = `${(box.x + box.width / 2) * scale}px`;
+        tooltip.style.top = `${topY * scale}px`;
+        tooltip.hidden = false;
+      });
+      group.addEventListener("pointerleave", () => {
+        tooltip.hidden = true;
+      });
+    });
+  });
+</script>

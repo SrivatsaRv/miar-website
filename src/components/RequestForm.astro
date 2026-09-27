@@ -1,0 +1,124 @@
+---
+const interests = [
+  { value: "tactical-isr", label: "Tactical ISR" },
+  { value: "military-asset-monitoring", label: "Military asset monitoring" },
+  { value: "change-posture-monitoring", label: "Change and posture monitoring" },
+  { value: "archive-trend-analysis", label: "Archive and trend analysis" },
+  { value: "force-protection", label: "Force protection" },
+  { value: "delivery-integration", label: "Secure delivery and integration" },
+];
+
+const focuses = [
+  { value: "aircraft-presence-by-type", label: "Aircraft presence by type" },
+  { value: "vessel-vehicle-equipment-detection", label: "Vessel, vehicle, or equipment detection" },
+  { value: "site-posture-and-readiness", label: "Site posture and readiness" },
+  { value: "before-after-compare", label: "Before-and-after compare" },
+  { value: "trendlines-over-time", label: "Trendlines over time" },
+  { value: "analyst-review-and-provenance", label: "Analyst review and provenance" },
+  { value: "downstream-delivery", label: "Downstream delivery" },
+];
+
+const timelines = [
+  { value: "evaluating-now", label: "Evaluating now" },
+  { value: "0-3-months", label: "0–3 months" },
+  { value: "3-6-months", label: "3–6 months" },
+  { value: "researching-for-later", label: "Later" },
+];
+---
+
+<div class="form-card">
+  <form class="waitlist-form" id="waitlist-form" method="post" action="/api/waitlist/">
+    <div class="honeypot-field" aria-hidden="true">
+      <label>
+        Website
+        <input type="text" name="website" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+
+    <fieldset class="form-group">
+      <legend class="form-group-title"><span>01</span> About you</legend>
+      <div class="field-grid">
+        <label class="field">
+          Full name
+          <input type="text" name="name" autocomplete="name" placeholder="Asha Menon" />
+        </label>
+        <label class="field">
+          <span class="field-label">Work email <span class="req" aria-hidden="true">Required</span></span>
+          <input type="email" name="email" autocomplete="email" placeholder="asha@organization.gov" required aria-describedby="error-email" />
+          <span class="field-error" id="error-email" data-error-for="email" hidden></span>
+        </label>
+        <label class="field">
+          Organization
+          <input type="text" name="organization" autocomplete="organization" placeholder="Defence lab, GEOINT team, programme office" />
+        </label>
+        <label class="field">
+          Role or team
+          <input type="text" name="role" autocomplete="organization-title" placeholder="Imagery analyst, programme lead" />
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+      <legend class="form-group-title"><span>02</span> Your requirement</legend>
+
+      <div class="field" role="radiogroup" aria-labelledby="interest-label" aria-describedby="error-interest">
+        <span class="field-label" id="interest-label">What do you need to monitor? <span class="req" aria-hidden="true">Required</span></span>
+        <div class="chips" data-chips="interest">
+          {interests.map((option) => (
+            <label class="chip">
+              <input type="radio" name="interest" value={option.value} required />
+              <span>{option.label}</span>
+            </label>
+          ))}
+        </div>
+        <span class="field-error" id="error-interest" data-error-for="interest" hidden></span>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Primary area of interest <span class="req" aria-hidden="true">Required</span></span>
+        <span class="select-wrap" data-select-wrap="focus">
+          <select name="focus" required aria-describedby="error-focus">
+            <option value="" selected disabled>Select one</option>
+            {focuses.map((option) => <option value={option.value}>{option.label}</option>)}
+          </select>
+        </span>
+        <span class="field-error" id="error-focus" data-error-for="focus" hidden></span>
+      </label>
+
+      <div class="field" role="radiogroup" aria-labelledby="timeline-label">
+        <span class="field-label" id="timeline-label">When do you need this? <small>Optional</small></span>
+        <div class="chips chips-row">
+          {timelines.map((option) => (
+            <label class="chip">
+              <input type="radio" name="timeline" value={option.value} />
+              <span>{option.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <label class="field">
+        <span class="field-label">Tell us about your use case <small>Optional</small></span>
+        <textarea
+          name="mission"
+          rows="4"
+          placeholder="The sites you watch, the imagery you use today, and the questions you need answered."
+        ></textarea>
+      </label>
+    </fieldset>
+
+    <div class="form-footer">
+      <p class="form-disclosure">
+        By submitting, you acknowledge the <a href="/legal/">MIAR legal notice</a> and
+        <a href="/privacy/">privacy notice</a>, and confirm this request is for a lawful
+        organizational use case.
+      </p>
+      <div class="submit-row">
+        <button class="button button-primary submit-button" type="submit">
+          Request access
+        </button>
+      </div>
+      <p class="form-status" id="form-status" aria-live="polite"></p>
+    </div>
+  </form>
+</div>

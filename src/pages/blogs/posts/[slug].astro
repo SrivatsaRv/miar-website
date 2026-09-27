@@ -124,8 +124,9 @@ const jsonLd = {
   jsonLd={jsonLd}
 >
   <main class="subpage-shell article-shell blog-article-shell">
+    <div class="wrap">
     <header class="blog-article-hero">
-      <a class="blog-article-breadcrumb" href="/blogs/">Blogs <span>/</span> {post.data.category}</a>
+      <a class="blog-article-breadcrumb" href="/blogs/">Insights <span>/</span> {post.data.category}</a>
       <h1>{post.data.title}</h1>
       <p class="lead">{post.data.summary}</p>
       <div class="blog-article-byline">
@@ -207,6 +208,17 @@ const jsonLd = {
         </nav>
       )
     }
+
+    <section class="cta-band article-cta">
+      <div>
+        <h2>See how MIAR handles your sites and imagery.</h2>
+        <p>Tell us what you monitor. If there is a fit, we will set up a short call and a scoped evaluation.</p>
+      </div>
+      <div class="cta-band-actions">
+        <a class="button button-primary" href="/#waitlist">Request access <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </section>
+    </div>
   </main>
 
   <script>

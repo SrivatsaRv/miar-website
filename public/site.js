@@ -1,128 +1,42 @@
 const body = document.body;
+const header = document.querySelector("[data-site-header]");
 const headerShell = document.querySelector(".header-shell");
 const navToggle = document.querySelector("[data-nav-toggle]");
 const navLinks = document.querySelectorAll(".site-nav a");
+const navGroupToggles = document.querySelectorAll("[data-nav-group-toggle]");
 const form = document.getElementById("waitlist-form");
 const statusNode = document.getElementById("form-status");
 const submitButton = form?.querySelector(".submit-button");
-const customSelects = document.querySelectorAll("[data-custom-select]");
-const navGroupToggles = document.querySelectorAll("[data-nav-group-toggle]");
+
+/* ---------- Header ---------- */
+
+if (header?.classList.contains("site-header-home")) {
+  const syncHeader = () => header.classList.toggle("is-scrolled", window.scrollY > 24);
+  syncHeader();
+  window.addEventListener("scroll", syncHeader, { passive: true });
+}
 
 function setNavOpen(isOpen) {
-  if (!headerShell || !navToggle) {
-    return;
-  }
-
+  if (!headerShell || !navToggle) return;
   headerShell.classList.toggle("is-nav-open", isOpen);
   navToggle.setAttribute("aria-expanded", String(isOpen));
   body.classList.toggle("nav-open", isOpen);
 }
 
 navToggle?.addEventListener("click", () => {
-  const isOpen = headerShell?.classList.contains("is-nav-open");
-  setNavOpen(!isOpen);
+  setNavOpen(!headerShell?.classList.contains("is-nav-open"));
 });
 
 window.addEventListener("resize", () => {
-  if (window.innerWidth > 920) {
-    setNavOpen(false);
-  }
+  if (window.innerWidth > 920) setNavOpen(false);
 });
 
-navLinks.forEach((link) => {
-  link.addEventListener("click", () => {
-    setNavOpen(false);
-  });
-});
+navLinks.forEach((link) => link.addEventListener("click", () => setNavOpen(false)));
 
 navGroupToggles.forEach((toggle) => {
   toggle.addEventListener("click", () => {
-    const group = toggle.closest(".nav-group");
-    const isOpen = group?.classList.toggle("is-open");
+    const isOpen = toggle.closest(".nav-group")?.classList.toggle("is-open");
     toggle.setAttribute("aria-expanded", String(Boolean(isOpen)));
-  });
-});
-
-function closeCustomSelect(select) {
-  const trigger = select?.querySelector("[data-custom-select-trigger]");
-  const menu = select?.querySelector("[data-custom-select-menu]");
-
-  if (!select || !trigger || !menu) {
-    return;
-  }
-
-  select.classList.remove("is-open");
-  trigger.setAttribute("aria-expanded", "false");
-  menu.hidden = true;
-}
-
-function syncCustomSelect(select, value = "") {
-  const shell = select?.closest(".select-shell");
-  const hiddenInput = shell?.querySelector("[data-custom-select-input]");
-  const mobileSelect = shell?.querySelector("[data-custom-select-mobile]");
-  const trigger = select?.querySelector("[data-custom-select-trigger]");
-  const valueNode = select?.querySelector("[data-custom-select-value]");
-  const options = select?.querySelectorAll("[data-value]");
-
-  if (!shell || !hiddenInput || !mobileSelect || !trigger || !valueNode || !options?.length) {
-    return;
-  }
-
-  hiddenInput.value = value;
-  mobileSelect.value = value;
-
-  const selectedOption = Array.from(options).find((option) => option.dataset.value === value);
-
-  if (selectedOption) {
-    valueNode.textContent = selectedOption.textContent || "Select one";
-    trigger.classList.remove("is-placeholder");
-  } else {
-    valueNode.textContent = "Select one";
-    trigger.classList.add("is-placeholder");
-  }
-
-  options.forEach((option) => {
-    option.classList.toggle("is-selected", option.dataset.value === value);
-  });
-}
-
-customSelects.forEach((select) => {
-  const shell = select.closest(".select-shell");
-  const hiddenInput = shell?.querySelector("[data-custom-select-input]");
-  const mobileSelect = shell?.querySelector("[data-custom-select-mobile]");
-  const trigger = select.querySelector("[data-custom-select-trigger]");
-  const menu = select.querySelector("[data-custom-select-menu]");
-  const options = select.querySelectorAll("[data-value]");
-
-  if (!shell || !hiddenInput || !mobileSelect || !trigger || !menu || !options.length) {
-    return;
-  }
-
-  syncCustomSelect(select, hiddenInput.value || mobileSelect.value || "");
-
-  trigger.addEventListener("click", () => {
-    const isOpen = select.classList.contains("is-open");
-
-    customSelects.forEach((node) => {
-      if (node !== select) {
-        closeCustomSelect(node);
-      }
-    });
-
-    select.classList.toggle("is-open", !isOpen);
-    trigger.setAttribute("aria-expanded", String(!isOpen));
-    menu.hidden = isOpen;
-  });
-
-  options.forEach((option) => {
-    option.addEventListener("click", () => {
-      syncCustomSelect(select, option.dataset.value || "");
-      closeCustomSelect(select);
-    });
-  });
-
-  mobileSelect.addEventListener("change", () => {
-    syncCustomSelect(select, mobileSelect.value);
   });
 });
 
@@ -130,89 +44,113 @@ document.addEventListener("click", (event) => {
   if (headerShell?.classList.contains("is-nav-open") && !headerShell.contains(event.target)) {
     setNavOpen(false);
   }
-
-  customSelects.forEach((select) => {
-    if (!select.contains(event.target)) {
-      closeCustomSelect(select);
+  document.querySelectorAll(".nav-group.is-open").forEach((group) => {
+    if (!group.contains(event.target)) {
+      group.classList.remove("is-open");
+      group.querySelector("[data-nav-group-toggle]")?.setAttribute("aria-expanded", "false");
     }
   });
 });
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    setNavOpen(false);
-    customSelects.forEach((select) => closeCustomSelect(select));
-  }
+  if (event.key === "Escape") setNavOpen(false);
 });
 
-function setStatus(message, type = "") {
-  if (!statusNode) {
-    return;
-  }
+/* ---------- Request form ---------- */
 
+const messages = {
+  email: "Enter your work email.",
+  emailFormat: "Enter a valid email address.",
+  interest: "Select a primary workflow before submitting.",
+  focus: "Select an operating focus before submitting.",
+};
+
+function setStatus(message, type = "") {
+  if (!statusNode) return;
   statusNode.textContent = message;
   statusNode.classList.remove("is-success", "is-error");
+  if (type) statusNode.classList.add(type);
+}
 
-  if (type) {
-    statusNode.classList.add(type);
+function setFieldError(name, message) {
+  if (!form) return;
+  const errorNode = form.querySelector(`[data-error-for="${name}"]`);
+  if (errorNode) {
+    errorNode.textContent = message || "";
+    errorNode.hidden = !message;
   }
+  if (name === "email") {
+    form.elements.email?.setAttribute("aria-invalid", String(Boolean(message)));
+  }
+  if (name === "interest") {
+    form.querySelector('[data-chips="interest"]')?.classList.toggle("is-invalid", Boolean(message));
+  }
+  if (name === "focus") {
+    form.querySelector('[data-select-wrap="focus"]')?.classList.toggle("is-invalid", Boolean(message));
+    form.elements.focus?.setAttribute("aria-invalid", String(Boolean(message)));
+  }
+}
+
+function validate() {
+  const data = new FormData(form);
+  const email = String(data.get("email") || "").trim();
+  const errors = {
+    email: !email ? messages.email : /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? "" : messages.emailFormat,
+    interest: data.get("interest") ? "" : messages.interest,
+    focus: data.get("focus") ? "" : messages.focus,
+  };
+  Object.entries(errors).forEach(([name, message]) => setFieldError(name, message));
+  return Object.values(errors).find(Boolean) || "";
 }
 
 function setSubmittingState(isSubmitting) {
-  if (!form || !submitButton) {
-    return;
-  }
-
+  if (!form || !submitButton) return;
   form.setAttribute("aria-busy", String(isSubmitting));
   submitButton.disabled = isSubmitting;
-  submitButton.textContent = isSubmitting ? "Recording request..." : "Request access";
+  submitButton.textContent = isSubmitting ? "Sending request…" : "Request access";
 }
 
-form?.addEventListener("submit", async (event) => {
-  event.preventDefault();
+if (form) {
+  form.noValidate = true;
+  form.setAttribute("aria-busy", "false");
 
-  const interestInput = form.querySelector('input[name="interest"]');
-  const focusInput = form.querySelector('input[name="focus"]');
+  form.addEventListener("change", (event) => {
+    const name = event.target?.name;
+    if (name && form.querySelector(`[data-error-for="${name}"]:not([hidden])`)) validate();
+  });
 
-  if (interestInput && !interestInput.value) {
-    setStatus("Select a primary workflow before submitting.", "is-error");
-    return;
-  }
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  if (focusInput && !focusInput.value) {
-    setStatus("Select an operating focus before submitting.", "is-error");
-    return;
-  }
-
-  setSubmittingState(true);
-  setStatus("Recording request...");
-
-  const formData = new FormData(form);
-
-  try {
-    const response = await fetch(form.action, {
-      method: "POST",
-      body: formData,
-      headers: {
-        Accept: "application/json",
-      },
-    });
-
-    const result = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      throw new Error(result.error || "Submission failed.");
+    const firstError = validate();
+    if (firstError) {
+      setStatus(firstError, "is-error");
+      form.querySelector('[aria-invalid="true"], .is-invalid input')?.focus();
+      return;
     }
 
-    form.reset();
-    customSelects.forEach((select) => syncCustomSelect(select, ""));
-    setStatus(
-      result.message || "Request recorded. We will review fit and reach out directly.",
-      result.persisted === false ? "is-error" : "is-success"
-    );
-  } catch (error) {
-    setStatus(error.message || "Something went wrong. Please try again.", "is-error");
-  } finally {
-    setSubmittingState(false);
-  }
-});
+    setSubmittingState(true);
+    setStatus("");
+
+    try {
+      const response = await fetch(form.action, {
+        method: "POST",
+        body: new FormData(form),
+        headers: { Accept: "application/json" },
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) throw new Error(result.error || "Submission failed.");
+
+      form.reset();
+      setStatus(
+        result.message || "Request recorded. We will review fit and reach out directly.",
+        result.persisted === false ? "is-error" : "is-success"
+      );
+    } catch (error) {
+      setStatus(error.message || "Something went wrong. Please try again.", "is-error");
+    } finally {
+      setSubmittingState(false);
+    }
+  });
+}

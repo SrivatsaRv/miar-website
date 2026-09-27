@@ -1,0 +1,49 @@
+---
+// Current pass of the monitored airbase, with detections drawn over the registered 2026 image.
+const view = { x: 300, y: 400, w: 1180, h: 580 };
+const bracket = (cx: number, cy: number, size = 92, c = 14) => {
+  const x = cx - size / 2;
+  const y = cy - size / 2;
+  return `M${x} ${y + c}V${y}H${x + c}M${x + size - c} ${y}H${x + size}V${y + c}M${x + size} ${y + size - c}V${y + size}H${x + size - c}M${x + c} ${y + size}H${x}V${y + size - c}`;
+};
+const marks = [
+  { x: 492, y: 590, label: "FIXED-WING · 0.94", change: true },
+  { x: 982, y: 528, label: "FIXED-WING · 0.97" },
+  { x: 1090, y: 533, label: "FIXED-WING · 0.96" },
+  { x: 1355, y: 600, label: "FIXED-WING · 0.91", change: true },
+  { x: 955, y: 733, label: "FIXED-WING · 0.95" },
+  { x: 725, y: 918, label: "FIXED-WING · 0.89", change: true },
+  { x: 982, y: 846, label: "ROTARY · 0.86", change: true, size: 70 },
+];
+---
+
+<div class="plate solution-scene">
+  <div class="plate-head"><span>Current pass · <strong>Site 014</strong></span><span>7 detections · 4 flagged for review</span></div>
+  <div class="scene-grid">
+    <div class="plate-figure">
+      <svg viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} role="img" aria-label="Current image of a monitored airbase with seven aircraft detections, four marked for analyst review">
+        <image href="/imagery/monitored-site-follow-on-2026.webp" x="2" y="78" width="1546" height="1090" />
+        <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="#0b0e10" opacity="0.2" />
+        {marks.map((m) => (
+          <g>
+            <path class:list={["mark-box", m.change && "is-change"]} d={bracket(m.x, m.y, m.size)} />
+            {m.change && (
+              <g class="mark-tag is-change" transform={`translate(${m.x - (m.size ?? 92) / 2} ${m.y - (m.size ?? 92) / 2 - 30})`}>
+                <rect width={m.label.length * 9.6 + 16} height="24" />
+                <text x="8" y="17">{m.label}</text>
+              </g>
+            )}
+          </g>
+        ))}
+      </svg>
+    </div>
+    <dl class="scene-readout">
+      <div><dt>Fixed-wing aircraft</dt><dd>6</dd></div>
+      <div><dt>Rotary-wing aircraft</dt><dd>1</dd></div>
+      <div><dt>Same stand as baseline</dt><dd>3</dd></div>
+      <div class="is-change"><dt>New positions</dt><dd>4</dd></div>
+      <div><dt>Baseline used</dt><dd>2025 pass</dd></div>
+      <div><dt>Status</dt><dd>With analyst</dd></div>
+    </dl>
+  </div>
+</div>

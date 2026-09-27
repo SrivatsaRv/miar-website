@@ -1,0 +1,60 @@
+---
+// Thumbnails crop the eastern hardstand from the registered 2025/2026 pair.
+const crop = "1230 500 250 156";
+const bracket = "M1327 586V572H1341M1369 572H1383V586M1383 614V628H1369M1341 628H1327V614";
+---
+
+<div class="record" aria-label="Example finding record">
+  <div class="record-head">
+    <span>Finding F-0147</span>
+    <span class="status-pill">Approved</span>
+  </div>
+  <div class="record-title">
+    <strong>Large aircraft on the eastern hardstand</strong>
+    <span>Site 014 · not present in the baseline image</span>
+  </div>
+  <div class="record-images">
+    <span class="pin pin-out" aria-hidden="true">1</span>
+    <figure>
+      <svg viewBox={crop} aria-hidden="true">
+        <image href="/imagery/monitored-site-reference-2025.webp" x="0" y="0" width="1564" height="1136" />
+        <path d={bracket} class="mark-box is-vacated" />
+      </svg>
+      <figcaption>BASELINE · 2025</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox={crop} aria-hidden="true">
+        <image href="/imagery/monitored-site-follow-on-2026.webp" x="2" y="78" width="1546" height="1090" />
+        <path d={bracket} class="mark-box is-change" />
+      </svg>
+      <figcaption>CURRENT · 2026</figcaption>
+    </figure>
+  </div>
+  <dl class="record-fields">
+    <div>
+      <dt>Detected</dt>
+      <dd>Large fixed-wing aircraft</dd>
+    </div>
+    <div>
+      <span class="pin" aria-hidden="true">2</span>
+      <dt>Model confidence</dt>
+      <dd class="confidence"><span class="num">0.91</span><i style="--value: 91%"></i></dd>
+    </div>
+    <div>
+      <dt>Compared against</dt>
+      <dd>2025 baseline pass</dd>
+    </div>
+    <div>
+      <span class="pin" aria-hidden="true">3</span>
+      <dt>Analyst decision</dt>
+      <dd>Accepted, with note</dd>
+    </div>
+  </dl>
+  <ol class="record-log">
+    <span class="pin" aria-hidden="true">4</span>
+    <li><time>06:42Z</time>Current image received from provider</li>
+    <li><time>06:44Z</time>Detection and comparison completed</li>
+    <li><time>09:18Z</time>Analyst accepted the finding and added a note</li>
+    <li><time>09:20Z</time>Included in the weekly site brief</li>
+  </ol>
+</div>

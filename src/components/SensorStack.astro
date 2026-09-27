@@ -1,0 +1,927 @@
+---
+// Hero workbench: the same fictional airfield drawn as optical, SAR and hyperspectral layers.
+// The viewer plays the analyst: pick a candidate detection, see what each sensor reads at that
+// exact spot, then accept or reject the assessment. Pure SVG + a little JS; no raster imagery.
+// Plane coordinates are 0–400; each layer is projected with one isometric affine matrix.
+
+const A = 0.6235; // cos30 × scale
+const B = 0.36; // sin30 × scale
+const originX = 262;
+const layerY = { eo: 18, sar: 136, hsi: 254, fused: 396 } as const;
+type LayerId = keyof typeof layerY;
+const project = (u: number, v: number, f: number) => [originX + (u - v) * A, f + (u + v) * B];
+const plane = (f: number) => `matrix(${A} ${B} ${-A} ${B} ${originX} ${f})`;
+const diamond = "M0 0H400V400H0Z";
+
+let seed = 20260927;
+const random = () => {
+  seed = (seed * 1664525 + 1013904223) % 4294967296;
+  return seed / 4294967296;
+};
+
+type Rect = { x: number; y: number; w: number; h: number };
+const runway: Rect = { x: 30, y: 50, w: 340, h: 30 };
+const taxiway: Rect = { x: 60, y: 108, w: 290, h: 14 };
+const links: Rect[] = [
+  { x: 84, y: 80, w: 12, h: 28 },
+  { x: 318, y: 80, w: 12, h: 28 },
+];
+const apron: Rect = { x: 150, y: 150, w: 205, h: 175 };
+const hangars: Rect[] = [
+  { x: 36, y: 158, w: 76, h: 50 },
+  { x: 36, y: 228, w: 76, h: 50 },
+  { x: 36, y: 298, w: 76, h: 40 },
+];
+const fields: Rect[] = [
+  { x: 150, y: 342, w: 110, h: 44 },
+  { x: 276, y: 342, w: 96, h: 44 },
+  { x: 14, y: 352, w: 110, h: 36 },
+];
+
+// Real aircraft (metal, paint), a decoy (aircraft shape, fabric) and a netted vehicle.
+const aircraft = [
+  [188, 188],
+  [236, 188],
+  [284, 188],
+  [188, 272],
+  [318, 272],
+];
+const decoy = [236, 272];
+const netted = [132, 250];
+
+type Reading = { ok: boolean; text: string; short: string };
+type Candidate = {
+  id: string;
+  pos: number[];
+  object: string;
+  verdict: string;
+  agreement: string;
+  tag: string;
+  readings: Record<"eo" | "sar" | "hsi", Reading>;
+};
+
+const candidates: Candidate[] = [
+  {
+    id: "C-2",
+    pos: [318, 272],
+    object: "Aircraft on apron east",
+    verdict: "New since last pass",
+    agreement: "3 of 3 sensors confirm a real aircraft",
+    tag: "NEW AIRCRAFT · 3/3",
+    readings: {
+      eo: { ok: true, text: "Aircraft shape, ~30 m span", short: "AIRCRAFT SHAPE" },
+      sar: { ok: true, text: "Strong metal return", short: "METAL RETURN" },
+      hsi: { ok: true, text: "Aircraft paint spectrum", short: "AIRCRAFT PAINT" },
+    },
+  },
+  {
+    id: "C-3",
+    pos: decoy,
+    object: "Aircraft-shaped object",
+    verdict: "Likely decoy",
+    agreement: "Only optical sees an aircraft",
+    tag: "LIKELY DECOY · 1/3",
+    readings: {
+      eo: { ok: true, text: "Aircraft shape, ~30 m span", short: "AIRCRAFT SHAPE" },
+      sar: { ok: false, text: "No metal return", short: "NO METAL RETURN" },
+      hsi: { ok: false, text: "Polymer fabric, not paint", short: "POLYMER FABRIC" },
+    },
+  },
+  {
+    id: "C-4",
+    pos: netted,
+    object: "Covered object by the hangars",
+    verdict: "Likely concealed vehicle",
+    agreement: "Radar and hyperspectral see what optical misses",
+    tag: "CONCEALED · 2/3",
+    readings: {
+      eo: { ok: false, text: "Nothing distinct visible", short: "NOTHING VISIBLE" },
+      sar: { ok: true, text: "Strong metal return", short: "METAL RETURN" },
+      hsi: { ok: true, text: "Camouflage net material", short: "CAMOUFLAGE NET" },
+    },
+  },
+  {
+    id: "C-1",
+    pos: [188, 188],
+    object: "Transport aircraft, north row",
+    verdict: "Confirmed, unchanged",
+    agreement: "3 of 3 sensors agree · same stand as baseline",
+    tag: "HELD · 3/3",
+    readings: {
+      eo: { ok: true, text: "Aircraft shape, ~38 m span", short: "AIRCRAFT SHAPE" },
+      sar: { ok: true, text: "Strong metal return", short: "METAL RETURN" },
+      hsi: { ok: true, text: "Aircraft paint spectrum", short: "AIRCRAFT PAINT" },
+    },
+  },
+];
+
+const inside = (u: number, v: number, r: Rect) => u >= r.x && u < r.x + r.w && v >= r.y && v < r.y + r.h;
+const near = (u: number, v: number, [x, y]: number[], d = 11) => Math.abs(u - x) < d && Math.abs(v - y) < d;
+
+const classes = {
+  soil: "#7d6538",
+  vegetation: "#23806a",
+  concrete: "#6d7789",
+  asphalt: "#262c3a",
+  roof: "#4f79a6",
+  paint: "#d6dbe0",
+  fabric: "#a07ccf",
+  net: "#a9ad3d",
+};
+const cell = 20;
+const hsiCells: { x: number; y: number; fill: string; o: number }[] = [];
+for (let row = 0; row < 20; row++) {
+  for (let col = 0; col < 20; col++) {
+    const u = col * cell + cell / 2;
+    const v = row * cell + cell / 2;
+    let fill = classes.soil;
+    if (fields.some((r) => inside(u, v, r))) fill = classes.vegetation;
+    if (inside(u, v, apron)) fill = classes.concrete;
+    if ([runway, taxiway, ...links].some((r) => inside(u, v, r))) fill = classes.asphalt;
+    if (hangars.some((r) => inside(u, v, r))) fill = classes.roof;
+    if (aircraft.some((p) => near(u, v, p))) fill = classes.paint;
+    if (near(u, v, decoy)) fill = classes.fabric;
+    if (near(u, v, netted)) fill = classes.net;
+    hsiCells.push({ x: col * cell, y: row * cell, fill, o: 0.72 + random() * 0.28 });
+  }
+}
+
+const speckle = Array.from({ length: 70 }, () => ({
+  x: random() * 40,
+  y: random() * 40,
+  r: 0.5 + random() * 1.1,
+  o: 0.12 + random() * 0.5,
+}));
+// Metal gives bright SAR returns; the fabric decoy gives none.
+const returns = [...aircraft, netted].flatMap(([x, y]) =>
+  Array.from({ length: 9 }, () => ({ x: x + (random() - 0.5) * 22, y: y + (random() - 0.5) * 22, r: 1.4 + random() * 2.4 }))
+);
+
+const bracket = (x: number, y: number, s = 30, c = 8) => {
+  const h = s / 2;
+  return `M${x - h} ${y - h + c}V${y - h}H${x - h + c}M${x + h - c} ${y - h}H${x + h}V${y - h + c}M${x + h} ${y + h - c}V${y + h}H${x + h - c}M${x - h + c} ${y + h}H${x - h}V${y + h - c}`;
+};
+
+const plan = "M0 -14L2 -8V-2L13 3V6L2 3.5V9L6 12V13.5L0 12.5L-6 13.5V12L-2 9V3.5L-13 6V3L-2 -2V-8Z";
+const layerTags: { id: LayerId; code: string; name: string }[] = [
+  { id: "eo", code: "EO", name: "Optical" },
+  { id: "sar", code: "SAR", name: "Radar" },
+  { id: "hsi", code: "HSI", name: "Hyperspectral" },
+  { id: "fused", code: "FUSED", name: "Assessment" },
+];
+const sensorIds = ["eo", "sar", "hsi"] as const;
+const tagWidth = (text: string) => text.length * 7.6 + 30;
+---
+
+<figure class="sensor-stack" data-sensor-stack data-active="all" data-cand-active={candidates[0].id}>
+  <svg viewBox="0 0 660 700" role="img" aria-labelledby="ws-title">
+    <title id="ws-title">
+      An airfield seen by optical, radar and hyperspectral sensors. Select a candidate detection to see what
+      each sensor reads at that location.
+    </title>
+    <defs>
+      <pattern id="ss-speckle" width="40" height="40" patternUnits="userSpaceOnUse">
+        {speckle.map((dot) => <circle cx={dot.x} cy={dot.y} r={dot.r} fill="#cfe0e8" opacity={dot.o} />)}
+      </pattern>
+      <pattern id="ss-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M20 0H0V20" fill="none" stroke="#f2f1ec" stroke-opacity="0.08" stroke-width="1" vector-effect="non-scaling-stroke" />
+      </pattern>
+      <radialGradient id="ss-glow">
+        <stop offset="0" stop-color="#ffffff" stop-opacity="0.95" />
+        <stop offset="0.45" stop-color="#bfe3ff" stop-opacity="0.55" />
+        <stop offset="1" stop-color="#bfe3ff" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <!-- Fused assessment (bottom) -->
+    <g class="ss-layer" data-layer="fused">
+      <g transform={plane(layerY.fused)}>
+        <path d={diamond} fill="#0d1215" />
+        <path d={diamond} fill="url(#ss-grid)" />
+        <g fill="none" stroke="#f2f1ec" stroke-opacity="0.26" stroke-width="1">
+          {[runway, taxiway, ...links, apron, ...hangars].map((r) => (
+            <rect x={r.x} y={r.y} width={r.w} height={r.h} vector-effect="non-scaling-stroke" />
+          ))}
+        </g>
+        <g fill="none" stroke="#f2f1ec" stroke-opacity="0.45" stroke-width="1.2">
+          {aircraft.filter(([x, y]) => !candidates.some((c) => c.pos[0] === x && c.pos[1] === y)).map(([x, y]) => (
+            <path d={bracket(x, y, 26)} vector-effect="non-scaling-stroke" />
+          ))}
+        </g>
+        {candidates.map((c) => (
+          <path class="ss-cand-mark" data-mark={c.id} d={bracket(c.pos[0], c.pos[1], 34, 9)} fill="none" vector-effect="non-scaling-stroke" />
+        ))}
+        <path class="ss-edge" d={diamond} fill="none" vector-effect="non-scaling-stroke" />
+      </g>
+    </g>
+
+    <!-- Hyperspectral -->
+    <g class="ss-layer" data-layer="hsi">
+      <g transform={plane(layerY.hsi)}>
+        <path d={diamond} fill="#0b0e10" />
+        {hsiCells.map((c) => <rect x={c.x + 1} y={c.y + 1} width={cell - 2} height={cell - 2} fill={c.fill} opacity={c.o} />)}
+        <rect class="ss-scan" x="0" y="0" width="26" height="400" fill="#f2f1ec" fill-opacity="0.14" />
+        <path class="ss-edge" d={diamond} fill="none" vector-effect="non-scaling-stroke" />
+      </g>
+    </g>
+
+    <!-- SAR -->
+    <g class="ss-layer" data-layer="sar">
+      <g transform={plane(layerY.sar)}>
+        <path d={diamond} fill="#0a0d10" />
+        <path d={diamond} fill="url(#ss-speckle)" />
+        <g fill="#030405">
+          {[runway, taxiway, ...links].map((r) => <rect x={r.x} y={r.y} width={r.w} height={r.h} />)}
+        </g>
+        <rect x={apron.x} y={apron.y} width={apron.w} height={apron.h} fill="#0a0d10" opacity="0.55" />
+        <g fill="none" stroke="#e9f4f8" stroke-width="1.8" stroke-opacity="0.9">
+          {hangars.map((r) => <path d={`M${r.x} ${r.y + r.h}V${r.y}H${r.x + r.w}`} vector-effect="non-scaling-stroke" />)}
+        </g>
+        {returns.map((dot) => <circle cx={dot.x} cy={dot.y} r={dot.r * 1.8} fill="url(#ss-glow)" />)}
+        <rect class="ss-scan" x="0" y="0" width="26" height="400" fill="#cfe0e8" fill-opacity="0.12" />
+        <path class="ss-edge" d={diamond} fill="none" vector-effect="non-scaling-stroke" />
+      </g>
+    </g>
+
+    <!-- Optical (top) -->
+    <g class="ss-layer" data-layer="eo">
+      <g transform={plane(layerY.eo)}>
+        <path d={diamond} fill="#57534a" />
+        {fields.map((r) => <rect x={r.x} y={r.y} width={r.w} height={r.h} fill="#4a5642" />)}
+        <rect x={apron.x} y={apron.y} width={apron.w} height={apron.h} fill="#8b877b" />
+        <g fill="#2a2d2f">
+          {[runway, taxiway, ...links].map((r) => <rect x={r.x} y={r.y} width={r.w} height={r.h} />)}
+        </g>
+        <path d={`M${runway.x + 12} ${runway.y + runway.h / 2}H${runway.x + runway.w - 12}`} stroke="#e9e6dd" stroke-width="1.2" stroke-dasharray="10 8" vector-effect="non-scaling-stroke" />
+        {hangars.map((r) => (
+          <g>
+            <rect x={r.x + 4} y={r.y + 4} width={r.w} height={r.h} fill="#2a2a25" opacity="0.6" />
+            <rect x={r.x} y={r.y} width={r.w} height={r.h} fill="#b9b3a3" />
+          </g>
+        ))}
+        <g fill="#efece4">
+          {[...aircraft, decoy].map(([x, y]) => <path d={plan} transform={`translate(${x} ${y}) scale(1.05)`} />)}
+        </g>
+        <rect x={netted[0] - 11} y={netted[1] - 8} width="22" height="16" rx="5" fill="#5b5847" />
+        <rect class="ss-scan" x="0" y="0" width="26" height="400" fill="#ffffff" fill-opacity="0.14" />
+        <path class="ss-edge" d={diamond} fill="none" vector-effect="non-scaling-stroke" />
+      </g>
+    </g>
+
+    <!-- Per-candidate probe: beam, per-layer readings and fused assessment -->
+    {candidates.map((c) => {
+      const [bx, top] = project(c.pos[0], c.pos[1], layerY.eo);
+      const [, bottom] = project(c.pos[0], c.pos[1], layerY.fused);
+      return (
+        <g class="ss-probe" data-probe={c.id} aria-hidden="true">
+          <line class="ss-beam" x1={bx} y1={top} x2={bx} y2={bottom} />
+          {sensorIds.map((id) => {
+            const [x, y] = project(c.pos[0], c.pos[1], layerY[id]);
+            const reading = c.readings[id];
+            const label = `${reading.ok ? "✓" : "✕"} ${reading.short}`;
+            return (
+              <g class:list={["ss-reading", reading.ok ? "is-ok" : "is-no"]} data-reading={id}>
+                <path class="ss-hit" d={`M${x} ${y - 9}L${x + 15} ${y}L${x} ${y + 9}L${x - 15} ${y}Z`} />
+                <g transform={`translate(${x + 22} ${y - 13})`}>
+                  <rect width={tagWidth(label)} height="24" />
+                  <text x="10" y="16">{label}</text>
+                </g>
+              </g>
+            );
+          })}
+          <g class="ss-finding" transform={`translate(${bx} ${bottom})`}>
+            <circle class="ss-ping" r="16" />
+            <path d="M0 18V52H24" fill="none" />
+            <rect x="24" y="38" width={tagWidth(c.tag) + 4} height="28" />
+            <text x="36" y="57">{c.tag}</text>
+          </g>
+        </g>
+      );
+    })}
+
+    <!-- Click targets on the top and bottom layers -->
+    {candidates.map((c) =>
+      (["eo", "fused"] as const).map((id) => {
+        const [x, y] = project(c.pos[0], c.pos[1], layerY[id]);
+        return <circle class="ss-target" data-select={c.id} cx={x} cy={y} r="18" />;
+      })
+    )}
+
+    {layerTags.map((layer) => {
+      const [x, y] = project(400, 0, layerY[layer.id]);
+      return (
+        <g class="ss-tag" data-tag={layer.id} data-peel={layer.id} transform={`translate(${x + 14} ${y - 6})`}>
+          <rect x="-14" y="-14" width="130" height="44" fill="transparent" />
+          <line x1="-12" y1="6" x2="0" y2="6" />
+          <text x="4" y="4" class="ss-tag-code">{layer.code}</text>
+          <text x="4" y="21" class="ss-tag-name">{layer.name}</text>
+        </g>
+      );
+    })}
+  </svg>
+
+  <figcaption class="wb" aria-label="Analyst review">
+    <div class="wb-head">
+      <span class="wb-title">Your review <span>· 4 candidates on this pass</span></span>
+      <div class="wb-cands" role="group" aria-label="Select a candidate">
+        {candidates.map((c) => (
+          <button type="button" data-select={c.id} aria-pressed={c.id === candidates[0].id ? "true" : "false"}>{c.id}</button>
+        ))}
+      </div>
+    </div>
+
+    {candidates.map((c, index) => (
+      <div class="wb-body" data-panel={c.id} hidden={index !== 0}>
+        <ul class="wb-readings">
+          {sensorIds.map((id) => (
+            <li data-peel={id} class:list={[c.readings[id].ok ? "is-ok" : "is-no"]} tabindex="0">
+              <span class="wb-code">{id.toUpperCase()}</span>
+              <span class="wb-text">{c.readings[id].text}</span>
+              <span class="wb-status" aria-label={c.readings[id].ok ? "supports" : "contradicts"}>{c.readings[id].ok ? "✓" : "✕"}</span>
+            </li>
+          ))}
+        </ul>
+        <div class="wb-verdict">
+          <div class="wb-assessment">
+            <strong>{c.verdict}</strong>
+            <span>{c.object} · {c.agreement}</span>
+          </div>
+          <div class="wb-actions" data-actions>
+            <button type="button" class="is-accept" data-decide="accept">Accept</button>
+            <button type="button" data-decide="reject">Reject</button>
+          </div>
+          <p class="wb-log" data-log hidden></p>
+        </div>
+      </div>
+    ))}
+  </figcaption>
+</figure>
+
+<style>
+  .sensor-stack {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+  }
+
+  .sensor-stack svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: min(540px, calc(100svh - 390px));
+    min-height: 300px;
+    margin-inline: auto;
+    overflow: visible;
+  }
+
+  .ss-layer {
+    transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
+  }
+
+  .ss-edge {
+    stroke: rgba(242, 241, 236, 0.28);
+    stroke-width: 1;
+    transition: stroke 0.4s var(--ease);
+  }
+
+  [data-active="sar"] [data-layer="eo"],
+  [data-active="hsi"] [data-layer="eo"],
+  [data-active="hsi"] [data-layer="sar"],
+  [data-active="fused"] [data-layer="eo"],
+  [data-active="fused"] [data-layer="sar"],
+  [data-active="fused"] [data-layer="hsi"] {
+    opacity: 0.08;
+  }
+
+  [data-active="eo"] [data-layer="eo"],
+  [data-active="sar"] [data-layer="sar"],
+  [data-active="hsi"] [data-layer="hsi"],
+  [data-active="fused"] [data-layer="fused"] {
+    transform: translateY(-8px);
+  }
+
+  [data-active="eo"] [data-layer="eo"] .ss-edge,
+  [data-active="sar"] [data-layer="sar"] .ss-edge,
+  [data-active="hsi"] [data-layer="hsi"] .ss-edge,
+  [data-active="fused"] [data-layer="fused"] .ss-edge {
+    stroke: #f2f1ec;
+  }
+
+  /* Dim readings that are not on the peeled layer. */
+  [data-active="eo"] .ss-reading:not([data-reading="eo"]),
+  [data-active="sar"] .ss-reading:not([data-reading="sar"]),
+  [data-active="hsi"] .ss-reading:not([data-reading="hsi"]) {
+    opacity: 0.25;
+  }
+
+  .ss-scan {
+    opacity: 0;
+    animation: ss-scan 3.2s linear infinite;
+  }
+
+  [data-active="eo"] [data-layer="eo"] .ss-scan,
+  [data-active="sar"] [data-layer="sar"] .ss-scan,
+  [data-active="hsi"] [data-layer="hsi"] .ss-scan {
+    opacity: 1;
+  }
+
+  @keyframes ss-scan {
+    from {
+      transform: translateX(-30px);
+    }
+    to {
+      transform: translateX(404px);
+    }
+  }
+
+  .ss-cand-mark {
+    stroke: #f2f1ec;
+    stroke-width: 1.6;
+    transition: stroke 0.3s var(--ease);
+  }
+
+  .ss-probe {
+    display: none;
+  }
+
+  [data-cand-active="C-1"] [data-probe="C-1"],
+  [data-cand-active="C-2"] [data-probe="C-2"],
+  [data-cand-active="C-3"] [data-probe="C-3"],
+  [data-cand-active="C-4"] [data-probe="C-4"] {
+    display: inline;
+  }
+
+  [data-cand-active="C-1"] [data-mark="C-1"],
+  [data-cand-active="C-2"] [data-mark="C-2"],
+  [data-cand-active="C-3"] [data-mark="C-3"],
+  [data-cand-active="C-4"] [data-mark="C-4"] {
+    stroke: #e4571e;
+    stroke-width: 2.6;
+  }
+
+  .ss-reading {
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .ss-beam {
+    stroke: #e4571e;
+    stroke-width: 1.6;
+    stroke-dasharray: 3 7;
+    animation: ss-flow 1.2s linear infinite;
+  }
+
+  @keyframes ss-flow {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+
+  .ss-hit {
+    fill: rgba(228, 87, 30, 0.2);
+    stroke: #e4571e;
+    stroke-width: 1.5;
+  }
+
+  .ss-reading rect {
+    fill: rgba(11, 14, 16, 0.9);
+    stroke: rgba(242, 241, 236, 0.18);
+  }
+
+  .ss-reading text {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    fill: #f2f1ec;
+  }
+
+  .ss-reading.is-ok text {
+    fill: #5fd3b0;
+  }
+
+  .ss-reading.is-no text {
+    fill: #ff8a5c;
+  }
+
+  .ss-reading.is-no rect {
+    stroke: rgba(228, 87, 30, 0.6);
+  }
+
+  .ss-finding path {
+    stroke: #e4571e;
+  }
+
+  .ss-finding rect {
+    fill: #e4571e;
+  }
+
+  .ss-finding text {
+    fill: #fff;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+  }
+
+  .ss-ping {
+    fill: none;
+    stroke: #e4571e;
+    stroke-width: 1.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ss-ping 2.4s var(--ease) infinite;
+  }
+
+  @keyframes ss-ping {
+    0% {
+      transform: scale(0.6);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2.2);
+      opacity: 0;
+    }
+  }
+
+  .ss-target {
+    fill: transparent;
+    cursor: pointer;
+  }
+
+  .ss-target:hover {
+    fill: rgba(242, 241, 236, 0.1);
+  }
+
+  .ss-tag line {
+    stroke: rgba(242, 241, 236, 0.4);
+  }
+
+  .ss-tag-code {
+    fill: #f2f1ec;
+    font-family: var(--mono);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    transition: fill 0.3s var(--ease);
+  }
+
+  .ss-tag-name {
+    fill: rgba(242, 241, 236, 0.5);
+    font-family: var(--sans);
+    font-size: 13px;
+  }
+
+  [data-active="eo"] [data-tag="eo"] .ss-tag-code,
+  [data-active="sar"] [data-tag="sar"] .ss-tag-code,
+  [data-active="hsi"] [data-tag="hsi"] .ss-tag-code,
+  [data-active="fused"] [data-tag="fused"] .ss-tag-code {
+    fill: #e4571e;
+  }
+
+  /* Review card */
+
+  .wb {
+    margin-top: 6px;
+    border: 1px solid var(--night-rule);
+    background: rgba(18, 23, 26, 0.86);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .wb-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 1px solid var(--night-rule);
+  }
+
+  .wb-title {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--on-night);
+  }
+
+  .wb-title span {
+    color: var(--on-night-3);
+  }
+
+  .wb-cands {
+    display: flex;
+    gap: 4px;
+  }
+
+  .wb-cands button {
+    position: relative;
+    min-height: 30px;
+    padding: 0 10px;
+    border: 1px solid var(--night-rule);
+    background: transparent;
+    color: var(--on-night-2);
+    font-family: var(--mono);
+    font-size: 12px;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+
+  .wb-cands button:hover {
+    border-color: var(--on-night-3);
+    color: var(--on-night);
+  }
+
+  .wb-cands button[aria-pressed="true"] {
+    background: var(--on-night);
+    border-color: var(--on-night);
+    color: var(--night);
+  }
+
+  .wb-cands button.is-done::after {
+    content: "";
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #1a9c80;
+    box-shadow: 0 0 0 2px var(--night);
+  }
+
+  .wb-readings {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-bottom: 1px solid var(--night-rule);
+  }
+
+  .wb-readings li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2px 8px;
+    padding: 12px 14px 12px 16px;
+    cursor: default;
+    transition: background 0.2s var(--ease);
+  }
+
+  .wb-readings li + li {
+    border-left: 1px solid var(--night-rule);
+  }
+
+  .wb-readings li:hover,
+  .wb-readings li:focus-visible {
+    background: rgba(242, 241, 236, 0.05);
+    outline: none;
+  }
+
+  .wb-code {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--on-night-3);
+  }
+
+  .wb-text {
+    grid-column: 1;
+    font-size: 13.5px;
+    line-height: 1.35;
+    color: var(--on-night);
+  }
+
+  .wb-status {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .is-ok .wb-status {
+    background: rgba(26, 156, 128, 0.2);
+    color: #5fd3b0;
+  }
+
+  .is-no .wb-status {
+    background: rgba(228, 87, 30, 0.2);
+    color: #ff8a5c;
+  }
+
+  .wb-verdict {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 16px;
+    flex-wrap: wrap;
+    padding: 12px 12px 12px 16px;
+  }
+
+  .wb-assessment {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .wb-assessment strong {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--on-night);
+  }
+
+  .wb-assessment span {
+    font-size: 13px;
+    color: var(--on-night-2);
+  }
+
+  .wb-actions {
+    display: flex;
+    gap: 6px;
+  }
+
+  .wb-actions button {
+    min-height: 36px;
+    padding: 0 16px;
+    border: 1px solid var(--night-rule);
+    background: transparent;
+    color: var(--on-night);
+    font-size: 14px;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+
+  .wb-actions button:hover {
+    border-color: var(--on-night);
+  }
+
+  .wb-actions .is-accept {
+    background: var(--on-night);
+    border-color: var(--on-night);
+    color: var(--night);
+    font-weight: 500;
+  }
+
+  .wb-actions .is-accept:hover {
+    background: var(--signal);
+    border-color: var(--signal);
+    color: #fff;
+  }
+
+  .wb-log {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: #5fd3b0;
+  }
+
+  .wb-log button,
+  .wb-log a {
+    padding: 4px 10px;
+    border: 1px solid var(--night-rule);
+    background: transparent;
+    color: var(--on-night);
+    font-family: var(--sans);
+    font-size: 13px;
+    letter-spacing: 0;
+    text-decoration: none;
+  }
+
+  .wb-log button:hover,
+  .wb-log a:hover {
+    border-color: var(--on-night);
+  }
+
+  @media (max-width: 560px) {
+    .wb-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .wb-readings {
+      grid-template-columns: 1fr;
+    }
+
+    .wb-readings li + li {
+      border-left: 0;
+      border-top: 1px solid var(--night-rule);
+    }
+
+    .ss-tag-name,
+    .ss-reading g {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ss-scan,
+    .ss-ping,
+    .ss-beam {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-sensor-stack]").forEach((root) => {
+    const chips = [...root.querySelectorAll<HTMLButtonElement>(".wb-cands [data-select]")];
+    const order = chips.map((chip) => chip.dataset.select ?? "");
+    const decisions = new Map<string, string>();
+    let timer = 0;
+    let engaged = false;
+
+    const peel = (id: string) => {
+      root.dataset.active = id;
+    };
+
+    const select = (id: string) => {
+      root.dataset.candActive = id;
+      chips.forEach((chip) => chip.setAttribute("aria-pressed", String(chip.dataset.select === id)));
+      root.querySelectorAll<HTMLElement>("[data-panel]").forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== id;
+      });
+    };
+
+    const engage = () => {
+      engaged = true;
+      window.clearInterval(timer);
+    };
+
+    root.querySelectorAll<Element>("[data-select]").forEach((node) => {
+      node.addEventListener("click", () => {
+        engage();
+        select((node as HTMLElement).dataset.select ?? order[0]);
+      });
+    });
+
+    root.querySelectorAll<HTMLElement>("[data-peel]").forEach((node) => {
+      const id = node.dataset.peel ?? "all";
+      node.addEventListener("pointerenter", () => {
+        engage();
+        peel(id);
+      });
+      node.addEventListener("pointerleave", () => peel("all"));
+      node.addEventListener("focus", () => peel(id));
+      node.addEventListener("blur", () => peel("all"));
+    });
+
+    const timeNow = () => {
+      const now = new Date();
+      return `${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")}Z`;
+    };
+
+    root.querySelectorAll<HTMLElement>("[data-panel]").forEach((panel) => {
+      const id = panel.dataset.panel ?? "";
+      const actions = panel.querySelector<HTMLElement>("[data-actions]");
+      const log = panel.querySelector<HTMLElement>("[data-log]");
+      const verdict = panel.querySelector("strong")?.textContent ?? "";
+      panel.querySelectorAll<HTMLButtonElement>("[data-decide]").forEach((button) => {
+        button.addEventListener("click", () => {
+          engage();
+          const decision = button.dataset.decide === "accept" ? "Accepted" : "Rejected";
+          decisions.set(id, decision);
+          chips.find((chip) => chip.dataset.select === id)?.classList.add("is-done");
+          if (!actions || !log) return;
+          actions.hidden = true;
+          log.hidden = false;
+          log.textContent = `✓ ${decision} “${verdict}” · you · ${timeNow()} · logged`;
+
+          const next = order.find((candidate) => !decisions.has(candidate));
+          if (next) {
+            const nextButton = document.createElement("button");
+            nextButton.type = "button";
+            nextButton.textContent = `Next: ${next} →`;
+            nextButton.addEventListener("click", () => select(next));
+            log.append(nextButton);
+          } else {
+            const link = document.createElement("a");
+            link.href = "#waitlist";
+            link.textContent = "Review complete. Try it on your imagery →";
+            log.append(link);
+          }
+        });
+      });
+    });
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // Idle tour through the candidates until the visitor takes over.
+    let step = 0;
+    const start = () => {
+      if (engaged) return;
+      window.clearInterval(timer);
+      timer = window.setInterval(() => {
+        step = (step + 1) % order.length;
+        select(order[step]);
+      }, 4200);
+    };
+    new IntersectionObserver((entries) => {
+      if (entries.some((entry) => entry.isIntersecting)) start();
+      else window.clearInterval(timer);
+    }).observe(root);
+  });
+</script>
