@@ -8,6 +8,7 @@ import SensorMatrix from "../components/SensorMatrix.astro";
 import EvidenceRecord from "../components/EvidenceRecord.astro";
 import IntelligenceContract from "../components/IntelligenceContract.astro";
 import RequestForm from "../components/RequestForm.astro";
+import TaxonomyDrill from "../components/TaxonomyDrill.astro";
 import { solutions } from "../data/solutions";
 
 const latest = (await getCollection("blog"))
@@ -203,7 +204,8 @@ const users = [
             <p class="lead">
               Overhead imagery is a different problem from everyday computer vision. MIAR's ML models
               are trained specifically on satellite scenes of military targets, with oriented
-              detections and a class, family and type hierarchy that analysts can check.
+              detections and a role, type and state hierarchy that analysts can check. Select any
+              level below to drill in.
             </p>
           </div>
         </div>
@@ -230,6 +232,7 @@ const users = [
             <span class="detector-meta">In development</span>
           </article>
         </div>
+        <TaxonomyDrill />
       </div>
     </section>
 

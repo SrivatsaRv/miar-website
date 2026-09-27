@@ -329,3 +329,24 @@ test("article imagery exposes visible captions and structured descriptions", asy
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
 });
+
+test("detection taxonomy drills down and holds unresolved types at role level", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const tx = page.locator("[data-tx]");
+  await tx.scrollIntoViewIfNeeded();
+  const crumbs = tx.locator("[data-tx-crumbs]");
+  await expect(crumbs).toHaveText(/Aircraft.*Fighter.*Su-30 family.*On apron/);
+
+  await tx.locator('.tx-node[data-id="transport"]').click();
+  await tx.locator('.tx-node[data-id="transport-unresolved"]').click();
+  await expect(crumbs).toContainText("Type not resolved");
+  await expect(tx.locator("[data-tx-explain]")).toContainText("Held at the level the imagery supports");
+  await expect(tx.locator('.tx-col[data-depth="3"] .tx-group:not([hidden]) .tx-node')).toHaveCount(1);
+  expect(await tx.locator("[data-tx-links] path.is-on").count()).toBe(3);
+
+  await tx.locator('.tx-node[data-id="ships"]').click();
+  await expect(crumbs).toHaveText(/Ships.*Surface combatant.*Destroyer/);
+  await tx.locator('.tx-node[data-id="vehicles"]').click();
+  await expect(tx.locator("[data-tx-explain]")).toContainText("in development");
+});
