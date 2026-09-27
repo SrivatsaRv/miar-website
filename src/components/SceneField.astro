@@ -90,20 +90,28 @@
     z-index: 2;
     display: grid;
     justify-items: center;
-    gap: 22px;
-    width: min(880px, calc(100% - 2 * var(--gutter)));
+    gap: 16px;
+    width: min(720px, calc(100% - 2 * var(--gutter)));
     margin: 0 auto;
-    padding-top: calc(var(--header-h) + clamp(28px, 7vh, 72px));
+    padding-top: calc(var(--header-h) + clamp(20px, 5vh, 52px));
     text-align: center;
   }
 
   .field-copy .display {
-    font-size: clamp(2.5rem, 6vw, 5.2rem);
+    font-size: clamp(2rem, 3.6vw, 3.4rem);
+    line-height: 1.04;
   }
 
   .field-copy .lead {
-    max-width: 660px;
+    max-width: 560px;
+    font-size: clamp(0.98rem, 1.15vw, 1.1rem);
     color: rgba(242, 241, 236, 0.76);
+  }
+
+  .field-copy .button {
+    min-height: 44px;
+    padding: 0 18px;
+    font-size: 14.5px;
   }
 
   .field-actions {
