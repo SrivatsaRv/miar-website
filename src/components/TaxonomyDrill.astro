@@ -1,0 +1,581 @@
+---
+// Drill-down of the detection hierarchy: Domain → Role → Type / family → State.
+// Every group is rendered on the server; the script only shows the branch in focus
+// and draws the split connectors. Data and path logic: src/lib/taxonomy.mjs.
+import { TAXONOMY, LEVELS, completePath, share } from "../lib/taxonomy.mjs";
+
+type Node = (typeof TAXONOMY)[number];
+
+const initial = completePath(TAXONOMY, []);
+
+// Groups per column: column 0 is the roots; column d holds the children of every node at depth d-1.
+const columns: { parent: string; parentNode?: Node; nodes: Node[] }[][] = [[{ parent: "root", nodes: TAXONOMY as Node[] }]];
+for (let depth = 1; depth < LEVELS.length; depth++) {
+  const groups: { parent: string; parentNode: Node; nodes: Node[] }[] = [];
+  for (const group of columns[depth - 1]) {
+    for (const node of group.nodes) {
+      groups.push({ parent: node.id, parentNode: node, nodes: (node.children ?? []) as Node[] });
+    }
+  }
+  columns.push(groups);
+}
+
+const extensions = [
+  { title: "ORBAT roll-up", body: "Strength by role and type for each pass, pushed to the ORBAT or operational picture system." },
+  { title: "Readiness indicators", body: "Track the state mix over time: shelters versus apron, engines running, dispersal." },
+  { title: "Watchlist alerts", body: "Rules such as more than two tankers at Site 014, or any submarine leaving dry dock." },
+  { title: "Cross-site tracking", body: "Follow a type across installations to see redeployment and surge." },
+  { title: "Customer-specific classes", body: "Add national or theatre-specific types. Analyst decisions become new training labels." },
+  { title: "Decoy and concealment checks", body: "Confirm type calls against SAR and hyperspectral before they count toward strength." },
+];
+---
+
+<div class="tx" data-tx data-path={initial.join(",")}>
+  <div class="tx-head">
+    <nav class="tx-crumbs" aria-label="Selected classification" data-tx-crumbs></nav>
+    <span class="tx-note">Representative taxonomy · illustrative counts from one pass</span>
+  </div>
+
+  <div class="tx-cols" data-tx-cols>
+    <svg class="tx-links" data-tx-links aria-hidden="true"></svg>
+    {columns.map((groups, depth) => (
+      <div class="tx-col" data-depth={depth}>
+        <span class="tx-level">{String(depth + 1).padStart(2, "0")} · {LEVELS[depth]}</span>
+        {groups.map((group) => (
+          <div class="tx-group" data-parent={group.parent} hidden={depth > 0 && group.parent !== initial[depth - 1]}>
+            {group.nodes.length === 0 && depth > 0 && (
+              <p class="tx-empty">{group.parentNode?.soon ? "Planned" : "—"}</p>
+            )}
+            {group.nodes.map((node) => {
+              const value = share(node, group.parentNode ?? null, group.nodes);
+              return (
+                <button
+                  type="button"
+                  class:list={["tx-node", node.limited && "is-limited", node.soon && "is-soon"]}
+                  data-id={node.id}
+                  data-depth={depth}
+                  aria-pressed={initial[depth] === node.id ? "true" : "false"}
+                  style={`--share: ${value}`}
+                >
+                  <span class="tx-name">{node.name}</span>
+                  <span class="tx-count">{node.soon ? "Soon" : node.count}</span>
+                  <span class="tx-bar" aria-hidden="true"><i></i></span>
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+
+  <div class="tx-detail" data-tx-detail aria-live="polite">
+    <div class="tx-ladder" data-tx-ladder></div>
+    <p class="tx-explain" data-tx-explain></p>
+  </div>
+
+  <div class="tx-build">
+    <div class="tx-build-head">
+      <span class="label">Build on the same hierarchy</span>
+      <p>Every detection carries its role, type and state, so these can be layered on without re-exploiting the imagery.</p>
+    </div>
+    <ul>
+      {extensions.map((item, index) => (
+        <li><span class="num">{String(index + 1).padStart(2, "0")}</span><strong>{item.title}</strong><p>{item.body}</p></li>
+      ))}
+    </ul>
+  </div>
+
+  <script type="application/json" data-tx-data set:html={JSON.stringify({ tree: TAXONOMY, levels: LEVELS })} />
+</div>
+
+<style>
+  .tx {
+    margin-top: 40px;
+    border: 1px solid var(--ink);
+    background: var(--paper-raised);
+  }
+
+  .tx-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px 24px;
+    flex-wrap: wrap;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .tx-crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+  }
+
+  .tx-crumbs :global(span) {
+    color: var(--ink-3);
+  }
+
+  .tx-crumbs :global(strong) {
+    font-weight: 500;
+  }
+
+  .tx-crumbs :global(strong:last-child) {
+    color: var(--signal-ink);
+  }
+
+  .tx-note {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .tx-cols {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0 56px;
+    padding: 20px 20px 24px;
+  }
+
+  .tx-links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .tx-links :global(path) {
+    fill: none;
+    stroke: var(--rule-strong);
+    transition: stroke 0.25s var(--ease);
+  }
+
+  .tx-links :global(path.is-on) {
+    stroke: var(--signal);
+  }
+
+  .tx-col {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .tx-level {
+    margin-bottom: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .tx-group {
+    display: grid;
+    gap: 6px;
+    animation: tx-in 0.35s var(--ease);
+  }
+
+  @keyframes tx-in {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+  }
+
+  .tx-node {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 6px 10px;
+    width: 100%;
+    padding: 10px 12px 12px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    text-align: left;
+    transition: border-color 0.2s var(--ease), background 0.2s var(--ease), color 0.2s var(--ease);
+  }
+
+  .tx-node:hover {
+    border-color: var(--ink-3);
+  }
+
+  .tx-node[aria-pressed="true"] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .tx-name {
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  .tx-count {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tx-bar {
+    grid-column: 1 / -1;
+    height: 3px;
+    background: var(--paper-sunk);
+  }
+
+  .tx-bar i {
+    display: block;
+    height: 100%;
+    width: calc(var(--share) * 100%);
+    background: var(--ink-3);
+    transition: width 0.4s var(--ease);
+  }
+
+  .tx-node[aria-pressed="true"] .tx-bar {
+    background: rgba(128, 128, 128, 0.35);
+  }
+
+  .tx-node[aria-pressed="true"] .tx-bar i {
+    background: var(--signal);
+  }
+
+  .tx-node.is-limited {
+    border-style: dashed;
+  }
+
+  .tx-node.is-limited .tx-name::after {
+    content: " · held at role";
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    color: var(--signal-ink);
+  }
+
+  .tx-node.is-limited[aria-pressed="true"] .tx-name::after {
+    color: #ffb08c;
+  }
+
+  .tx-node.is-soon {
+    border-style: dashed;
+    color: var(--ink-3);
+    background: repeating-linear-gradient(135deg, var(--paper) 0 8px, var(--paper-sunk) 8px 9px);
+  }
+
+  .tx-node.is-soon[aria-pressed="true"] {
+    border-style: dashed;
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .tx-empty {
+    padding: 10px 12px;
+    border: 1px dashed var(--rule-strong);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .tx-detail {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    border-top: 1px solid var(--rule);
+  }
+
+  .tx-ladder {
+    display: grid;
+    padding: 16px 20px;
+    border-right: 1px solid var(--rule);
+  }
+
+  .tx-ladder :global(.tx-rung) {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) 150px 44px;
+    align-items: center;
+    gap: 12px;
+    padding: 7px 0;
+    font-size: 14px;
+  }
+
+  .tx-ladder :global(.tx-rung + .tx-rung) {
+    border-top: 1px solid var(--rule);
+  }
+
+  .tx-ladder :global(.tx-rung span) {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  .tx-ladder :global(.tx-rung strong) {
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .tx-ladder :global(.tx-rung i) {
+    height: 4px;
+    background: var(--paper-sunk);
+    position: relative;
+  }
+
+  .tx-ladder :global(.tx-rung i)::after {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--value);
+    background: var(--ink);
+    transition: width 0.4s var(--ease);
+  }
+
+  .tx-ladder :global(.tx-rung.is-low i)::after {
+    background: var(--signal);
+  }
+
+  .tx-ladder :global(.tx-rung b) {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    text-align: right;
+  }
+
+  .tx-explain {
+    padding: 16px 20px;
+    font-size: 15px;
+    color: var(--ink-2);
+    align-self: center;
+  }
+
+  .tx-explain :global(strong) {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .tx-build {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    gap: 16px 32px;
+    padding: 22px 20px 24px;
+    border-top: 1px solid var(--ink);
+    background: var(--paper);
+  }
+
+  .tx-build-head {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+  }
+
+  .tx-build-head p {
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  .tx-build ul {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .tx-build li {
+    display: grid;
+    align-content: start;
+    gap: 6px;
+    padding: 14px 16px;
+    background: var(--paper-raised);
+  }
+
+  .tx-build li .num {
+    font-size: 11px;
+    color: var(--signal-ink);
+  }
+
+  .tx-build li strong {
+    font-weight: 500;
+    font-size: 15.5px;
+  }
+
+  .tx-build li p {
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 1000px) {
+    .tx-cols {
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 32px;
+    }
+
+    .tx-links {
+      display: none;
+    }
+
+    .tx-detail,
+    .tx-build {
+      grid-template-columns: 1fr;
+    }
+
+    .tx-ladder {
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .tx-build ul {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .tx-cols {
+      grid-template-columns: 1fr;
+    }
+
+    .tx-group {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .tx-level {
+      grid-column: 1 / -1;
+    }
+
+    .tx-ladder :global(.tx-rung) {
+      grid-template-columns: 84px minmax(0, 1fr) 40px;
+    }
+
+    .tx-ladder :global(.tx-rung i) {
+      display: none;
+    }
+
+    .tx-build ul {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tx-group {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { selectAt, resolvePath } from "../lib/taxonomy.mjs";
+
+  document.querySelectorAll<HTMLElement>("[data-tx]").forEach((root) => {
+    const data = JSON.parse(root.querySelector("[data-tx-data]")?.textContent ?? "{}");
+    const tree = data.tree;
+    const levels: string[] = data.levels;
+    const cols = root.querySelector<HTMLElement>("[data-tx-cols]");
+    const links = root.querySelector<SVGSVGElement>("[data-tx-links]");
+    const crumbs = root.querySelector<HTMLElement>("[data-tx-crumbs]");
+    const ladder = root.querySelector<HTMLElement>("[data-tx-ladder]");
+    const explain = root.querySelector<HTMLElement>("[data-tx-explain]");
+    let path = (root.dataset.path ?? "").split(",").filter(Boolean);
+
+    const drawLinks = () => {
+      if (!cols || !links || getComputedStyle(links).display === "none") return;
+      const box = cols.getBoundingClientRect();
+      links.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
+      const parts: string[] = [];
+      for (let depth = 1; depth < levels.length; depth++) {
+        const from = root.querySelector<HTMLElement>(`.tx-col[data-depth="${depth - 1}"] .tx-node[aria-pressed="true"]`);
+        const group = root.querySelector<HTMLElement>(`.tx-col[data-depth="${depth}"] .tx-group:not([hidden])`);
+        if (!from || !group) continue;
+        const a = from.getBoundingClientRect();
+        const x1 = a.right - box.left;
+        const y1 = a.top + a.height / 2 - box.top;
+        group.querySelectorAll<HTMLElement>(".tx-node, .tx-empty").forEach((child) => {
+          const b = child.getBoundingClientRect();
+          const x2 = b.left - box.left;
+          const y2 = b.top + b.height / 2 - box.top;
+          const mid = (x1 + x2) / 2;
+          const share = Number(child.style.getPropertyValue("--share")) || 0;
+          const on = child.getAttribute("aria-pressed") === "true";
+          const width = (1 + share * 5).toFixed(2);
+          parts.push(`<path class="${on ? "is-on" : ""}" stroke-width="${width}" d="M${x1} ${y1}C${mid} ${y1} ${mid} ${y2} ${x2} ${y2}" />`);
+        });
+      }
+      links.innerHTML = parts.join("");
+    };
+
+    const render = () => {
+      const chain = resolvePath(tree, path);
+      root.querySelectorAll<HTMLElement>(".tx-col").forEach((col) => {
+        const depth = Number(col.dataset.depth);
+        col.querySelectorAll<HTMLElement>(".tx-group").forEach((group) => {
+          const visible = depth === 0 || group.dataset.parent === path[depth - 1];
+          if (group.hidden === visible) group.hidden = !visible;
+        });
+        col.querySelectorAll<HTMLButtonElement>(".tx-node").forEach((node) => {
+          node.setAttribute("aria-pressed", String(node.dataset.id === path[depth]));
+        });
+      });
+
+      if (crumbs) {
+        crumbs.innerHTML = chain
+          .map((node: { name: string }, index: number) => `${index ? "<span>›</span>" : ""}<strong>${node.name}</strong>`)
+          .join("");
+      }
+
+      const leaf = chain[chain.length - 1];
+      if (ladder) {
+        ladder.innerHTML = levels
+          .map((level, index) => {
+            const node = chain[index];
+            if (!node) return `<div class="tx-rung"><span>${level}</span><strong>—</strong><i style="--value:0%"></i><b></b></div>`;
+            if (node.soon) return `<div class="tx-rung"><span>${level}</span><strong>${node.name}</strong><i style="--value:0%"></i><b>Soon</b></div>`;
+            const low = node.confidence < 0.75 ? " is-low" : "";
+            return `<div class="tx-rung${low}"><span>${level}</span><strong>${node.name}</strong><i style="--value:${Math.round(node.confidence * 100)}%"></i><b>${node.confidence.toFixed(2)}</b></div>`;
+          })
+          .join("");
+      }
+
+      if (explain && leaf) {
+        const limited = chain.find((node: { limited?: boolean }) => node.limited);
+        const root0 = chain[0];
+        const title = root0?.soon
+          ? "Armed forces vehicles · in development"
+          : limited
+            ? "Held at the level the imagery supports"
+            : `${leaf.count} of ${chain[chain.length - 2]?.count ?? leaf.count} · ${leaf.name}`;
+        const body = root0?.soon ? root0.note : limited ? limited.note : leaf.note ?? root0?.note ?? "";
+        explain.innerHTML = `<strong>${title}</strong>${body}`;
+      }
+
+      requestAnimationFrame(drawLinks);
+    };
+
+    root.querySelectorAll<HTMLButtonElement>(".tx-node").forEach((node) => {
+      node.addEventListener("click", () => {
+        path = selectAt(tree, path, Number(node.dataset.depth), node.dataset.id ?? "");
+        render();
+      });
+    });
+
+    window.addEventListener("resize", () => requestAnimationFrame(drawLinks));
+    if (document.fonts?.ready) document.fonts.ready.then(drawLinks);
+    render();
+  });
+</script>
