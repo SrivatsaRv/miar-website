@@ -75,13 +75,7 @@ const stages = [
 
     <div class="frag-grid">
       <div class="frag-figure">
-        <svg viewBox="0 0 1200 560" role="img" aria-labelledby="frag-title">
-          <title id="frag-title">
-            Today, imagery from five sources passes through nine separate tools before reaching briefings by hand,
-            and nothing feeds back to collection management. Through MIAR, all five sources feed one exploitation
-            layer that publishes one intelligence contract to the operational picture, GIS, briefings and collection
-            management.
-          </title>
+        <svg viewBox="0 0 1200 560" role="img" aria-label="Today, imagery from five sources passes through nine separate tools before reaching briefings by hand, and nothing feeds back to collection management. Through MIAR, all five sources feed one exploitation layer that publishes one intelligence contract to the operational picture, GIS, briefings and collection management.">
 
           <g class="frag-edges-frag">
             {fragmented.map((edge) => (
@@ -122,8 +116,9 @@ const stages = [
               style={`--dx: ${coreCenter[0] - (t.x + t.w / 2)}px; --dy: ${coreCenter[1] - (t.y + t.h / 2)}px`}
             >
               <rect x={t.x} y={t.y} width={t.w} height={t.h} />
-              <text class="ff-title" x={t.x + 12} y={t.y + 21}>{t.title}</text>
-              <text class="ff-sub" x={t.x + 12} y={t.y + 39}>{t.sub}</text>
+              <rect class="ff-accent" x={t.x} y={t.y} width="2" height={t.h} />
+              <text class="ff-title" x={t.x + 14} y={t.y + 21}>{t.title}</text>
+              <text class="ff-sub" x={t.x + 14} y={t.y + 38}>{t.sub}</text>
             </g>
           ))}
 
@@ -281,16 +276,18 @@ const stages = [
     opacity: 0.35;
   }
 
-  .ff-tool rect {
-    stroke-dasharray: 4 3;
+  .ff-tool .ff-accent {
+    fill: var(--on-night-3);
+    stroke: none;
+    transition: fill 0.4s var(--ease);
   }
 
   [data-step="1"] .ff-tool {
     opacity: 1;
   }
 
-  [data-step="1"] .ff-tool rect {
-    stroke: rgba(228, 87, 30, 0.55);
+  [data-step="1"] .ff-tool .ff-accent {
+    fill: #e4571e;
   }
 
   [data-step="2"] .ff-tool,
@@ -639,6 +636,8 @@ const stages = [
 </style>
 
 <script>
+  import { fragStep, pinnedProgress } from "../lib/frag-steps.mjs";
+
   document.querySelectorAll<HTMLElement>("[data-frag]").forEach((root) => {
     const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-frag-go]")];
     const caption = root.querySelector<HTMLElement>("[data-frag-caption]");
@@ -667,9 +666,7 @@ const stages = [
     const onScroll = () => {
       if (!scrollDriven()) return;
       const rect = root.getBoundingClientRect();
-      const span = rect.height - window.innerHeight;
-      const p = Math.min(1, Math.max(0, -rect.top / Math.max(1, span)));
-      setStep(p < 0.1 ? 0 : p < 0.42 ? 1 : p < 0.66 ? 2 : 3);
+      setStep(fragStep(pinnedProgress(rect.top, rect.height, window.innerHeight)));
     };
 
     buttons.forEach((button) => {

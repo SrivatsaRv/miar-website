@@ -4,7 +4,7 @@
 const stages = ["Receive", "Register", "Exploit", "Qualify", "Publish"];
 ---
 
-<nav class="rail" data-rail aria-label="Scene processing progress" hidden>
+<nav class="rail" data-rail data-complete="Complete · picture updated" aria-label="Scene processing progress" hidden>
   <div class="rail-packet">
     <span class="rail-thumb" aria-hidden="true"><i></i></span>
     <div class="rail-text">
@@ -135,7 +135,7 @@ const stages = ["Receive", "Register", "Exploit", "Qualify", "Publish"];
   .rail-stages::after {
     background: #e4571e;
     width: calc(80% * var(--progress, 0));
-    transition: width 0.5s var(--ease);
+    transition: width 0.2s linear;
   }
 
   .rail-stages button {
@@ -184,6 +184,24 @@ const stages = ["Receive", "Register", "Exploit", "Qualify", "Publish"];
     box-shadow: 0 0 0 4px rgba(228, 87, 30, 0.25);
   }
 
+  .rail[data-done="true"] .rail-thumb i {
+    border-color: #5fd3b0;
+    background: rgba(95, 211, 176, 0.25);
+  }
+
+  .rail[data-done="true"] .rail-text span {
+    color: #5fd3b0;
+  }
+
+  .rail[data-done="true"] .rail-stages::after {
+    background: #5fd3b0;
+  }
+
+  .rail[data-done="true"] .rail-stages button.is-done i {
+    background: #5fd3b0;
+    border-color: #5fd3b0;
+  }
+
   .rail-stages button:hover {
     color: #f2f1ec;
   }
@@ -219,37 +237,39 @@ const stages = ["Receive", "Register", "Exploit", "Qualify", "Publish"];
 </style>
 
 <script>
+  import { railState } from "../lib/rail-state.mjs";
+
   const rail = document.querySelector<HTMLElement>("[data-rail]");
   const sections = [...document.querySelectorAll<HTMLElement>("[data-stage]")];
   const status = rail?.querySelector<HTMLElement>("[data-rail-status]");
   const stageButtons = [...(rail?.querySelectorAll<HTMLButtonElement>("[data-rail-stage]") ?? [])];
   const stagesList = rail?.querySelector<HTMLElement>(".rail-stages");
-  const stopAt = document.getElementById("waitlist");
+  const completeText = rail?.dataset.complete ?? "Complete";
 
   if (rail && sections.length) {
     rail.hidden = false;
     rail.dataset.hidden = "true";
 
     const render = () => {
-      const probe = window.innerHeight * 0.45;
-      const firstTop = sections[0].getBoundingClientRect().top;
-      const stopTop = stopAt?.getBoundingClientRect().top ?? Infinity;
-      const visible = firstTop < window.innerHeight * 0.7 && stopTop > window.innerHeight * 0.75;
-      rail.dataset.hidden = String(!visible);
-      if (!visible) return;
-
-      let current = sections[0];
-      for (const section of sections) {
-        if (section.getBoundingClientRect().top <= probe) current = section;
-      }
-      const stage = Number(current.dataset.stage ?? 0);
-      if (status && status.textContent !== current.dataset.status) status.textContent = current.dataset.status ?? "";
-      stageButtons.forEach((button, index) => {
-        button.classList.toggle("is-done", index < stage);
-        button.classList.toggle("is-current", index === stage);
-        button.setAttribute("aria-current", index === stage ? "step" : "false");
+      const rects = sections.map((section) => {
+        const rect = section.getBoundingClientRect();
+        return { stage: Number(section.dataset.stage ?? 0), top: rect.top, bottom: rect.bottom };
       });
-      stagesList?.style.setProperty("--progress", String(stage / (stageButtons.length - 1)));
+      const state = railState(rects, window.innerHeight, stageButtons.length);
+      rail.dataset.hidden = String(!state.visible);
+      rail.dataset.done = String(state.complete);
+      if (!state.visible) return;
+
+      const text = state.complete ? completeText : sections[state.index]?.dataset.status ?? "";
+      if (status && status.textContent !== text) status.textContent = text;
+      stageButtons.forEach((button, index) => {
+        const done = state.complete || index < state.stage;
+        const current = !state.complete && index === state.stage;
+        button.classList.toggle("is-done", done);
+        button.classList.toggle("is-current", current);
+        button.setAttribute("aria-current", current ? "step" : "false");
+      });
+      stagesList?.style.setProperty("--progress", state.track.toFixed(4));
     };
 
     stageButtons.forEach((button) => {

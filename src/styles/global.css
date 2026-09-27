@@ -5340,3 +5340,33 @@ h3 {
     transform: none;
   }
 }
+
+
+/* ---------- Pipeline stage tags (option 2) ---------- */
+
+.label:has(.stage-tag) {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+.stage-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px 2px 2px;
+  border: 1px solid var(--rule-strong);
+  color: var(--ink-2);
+  letter-spacing: 0.06em;
+}
+
+.stage-tag i {
+  font-style: normal;
+  padding: 1px 5px;
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.on-night .stage-tag {
+  border-color: var(--night-rule);
+  color: var(--on-night-2);
+}
