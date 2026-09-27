@@ -122,6 +122,10 @@
   }
 
   .field-phase {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 0.08em;
@@ -254,11 +258,14 @@
 
   if (root && canvas && safeNode && context) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const captions = [
+    // Short captions on narrow screens so the line never wraps into the site record below.
+    const captionsWide = [
       "5 providers · 7 formats · 0 shared context",
       "Lining up every image of Site 014 · dropping cloudy and duplicate ones",
       "1 picture of the site · 3 changes found · 1 intelligence contract",
     ];
+    const captionsNarrow = ["5 providers · 7 formats", "Lining up every image", "3 changes · 1 contract"];
+    let captions = captionsWide;
     const tags: Record<string, string> = Object.fromEntries(SOURCES.map((s) => [s.id, s.tag]));
 
     // ---- Tile textures (drawn once) ----
@@ -374,6 +381,7 @@
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const narrow = width < 900;
+      captions = width < 700 ? captionsNarrow : captionsWide;
       dates = narrow ? 8 : 12;
       scenes = makeScenes(dates);
       size = narrow ? 30 : Math.min(52, Math.max(36, width * 0.032));
@@ -393,8 +401,9 @@
 
       const gutter = width < 600 ? 16 : narrow ? 40 : 48;
       const contractWidth = narrow ? 0 : 290;
-      const bandTop = safe.bottom + (narrow ? 12 : 24);
-      const bandBottom = height - (narrow ? 132 : root.classList.contains("is-flow") ? 70 : 60);
+      // Leave room for the "SITE 014 · SITE RECORD" label drawn above the grid.
+      const bandTop = safe.bottom + (narrow ? 34 : 30);
+      const bandBottom = height - (narrow ? 170 : root.classList.contains("is-flow") ? 70 : 60);
       const labelWidth = narrow ? 34 : 48;
       const band = { left: gutter, top: bandTop, width: width - gutter * 2 - contractWidth, height: Math.max(60, bandBottom - bandTop) };
       const options = { maxSize: width < 600 ? 34 : narrow ? 50 : 58, labelWidth };
@@ -407,7 +416,7 @@
         record = recordLayout(scenes, { ...band, left: desiredLeft, width: labelWidth + record.width }, dates, options);
       }
       contractAt = narrow
-        ? { x: gutter, y: record.top + record.height + 34, below: true }
+        ? { x: gutter, y: record.top + record.height + 44, below: true }
         : { x: record.left + record.width + 40, y: record.top + record.height / 2, below: false };
     };
 
@@ -532,7 +541,25 @@
         context.save();
         context.strokeStyle = "#e4571e";
         context.lineWidth = 1.5;
-        for (const c of changes) {
+        if (contractAt.below) {
+          const latest = record.colX[record.colX.length - 1] + record.size / 2;
+          const x = Math.min(latest, contractAt.x + (contractNode?.offsetWidth ?? 240) - 24);
+          const y1 = record.top + record.height + 28;
+          const y2 = contractAt.y;
+          const length = y2 - y1;
+          context.setLineDash([length * phase.contract, length]);
+          context.beginPath();
+          context.moveTo(x, y1);
+          context.lineTo(x, y2);
+          context.stroke();
+          context.setLineDash([]);
+          context.beginPath();
+          context.arc(x, y1, 3, 0, Math.PI * 2);
+          context.fillStyle = "#e4571e";
+          context.globalAlpha = phase.contract;
+          context.fill();
+        }
+        for (const c of contractAt.below ? [] : changes) {
           const x1 = c.x + record.size;
           const y1 = c.y + record.size / 2;
           const x2 = contractAt.below ? contractAt.x + 60 : contractAt.x;
@@ -596,10 +623,10 @@
       const copyBottom = (safeNode.getBoundingClientRect().bottom - root.getBoundingClientRect().top) / z;
       const viewportW = window.innerWidth / z;
       const viewportH = window.innerHeight / z;
-      const needs = viewportW < 900 ? 240 : 190;
+      const needs = viewportW < 900 ? 300 : 190;
       const flow = copyBottom + needs > viewportH;
       root.classList.toggle("is-flow", flow);
-      root.style.setProperty("--flow-band", `${viewportW < 900 ? 250 : 210}px`);
+      root.style.setProperty("--flow-band", `${viewportW < 900 ? 330 : 210}px`);
       return flow;
     };
     let flowMode = false;
