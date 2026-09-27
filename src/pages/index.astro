@@ -70,10 +70,10 @@ const users = [
       </div>
     </section>
 
-    <section class="section" id="overview" data-stage="0" data-status="Scene received from provider portal">
+    <section class="section" id="overview">
       <div class="wrap">
         <div class="section-head">
-          <span class="label"><span class="label-index">01</span> The operational gap <span class="stage-tag" aria-label="Pipeline stage 1 of 5, Receive"><i>1/5</i>Receive</span></span>
+          <span class="label"><span class="label-index">01</span> The operational gap</span>
           <div class="section-head-body">
             <h2>A new scene arrives. Your team shouldn't have to start from zero.</h2>
             <p class="lead">
@@ -108,10 +108,30 @@ const users = [
       </div>
     </section>
 
-    <section class="section" data-stage="1" data-status="Co-registered to last usable scene">
+    <section class="section" id="how-it-works">
       <div class="wrap">
         <div class="section-head">
-          <span class="label"><span class="label-index">02</span> Where MIAR sits <span class="stage-tag" aria-label="Pipeline stage 2 of 5, Register"><i>2/5</i>Register</span></span>
+          <span class="label"><span class="label-index">02</span> How it works</span>
+          <div class="section-head-body">
+            <h2>From received scene to qualified finding, in five steps.</h2>
+            <p class="lead">
+              Automated exploitation does the searching and comparing. Analysts qualify every
+              finding. Every step is recorded against the scene it came from.
+            </p>
+          </div>
+        </div>
+        <WorkflowDiagram />
+        <div class="flow-foot">
+          <p>The same thread runs for one installation or a watchlist of hundreds, and for every provider you buy from.</p>
+          <a class="text-link" href="/capabilities/">Explore the workflow <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-stage="0" data-status="Scenes received from five providers">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label"><span class="label-index">03</span> Where MIAR sits <span class="stage-tag" aria-label="Pipeline stage 1 of 5, Receive"><i>1/5</i>Receive</span></span>
           <div class="section-head-body">
             <h2>You focus on obtaining imagery. MIAR does the rest.</h2>
             <p class="lead">
@@ -127,40 +147,19 @@ const users = [
       </div>
     </section>
 
-    <section class="section" data-stage="2" data-status="6 aircraft detected · 3 in new positions">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="label"><span class="label-index">03</span> Same site, one year apart <span class="stage-tag" aria-label="Pipeline stage 3 of 5, Exploit, Compare"><i>3/5</i>Exploit · Compare</span></span>
-          <div class="section-head-body">
-            <h2>Six aircraft in both scenes. Half of them have moved.</h2>
-            <p class="lead">
-              A count alone would report no change. MIAR compares the position of every detected
-              aircraft against the baseline, so the analyst sees the apron has been reorganised, one
-              aircraft is on the taxiway and a rotary-wing aircraft has arrived.
-            </p>
-          </div>
+    <section class="section" data-stage="1" data-status="Co-registered EO, SAR and HSI to Site 014">
+      <div class="wrap matrix-layout">
+        <div class="matrix-intro">
+          <span class="label"><span class="label-index">04</span> Every sensor, one record <span class="stage-tag" aria-label="Pipeline stage 2 of 5, Register"><i>2/5</i>Register</span></span>
+          <h2>Works when the weather doesn't.</h2>
+          <p>
+            No single sensor sees everything. EO gives morphology, SAR sees through cloud and at
+            night, hyperspectral separates materials. MIAR keeps them in one site record, so a
+            cloudy week or a decoy doesn't leave a gap in the picture.
+          </p>
         </div>
-        <ChangeCompare id="home-compare" />
-        <p class="figure-note">Drag across the scene to compare. Imagery of a monitored airbase, 2025 and 2026, with identifying details removed.</p>
-      </div>
-    </section>
-
-    <section class="section" id="how-it-works" data-stage="2" data-status="Change correlated with installation and ORBAT">
-      <div class="wrap">
-        <div class="section-head">
-          <span class="label"><span class="label-index">04</span> How it works <span class="stage-tag" aria-label="Covers all five pipeline stages"><i>1–5</i>All stages</span></span>
-          <div class="section-head-body">
-            <h2>From received scene to qualified finding, in five steps.</h2>
-            <p class="lead">
-              Automated exploitation does the searching and comparing. Analysts qualify every
-              finding. Every step is recorded against the scene it came from.
-            </p>
-          </div>
-        </div>
-        <WorkflowDiagram />
-        <div class="flow-foot">
-          <p>The same thread runs for one installation or a watchlist of hundreds, and for every provider you buy from.</p>
-          <a class="text-link" href="/capabilities/">Explore the workflow <span aria-hidden="true">→</span></a>
+        <div>
+          <SensorMatrix />
         </div>
       </div>
     </section>
@@ -206,10 +205,28 @@ const users = [
       </div>
     </section>
 
+    <section class="section" data-stage="2" data-status="6 aircraft · 3 in new positions">
+      <div class="wrap">
+        <div class="section-head">
+          <span class="label"><span class="label-index">06</span> Same site, one year apart <span class="stage-tag" aria-label="Pipeline stage 3 of 5, Exploit, Compare"><i>3/5</i>Exploit · Compare</span></span>
+          <div class="section-head-body">
+            <h2>Six aircraft in both scenes. Half of them have moved.</h2>
+            <p class="lead">
+              A count alone would report no change. MIAR compares the position of every detected
+              aircraft against the baseline, so the analyst sees the apron has been reorganised, one
+              aircraft is on the taxiway and a rotary-wing aircraft has arrived.
+            </p>
+          </div>
+        </div>
+        <ChangeCompare id="home-compare" />
+        <p class="figure-note">Drag across the scene to compare. Imagery of a monitored airbase, 2025 and 2026, with identifying details removed.</p>
+      </div>
+    </section>
+
     <section class="section" id="posture" data-stage="2" data-status="Assessed against protected assets · HIGH">
       <div class="wrap">
         <div class="section-head">
-          <span class="label"><span class="label-index">06</span> From detection to posture <span class="stage-tag" aria-label="Pipeline stage 3 of 5, Exploit, Assess"><i>3/5</i>Exploit · Assess</span></span>
+          <span class="label"><span class="label-index">07</span> From detection to posture <span class="stage-tag" aria-label="Pipeline stage 3 of 5, Exploit, Assess"><i>3/5</i>Exploit · Assess</span></span>
           <div class="section-head-body">
             <h2>You've detected four fighters. Now what?</h2>
             <p class="lead">
@@ -237,23 +254,6 @@ const users = [
         </div>
         <ModesConsole />
         <p class="figure-note">Run the mode the mission needs. Heightened awareness is shown; switch modes or platforms to compare.</p>
-      </div>
-    </section>
-
-    <section class="section" data-stage="2" data-status="Corroborated with SAR pass 02:10Z">
-      <div class="wrap matrix-layout">
-        <div class="matrix-intro">
-          <span class="label"><span class="label-index">07</span> Every sensor, one record <span class="stage-tag" aria-label="Pipeline stage 3 of 5, Exploit, Corroborate"><i>3/5</i>Exploit · Corroborate</span></span>
-          <h2>Works when the weather doesn't.</h2>
-          <p>
-            No single sensor sees everything. EO gives morphology, SAR sees through cloud and at
-            night, hyperspectral separates materials. MIAR keeps them in one site record, so a
-            cloudy week or a decoy doesn't leave a gap in the picture.
-          </p>
-        </div>
-        <div>
-          <SensorMatrix />
-        </div>
       </div>
     </section>
 

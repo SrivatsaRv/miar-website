@@ -358,7 +358,7 @@ test("fragmentation widget resolves into MIAR and the rail follows the page", as
   await expect(frag.locator("[data-frag-stat]").first()).toHaveText("9");
 
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.locator("#overview").scrollIntoViewIfNeeded();
+  await page.evaluate(() => document.querySelector("[data-stage]")!.scrollIntoView());
   await page.evaluate(() => window.scrollBy(0, 200));
   await expect(page.locator("[data-rail]")).toHaveAttribute("data-hidden", "false");
 });
