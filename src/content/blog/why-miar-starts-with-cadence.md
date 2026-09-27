@@ -25,7 +25,7 @@ heroImage: "/imagery/monitored-site-reference-2025.webp"
 heroImageAlt: "Earlier satellite imagery of a monitored airbase used as a comparison baseline"
 heroImageWidth: 1564
 heroImageHeight: 1136
-socialImage: "/social/why-repeat-coverage-matters.png"
+socialImage: "/social/v2/post-why-miar-starts-with-cadence.jpg"
 socialImageAlt: "MIAR editorial card for Why repeat coverage matters"
 socialImageWidth: 1200
 socialImageHeight: 630

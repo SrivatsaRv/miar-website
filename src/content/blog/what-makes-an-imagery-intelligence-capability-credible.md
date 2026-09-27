@@ -25,7 +25,7 @@ heroImage: "/imagery/operational-airfield-scene.webp"
 heroImageAlt: "Annotated monitored-airfield scene showing aircraft detections and an intelligence summary"
 heroImageWidth: 1752
 heroImageHeight: 898
-socialImage: "/social/miar-site-preview.jpg"
+socialImage: "/social/v2/post-what-makes-an-imagery-intelligence-capability-credible.jpg"
 socialImageAlt: "Annotated monitored-airfield scene showing aircraft detections and an intelligence summary"
 socialTitle: "Six tests for an imagery-intelligence system"
 socialDescription: "A practical checklist for evaluating imagery AI beyond a model demonstration."

@@ -25,8 +25,8 @@ heroImage: "/social/a-satellite-image-is-not-yet-intelligence.png"
 heroImageAlt: "MIAR editorial graphic for A satellite image is not yet intelligence"
 heroImageWidth: 1200
 heroImageHeight: 630
-socialImage: "/social/a-satellite-image-is-not-yet-intelligence.png"
-socialImageAlt: "MIAR editorial card reading A satellite image is not yet intelligence"
+socialImage: "/social/v2/post-a-satellite-image-is-not-yet-intelligence.jpg"
+socialImageAlt: "MIAR card: A satellite image is not yet intelligence"
 socialImageWidth: 1200
 socialImageHeight: 630
 socialTitle: "A satellite image is not yet intelligence"

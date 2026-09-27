@@ -24,7 +24,7 @@ const previous = solutions[(index - 1 + solutions.length) % solutions.length];
 const next = solutions[(index + 1) % solutions.length];
 ---
 
-<BaseLayout title={`${solution.name} | MIAR Solutions`} description={solution.summary} current="solutions">
+<BaseLayout socialImage={`/social/v2/solution-${solution.slug}.jpg`} socialImageAlt={`MIAR solutions: ${solution.title}`} title={`${solution.name} | MIAR Solutions`} description={solution.summary} current="solutions">
   <main class="subpage-shell">
     <div class="wrap">
       <section class="solution-hero">

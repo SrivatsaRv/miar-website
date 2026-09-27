@@ -325,7 +325,7 @@ test("article imagery exposes visible captions and structured descriptions", asy
 
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    "https://miar.reachdefence.com/social/a-satellite-image-is-not-yet-intelligence.png"
+    "https://miar.reachdefence.com/social/v2/post-a-satellite-image-is-not-yet-intelligence.jpg"
   );
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");

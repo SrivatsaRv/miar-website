@@ -23,7 +23,4 @@ for (const name of sources) {
   ]);
 }
 
-await sharp(path.join(sourceDirectory, "operational-airfield-scene.png"))
-  .resize(1200, 630, { fit: "cover", position: "centre" })
-  .jpeg({ quality: 80, progressive: true, mozjpeg: true })
-  .toFile(path.resolve("public/social/miar-site-preview.jpg"));
+// Link-preview cards are generated separately (npm run generate:social) and committed.
