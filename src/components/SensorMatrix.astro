@@ -5,7 +5,7 @@ const columns = ["Daylight", "Night", "Through cloud", "Fine detail", "Material 
 const rows: { name: string; note: string; values: Level[] }[] = [
   { name: "Optical (EO)", note: "Visible-light imagery", values: ["full", "none", "none", "full", "none", "part"] },
   { name: "Radar (SAR)", note: "Synthetic aperture radar", values: ["full", "full", "full", "part", "part", "part"] },
-  { name: "Hyperspectral (HSI)", note: "Hundreds of narrow colour bands", values: ["full", "none", "none", "part", "full", "part"] },
+  { name: "Hyperspectral (HSI)", note: "Hundreds of narrow spectral bands", values: ["full", "none", "none", "part", "full", "part"] },
   { name: "Thermal (IR)", note: "Infrared heat signatures", values: ["full", "full", "none", "none", "none", "full"] },
 ];
 
@@ -43,5 +43,5 @@ const words: Record<Level, string> = { full: "Strong", part: "Partial", none: "L
   <span><i class="dot dot-full"></i> Strong</span>
   <span><i class="dot dot-part"></i> Partial</span>
   <span><i class="dot dot-none"></i> Limited</span>
-  <span>Typical strengths. Actual results depend on resolution, provider and conditions.</span>
+  <span>Typical strengths. Actual results depend on GSD, look angle, provider and conditions.</span>
 </div>

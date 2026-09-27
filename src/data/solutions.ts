@@ -67,7 +67,7 @@ export const solutions: Solution[] = [
     approach: [
       "Detect and tabulate visible assets by class.",
       "Compare their position, spacing, and distribution with earlier scenes.",
-      "Require analyst confirmation before a machine finding is treated as reviewed intelligence.",
+      "Require analyst qualification before a detection is treated as reviewed intelligence.",
     ],
     outputs: [
       "Counts by visible asset class",
@@ -150,7 +150,7 @@ export const solutions: Solution[] = [
     question: "Can we run this inside our own boundary?",
     title: "Keep mission data and reviewed outputs under customer control.",
     summary:
-      "Support controlled deployment and delivery where the customer retains authority over imagery, review, models, and approved findings.",
+      "Support controlled deployment and delivery where the customer retains authority over imagery, review, detectors, and approved findings.",
     thesis:
       "Using more than one imagery provider should not force the analysis and review process into more than one provider portal.",
     problemTitle: "Every handoff adds a control point.",

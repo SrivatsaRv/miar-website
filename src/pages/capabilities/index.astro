@@ -22,10 +22,11 @@ const passes = [
       <section class="page-hero">
         <span class="label"><span class="label-index">—</span> How it works</span>
         <div class="page-hero-body">
-          <h1>From new image to approved finding, with nothing lost on the way.</h1>
+          <h1>From received scene to qualified finding, with nothing lost on the way.</h1>
           <p class="lead">
-            MIAR brings every image of a site into one record, finds and compares what matters, and
-            puts each finding in front of an analyst with its evidence. Only approved findings leave.
+            You focus on obtaining imagery. MIAR brings every scene of a site into one record, exploits
+            it with purpose-trained detection models, and puts each finding in front of an analyst
+            with its evidence. Only qualified findings leave.
           </p>
           <div class="page-hero-actions">
             <a class="button button-primary" href="/#waitlist">Request access <span class="arrow" aria-hidden="true">→</span></a>
@@ -37,13 +38,13 @@ const passes = [
       <div class="stages">
         <section class="stage">
           <div class="stage-copy">
-            <span class="num">01 · Ingest</span>
-            <h2>Every image of the site, in one queue.</h2>
-            <p>New and archive imagery arrives from whichever providers you use. MIAR files each pass against the right site, so analysts start from a list, not a download folder.</p>
+            <span class="num">01 · Register</span>
+            <h2>Every scene of the site, in one queue.</h2>
+            <p>Your focus stays on obtaining imagery. Tasked and archive scenes arrive from whichever providers you use, in native formats. MIAR orthorectifies and co-registers each pass against the right site, so analysts start from a queue, not a download folder.</p>
             <ul class="check-list">
               <li>Commercial and national sources side by side</li>
               <li>Optical, radar, hyperspectral and thermal</li>
-              <li>Low-value passes, such as heavy cloud, flagged before anyone opens them</li>
+              <li>Unusable passes, such as heavy cloud or extreme look angle, flagged before anyone opens them</li>
             </ul>
           </div>
           <div class="stage-visual plate plate-light">
@@ -68,8 +69,8 @@ const passes = [
         <section class="stage">
           <div class="stage-copy">
             <span class="num">02 · Detect</span>
-            <h2>Find what is on the ground, with a confidence you can see.</h2>
-            <p>Aircraft, vessels, vehicles, equipment and structures are detected and classed. Every detection carries its confidence score. None is hidden, and none is rounded up.</p>
+            <h2>Purpose-trained detection, with a confidence you can see.</h2>
+            <p>Specialised ML models, trained on overhead imagery of military targets, detect aircraft and ships as oriented boxes and classify them by family and type. Armed forces vehicles are next. Every detection carries its confidence, none is hidden, and none is rounded up.</p>
           </div>
           <div class="stage-visual"><TacticalScene /></div>
         </section>
@@ -77,17 +78,17 @@ const passes = [
         <section class="stage">
           <div class="stage-copy">
             <span class="num">03 · Compare</span>
-            <h2>Separate real change from cloud, shadow and season.</h2>
-            <p>The new pass is lined up against the site's baseline and history. MIAR compares objects and their positions, not just pixels, so a reorganised apron is caught even when the count is the same.</p>
+            <h2>Separate real change from geometry, atmosphere and sensor mismatch.</h2>
+            <p>The new pass is compared against the last usable scene and the site's history, then correlated with installation layout, ORBAT and activity. MIAR compares objects and their positions, not just pixels, so a reorganised apron is caught even when the count is the same.</p>
           </div>
           <div class="stage-visual"><ChangeCompare id="caps-compare" summary={false} /></div>
         </section>
 
         <section class="stage">
           <div class="stage-copy">
-            <span class="num">04 · Review</span>
+            <span class="num">04 · Qualify</span>
             <h2>An analyst makes every call.</h2>
-            <p>Each finding arrives with its imagery, the model's reading and what the other sensors show. The analyst accepts, rejects or annotates it. That decision is recorded against their name.</p>
+            <p>Each finding arrives with its scenes, the detector's reading and what the other sensors show. The analyst accepts, rejects or annotates it. That decision is recorded against their name.</p>
             <ul class="check-list">
               <li>Readings from every sensor shown side by side</li>
               <li>Disagreements between sensors are highlighted, not averaged away</li>
@@ -118,9 +119,9 @@ const passes = [
 
         <section class="stage">
           <div class="stage-copy">
-            <span class="num">05 · Report</span>
-            <h2>Approved findings go where they are needed, with their proof.</h2>
-            <p>Findings go out as briefs, as data for mission systems, or as the next collection request. Every output links back to the imagery and the decision behind it.</p>
+            <span class="num">05 · Publish</span>
+            <h2>Qualified findings go where they are needed, with their provenance.</h2>
+            <p>Findings are published as an intelligence contract to the operational picture, as briefs, or as the next collection cue. Every output links back to the imagery and the decision behind it.</p>
           </div>
           <div class="stage-visual plate">
             <div class="plate-head"><span>Outputs · <strong>Finding F-0147</strong></span><span>Illustrative</span></div>
@@ -158,7 +159,7 @@ const passes = [
         <div class="principles">
           <article><h3>Provider-neutral</h3><p>Switch or add imagery suppliers without retraining your analysts.</p></article>
           <article><h3>Evidence first</h3><p>No finding exists without the imagery and comparison behind it.</p></article>
-          <article><h3>People decide</h3><p>Model output is a suggestion until an analyst approves it.</p></article>
+          <article><h3>Analyst authority</h3><p>Detector output is a candidate until an analyst qualifies it.</p></article>
           <article><h3>Your boundary</h3><p>Deploy in controlled, on-premise or sovereign environments.</p></article>
         </div>
       </section>

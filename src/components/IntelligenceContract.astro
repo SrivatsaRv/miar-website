@@ -1,0 +1,34 @@
+---
+// The downstream deliverable: a qualified, provenance-carrying change to the operational picture.
+interface Props {
+  animated?: boolean;
+}
+const { animated = false } = Astro.props;
+
+const fields = [
+  { key: "site", value: '"SITE-022 / north-apron"' },
+  { key: "observation", value: '"+4 fighter-family aircraft"', change: true },
+  { key: "baseline", value: '"last usable scene · EO · 2025"' },
+  { key: "counts", value: "{ fighter: 10, transport: 5, rotary: 1 }" },
+  { key: "deltas", value: "{ fighter: +4, rotary: +1 }", change: true },
+  { key: "confidence", value: "0.91" },
+  { key: "sensors", value: '["EO", "SAR", "HSI"]' },
+  { key: "provenance", value: '["scene:eo-0642Z", "scene:sar-0210Z"]' },
+  { key: "analyst_state", value: '"qualified"', ok: true },
+  { key: "cue", value: '"SAR revisit < 48 h"' },
+];
+---
+
+<div class:list={["contract plate", animated && "is-animated"]} data-contract>
+  <div class="plate-head"><span>Intelligence contract · <strong>F-0152</strong></span><span class="contract-state">Qualified</span></div>
+  <pre class="contract-body" aria-label="Example intelligence contract"><span class="c-brace">{"{"}</span>
+{fields.map((field, index) => (
+  <span class:list={["c-line", field.change && "is-change", field.ok && "is-ok"]} style={`--i: ${index}`}>  <span class="c-key">"{field.key}"</span>: <span class="c-val">{field.value}</span>{index < fields.length - 1 ? "," : ""}
+</span>
+))}<span class="c-brace">{"}"}</span></pre>
+  <div class="contract-effects">
+    <div><span>01</span><strong>Update the picture</strong><p>Assessed strength, disposition and confidence are revised.</p></div>
+    <div><span>02</span><strong>Trigger a response</strong><p>Cue collection, publish an assessment or notify a command system.</p></div>
+    <div><span>03</span><strong>Set the next question</strong><p>What must be watched, corroborated or resolved on the next pass.</p></div>
+  </div>
+</div>
