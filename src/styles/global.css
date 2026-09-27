@@ -5624,3 +5624,13 @@ h3 {
     zoom: 2.1;
   }
 }
+
+
+/* When the hero flows instead of pinning (short or landscape phones), content scrolls under
+   the header, so the header is solid from the start. Pure CSS: no dependency on site.js. */
+body:has(.field-hero.is-flow) .site-header-home:not(.is-scrolled) {
+  background: rgba(11, 14, 16, 0.94);
+  border-bottom-color: var(--night-rule);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+}

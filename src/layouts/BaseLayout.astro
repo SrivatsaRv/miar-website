@@ -4,6 +4,9 @@ import SiteSearch from "../components/SiteSearch.astro";
 import Logo from "../components/Logo.astro";
 import { requestHref, solutionLinks } from "../data/site";
 
+// Version the shared script by content (hash computed in astro.config.mjs) so each deploy busts caches.
+const siteScript = `/site.js?v=${__SITE_JS_VERSION__}`;
+
 interface Props {
   title: string;
   description: string;
@@ -220,6 +223,6 @@ const year = new Date().getFullYear();
       </div>
     </footer>
 
-    <script src="/site.js" defer></script>
+    <script src={siteScript} defer></script>
   </body>
 </html>
