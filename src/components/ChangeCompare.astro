@@ -46,13 +46,7 @@ const divider = view.x + (view.w * start) / 100;
     <div class="compare-frame" data-compare-frame>
       <svg
         viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
-        role="img"
-        aria-labelledby={`${id}-title`}
-      >
-        <title id={`${id}-title`}>
-          The same airbase apron in 2025 and 2026. Six aircraft appear in both images, but three are in new
-          positions, three earlier stands are empty, and a rotary-wing aircraft has arrived.
-        </title>
+        role="img" aria-label="The same airbase apron in 2025 and 2026. Six aircraft appear in both images, but three are in new positions, three earlier stands are empty, and a rotary-wing aircraft has arrived.">
         <defs>
           <clipPath id={`${id}-before`}>
             <rect data-clip-before x={view.x} y={view.y} width={divider - view.x} height={view.h} />
