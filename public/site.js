@@ -11,7 +11,9 @@ const submitButton = form?.querySelector(".submit-button");
 /* ---------- Header ---------- */
 
 if (header?.classList.contains("site-header-home")) {
-  const syncHeader = () => header.classList.toggle("is-scrolled", window.scrollY > 24);
+  const pinnedHero = document.querySelector(".field-hero");
+  const threshold = () => (pinnedHero ? pinnedHero.offsetHeight - header.offsetHeight : 24);
+  const syncHeader = () => header.classList.toggle("is-scrolled", window.scrollY > threshold());
   syncHeader();
   window.addEventListener("scroll", syncHeader, { passive: true });
 }

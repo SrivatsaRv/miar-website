@@ -95,8 +95,9 @@ test("hero workbench lets a visitor review a candidate like an analyst", async (
   await page.goto("/");
 
   const stack = page.locator("[data-sensor-stack]");
+  await stack.scrollIntoViewIfNeeded();
   await expect(stack).toBeVisible();
-  expect(await page.locator(".hero img").count(), "hero should be vector, not raster").toBe(0);
+  expect(await page.locator("[data-field] img").count(), "hero should be drawn, not raster").toBe(0);
 
   await stack.getByRole("button", { name: "C-3", exact: true }).click();
   await expect(stack).toHaveAttribute("data-cand-active", "C-3");
@@ -381,4 +382,51 @@ test("detection taxonomy drills down and holds unresolved types at role level", 
   await expect(crumbs).toHaveText(/Ships.*Surface combatant.*Destroyer/);
   await tx.locator('.tx-node[data-id="vehicles"]').click();
   await expect(tx.locator("[data-tx-explain]")).toContainText("in development");
+});
+
+test("scene-field hero tells the story as the reader scrolls", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const hero = page.locator("[data-field]");
+  const caption = page.locator("[data-field-count]");
+  await expect(page.locator("[data-field-canvas]")).toBeVisible();
+  await expect(caption).toContainText("5 providers");
+
+  const span = await hero.evaluate((node) => node.offsetHeight - window.innerHeight);
+  await page.evaluate((y) => window.scrollTo(0, y), span * 0.45);
+  await expect(caption).toContainText("Co-registering");
+  await page.evaluate((y) => window.scrollTo(0, y), span);
+  await expect(caption).toContainText("1 site record");
+  await expect(hero).toHaveAttribute("data-caption", "2");
+  await expect(page.locator("[data-field-contract]")).toHaveCSS("opacity", "1");
+
+  // The headline stays readable: nothing is drawn over the centred copy block.
+  const copy = await page.locator("[data-field-safe]").boundingBox();
+  expect(copy?.width ?? 0).toBeGreaterThan(300);
+});
+
+test("heightened awareness turns the same detection into different threat signals", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const modes = page.locator("[data-modes]");
+  await modes.scrollIntoViewIfNeeded();
+  await expect(modes).toHaveAttribute("data-mode", "aware");
+
+  const card = (id: string) => modes.locator(`[data-platform-card="${id}"]`);
+  await expect(card("fighter")).toBeVisible();
+  await expect(card("fighter")).toContainText("HIGH", { ignoreCase: true });
+  await expect(card("fighter")).toContainText("under threat from detection D-2291");
+  await expect(card("fighter")).toContainText("Established capability");
+
+  await modes.getByRole("button", { name: /C-130 family/ }).click();
+  await expect(card("transport")).toBeVisible();
+  await expect(card("transport")).toContainText("Logistics or troop movement");
+  await expect(card("transport")).toContainText("No protected asset under direct threat");
+
+  await card("transport").getByRole("button", { name: "Qualify signal" }).click();
+  await expect(card("transport").locator("[data-signal-state]")).toContainText("Qualified by you");
+
+  await modes.getByRole("tab", { name: /Audit/ }).click();
+  await expect(modes.locator('[data-mode-panel="audit"]')).toBeVisible();
+  await expect(modes.locator('[data-mode-panel="aware"]')).toBeHidden();
 });
