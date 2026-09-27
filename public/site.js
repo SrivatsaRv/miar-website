@@ -17,7 +17,8 @@ if (header?.classList.contains("site-header-home")) {
     const pinned = pinnedHero && !pinnedHero.classList.contains("is-flow");
     const heroBottom = pinnedHero ? pinnedHero.getBoundingClientRect().bottom : 0;
     const headerBottom = header.getBoundingClientRect().bottom;
-    const past = pinned ? heroBottom <= headerBottom + 1 : window.scrollY > 24;
+    // Light header only once the dark hero has scrolled past, whether it pins or flows.
+    const past = pinnedHero ? heroBottom <= headerBottom + 1 : window.scrollY > 24;
     // Once the pinned hero releases, its content moves up under the header: go solid then.
     const moving = pinned && !past && heroBottom < window.innerHeight - 1;
     header.classList.toggle("is-scrolled", past);
