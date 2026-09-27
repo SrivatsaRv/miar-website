@@ -15,10 +15,13 @@ if (header?.classList.contains("site-header-home")) {
   // Stay transparent while the dark hero sits under the header (rect-based, so page zoom is safe).
   const syncHeader = () => {
     const pinned = pinnedHero && !pinnedHero.classList.contains("is-flow");
-    const past = pinned
-      ? pinnedHero.getBoundingClientRect().bottom <= header.getBoundingClientRect().bottom + 1
-      : window.scrollY > 24;
+    const heroBottom = pinnedHero ? pinnedHero.getBoundingClientRect().bottom : 0;
+    const headerBottom = header.getBoundingClientRect().bottom;
+    const past = pinned ? heroBottom <= headerBottom + 1 : window.scrollY > 24;
+    // Once the pinned hero releases, its content moves up under the header: go solid then.
+    const moving = pinned && !past && heroBottom < window.innerHeight - 1;
     header.classList.toggle("is-scrolled", past);
+    header.classList.toggle("is-solid-dark", moving);
   };
   syncHeader();
   window.addEventListener("scroll", syncHeader, { passive: true });

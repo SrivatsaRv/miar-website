@@ -16,7 +16,8 @@
     "preview:static": "astro preview --host 0.0.0.0 --port 3005",
     "generate-types": "wrangler types",
     "deploy": "npm run build && wrangler deploy",
-    "test:unit": "node --test \"tests/unit/*.test.mjs\""
+    "test:unit": "node --test \"tests/unit/*.test.mjs\"",
+    "export:widgets": "node scripts/export-widgets.mjs"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^13.5.0",

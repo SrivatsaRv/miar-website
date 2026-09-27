@@ -9,15 +9,15 @@
     <canvas class="field-canvas" data-field-canvas aria-hidden="true"></canvas>
 
     <div class="field-copy" data-field-safe>
-      <span class="label">Post-reception imagery exploitation</span>
-      <h1 class="display">Know what changed at every site you watch.</h1>
+      <span class="label">Unified intelligence processing layer</span>
+      <h1 class="display">The unified intelligence processing layer for the modern battlefield.</h1>
       <p class="lead">
-        You focus on obtaining imagery. MIAR does the rest: every scene, from every provider and
-        portal, co-registered into one site record and exploited into one qualified finding.
+        Every satellite, every sensor, every installation. MIAR turns all the imagery you receive
+        into what changed on the ground, as fast as it lands.
       </p>
       <div class="field-actions">
         <a class="button button-primary" href="#waitlist">Request access <span class="arrow" aria-hidden="true">→</span></a>
-        <a class="button button-secondary" href="#try-it">Qualify a pass yourself</a>
+        <a class="button button-secondary" href="#try-it">Try it yourself</a>
       </div>
       <p class="field-phase" data-field-caption aria-live="polite">
         <span data-field-count>5 providers · 7 formats · 0 shared context</span>
@@ -142,7 +142,7 @@
     display: grid;
     gap: 3px;
     padding: 12px 16px;
-    background: var(--signal);
+    background: var(--signal-fill);
     color: #fff;
     opacity: 0;
     transform: translateY(8px);
@@ -248,8 +248,8 @@
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const captions = [
       "5 providers · 7 formats · 0 shared context",
-      "Co-registering to Site 014 · dropping unusable and duplicate scenes",
-      "1 site record · 3 changes flagged · 1 qualified contract",
+      "Lining up every image of Site 014 · dropping cloudy and duplicate ones",
+      "1 picture of the site · 3 changes found · 1 intelligence contract",
     ];
     const tags: Record<string, string> = Object.fromEntries(SOURCES.map((s) => [s.id, s.tag]));
 

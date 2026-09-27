@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ChangeCompare from "../../components/ChangeCompare.astro";
 import TacticalScene from "../../components/TacticalScene.astro";
+import PipelineHero from "../../components/PipelineHero.astro";
 
 const passes = [
   { time: "06:42Z", provider: "Provider A", sensor: "EO", note: "Clear, 0.5 m", state: "Ready" },
@@ -34,6 +35,10 @@ const passes = [
             <a class="button button-secondary" href="/solutions/">See use cases</a>
           </div>
         </div>
+      </section>
+
+      <section class="pipeline-hero" aria-label="How imagery flows through MIAR">
+        <PipelineHero />
       </section>
 
       <div class="stages">

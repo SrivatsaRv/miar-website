@@ -394,9 +394,9 @@ test("scene-field hero tells the story as the reader scrolls", async ({ page }) 
 
   const span = await hero.evaluate((node) => node.offsetHeight - window.innerHeight);
   await page.evaluate((y) => window.scrollTo(0, y), span * 0.45);
-  await expect(caption).toContainText("Co-registering");
+  await expect(caption).toContainText("Lining up every image");
   await page.evaluate((y) => window.scrollTo(0, y), span);
-  await expect(caption).toContainText("1 site record");
+  await expect(caption).toContainText("1 picture of the site");
   await expect(hero).toHaveAttribute("data-caption", "2");
   await expect(page.locator("[data-field-contract]")).toHaveCSS("opacity", "1");
 
@@ -469,6 +469,32 @@ test("homepage fits phones, tablets, laptops and TVs in both orientations", asyn
       });
     }
     await expect(page.locator("[data-field-contract]"), `${label} contract`).toHaveCSS("opacity", "1", { timeout: 8000 });
+    await context.close();
+  }
+});
+
+test("header is never transparent over hero text while scrolling on phones", async ({ browser }) => {
+  test.setTimeout(180_000);
+  for (const [width, height] of [[412, 915], [390, 844], [768, 1024], [844, 390]]) {
+    const context = await browser.newContext({ viewport: { width, height }, isMobile: true, hasTouch: true });
+    const page = await context.newPage();
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const total = await page.evaluate(() => document.querySelector("[data-field]")!.getBoundingClientRect().height + 400);
+    for (let y = 0; y < total; y += 60) {
+      await page.evaluate((top) => window.scrollTo(0, top), y);
+      await page.waitForTimeout(30);
+      const covered = await page.evaluate(() => {
+        const header = document.querySelector("[data-site-header]")!;
+        const bottom = header.getBoundingClientRect().bottom;
+        if (getComputedStyle(header).backgroundColor !== "rgba(0, 0, 0, 0)") return false;
+        return [...document.querySelectorAll(".field-copy > *, .facts-band li")].some((node) => {
+          const rect = node.getBoundingClientRect();
+          return rect.top < bottom && rect.bottom > 0;
+        });
+      });
+      expect(covered, `${width}x${height} header transparent over text at scroll ${y}`).toBe(false);
+    }
     await context.close();
   }
 });

@@ -1,0 +1,564 @@
+---
+// Capabilities hero: provider satellites pass over an AOI, scenes land in customer storage,
+// MIAR ingests them into one pipeline, and an intelligence contract is published downstream.
+// Pure SVG with SMIL motion. Two renditions: wide (desktop) and tall (phones and tablets).
+
+const satellites = [
+  { label: "Provider A · EO", dur: 17, begin: -3, color: "#e9e6dd" },
+  { label: "Provider B · SAR", dur: 22, begin: -12, color: "#9fc3d6" },
+  { label: "Provider C · HSI", dur: 14, begin: -8, color: "#b99be0" },
+  { label: "National · EO", dur: 26, begin: -19, color: "#e9e6dd" },
+];
+
+const stores = [
+  { title: "Provider A bucket", sub: "GeoTIFF · COG" },
+  { title: "SAR delivery", sub: "SICD · GRD" },
+  { title: "Ground station", sub: "NITF" },
+  { title: "Public archive", sub: "Sentinel · SAFE" },
+];
+
+const stages = [
+  { title: "Register", sub: "Co-register to site", stat: "4 scenes" },
+  { title: "Exploit", sub: "Detect · compare", stat: "7 detections" },
+  { title: "Qualify", sub: "Analyst decision", stat: "4 qualified" },
+  { title: "Publish", sub: "Contract F-0152", stat: "1 contract" },
+];
+
+const consumers = [
+  { title: "Operational picture", sub: "ORBAT system" },
+  { title: "GIS services", sub: "OGC API · WFS" },
+  { title: "Briefings", sub: "Command and partners" },
+  { title: "Collection cue", sub: "Next tasking" },
+];
+
+const contract = [
+  ["site", '"SITE-014"'],
+  ["observation", '"+4 fighter-family"', "change"],
+  ["confidence", "0.91"],
+  ["sensors", '["EO","SAR","HSI"]'],
+  ["provenance", "4 scenes"],
+  ["analyst_state", '"qualified"', "ok"],
+];
+
+// ---------- Geometry helpers ----------
+
+// Satellite track: a gentle arc across the width, apex in the middle.
+const track = (x0: number, x1: number, yEdge: number, lift: number) =>
+  `M${x0} ${yEdge}Q${(x0 + x1) / 2} ${yEdge - lift * 2} ${x1} ${yEdge}`;
+const trackY = (t: number, yEdge: number, lift: number) => yEdge - 2 * t * (1 - t) * lift * 2;
+
+// Wide rendition (1200 × 640)
+const W = { w: 1200, h: 640, aoiX: 360, limbEdge: 250, limbPeak: 180 };
+const limbY = (x: number, w: number, edge: number, peak: number) => {
+  const t = x / w;
+  return edge - 2 * t * (1 - t) * (edge - peak) * 2 * 0.5 * 2;
+};
+const wLimb = `M0 ${W.limbEdge}Q${W.w / 2} ${W.limbPeak - (W.limbEdge - W.limbPeak)} ${W.w} ${W.limbEdge}V${W.h}H0Z`;
+const wAoiY = limbY(W.aoiX, W.w, W.limbEdge, W.limbPeak);
+const wTracks = satellites.map((s, i) => {
+  const yEdge = 92 + i * 34;
+  const lift = 26;
+  const x0 = -60;
+  const x1 = W.w + 60;
+  const tAoi = (W.aoiX - x0) / (x1 - x0);
+  const satY = trackY(tAoi, yEdge, lift);
+  return { ...s, d: track(x0, x1, yEdge, lift), tAoi, drop: wAoiY - satY - 12 };
+});
+const wStoreY = 300;
+const wStoreW = 170;
+const wStores = stores.map((s, i) => ({ ...s, x: 70 + i * 190, y: wStoreY }));
+const wPipeY = 520;
+const wStageX = [150, 370, 590, 800];
+const wEntry = (s: { x: number; y: number }) =>
+  `M${s.x + wStoreW / 2} ${s.y + 54}C${s.x + wStoreW / 2} ${s.y + 130} ${wStageX[0]} ${wPipeY - 90} ${wStageX[0]} ${wPipeY}L${wStageX[3]} ${wPipeY}`;
+const wCard = { x: 870, y: 250, w: 300, h: 222 };
+const wCons = consumers.map((c, i) => ({ ...c, x: 870 + (i % 2) * 154, y: 500 + Math.floor(i / 2) * 60 }));
+
+// Tall rendition (420 × 1180)
+const T = { w: 420, aoiX: 210, limbEdge: 230, limbPeak: 190 };
+const tLimb = `M0 ${T.limbEdge}Q${T.w / 2} ${T.limbPeak - (T.limbEdge - T.limbPeak)} ${T.w} ${T.limbEdge}V330H0Z`;
+const tAoiY = limbY(T.aoiX, T.w, T.limbEdge, T.limbPeak);
+const tTracks = satellites.map((s, i) => {
+  const yEdge = 96 + i * 26;
+  const lift = 16;
+  const x0 = -50;
+  const x1 = T.w + 50;
+  const tAoi = (T.aoiX - x0) / (x1 - x0);
+  return { ...s, d: track(x0, x1, yEdge, lift), tAoi, drop: tAoiY - trackY(tAoi, yEdge, lift) - 12 };
+});
+const tStores = stores.map((s, i) => ({ ...s, x: 16 + (i % 2) * 198, y: 360 + Math.floor(i / 2) * 64 }));
+const tPipeX = 70;
+const tStageY = [560, 650, 740, 830];
+const tEntry = (s: { x: number; y: number }) =>
+  `M${s.x + 94} ${s.y + 52}C${s.x + 94} ${s.y + 90} ${tPipeX} ${tStageY[0] - 60} ${tPipeX} ${tStageY[0]}L${tPipeX} ${tStageY[3]}`;
+const tCard = { x: 16, y: 880, w: 388, h: 176 };
+const tCons = consumers.map((c, i) => ({ ...c, x: 16 + (i % 2) * 198, y: 1076 + Math.floor(i / 2) * 50 }));
+
+// Swath visibility: bright only around the moment the satellite is over the AOI.
+const swathKeys = (t: number) => {
+  const a = Math.max(0.001, t - 0.05);
+  const b = t;
+  const c = Math.min(0.999, t + 0.05);
+  return { keyTimes: `0;${a.toFixed(3)};${b.toFixed(3)};${c.toFixed(3)};1`, values: "0;0;0.85;0;0" };
+};
+const satGlyph = `<rect x="-6" y="-4" width="12" height="8" rx="1.5"/><rect x="-20" y="-2.5" width="12" height="5"/><rect x="8" y="-2.5" width="12" height="5"/>`;
+---
+
+<figure class="ph" data-ph aria-label="Scenes from four imagery providers pass over an area of interest, land in the customer's storage, flow through MIAR's register, exploit, qualify and publish stages, and leave as an intelligence contract for the operational picture, GIS, briefings and collection cueing.">
+  <!-- Wide rendition -->
+  <svg class="ph-wide" viewBox={`0 0 ${W.w} ${W.h}`} aria-hidden="true">
+    <defs>
+      <linearGradient id="ph-space" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#070a0c" />
+        <stop offset="1" stop-color="#0e1519" />
+      </linearGradient>
+      <linearGradient id="ph-ground" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#1a2226" />
+        <stop offset="1" stop-color="#0b0e10" />
+      </linearGradient>
+      <linearGradient id="ph-swath" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#e4571e" stop-opacity="0.05" />
+        <stop offset="1" stop-color="#e4571e" stop-opacity="0.45" />
+      </linearGradient>
+    </defs>
+    <rect width={W.w} height={W.h} fill="url(#ph-space)" />
+    {Array.from({ length: 40 }, (_, i) => (
+      <circle cx={(i * 197) % W.w} cy={(i * 53) % 190 + 8} r={i % 5 === 0 ? 1.2 : 0.7} class="ph-star" />
+    ))}
+
+    <text class="ph-k" x="24" y="30">IN ORBIT · PROVIDER CONSTELLATIONS</text>
+    {wTracks.map((s) => <path class="ph-track" d={s.d} />)}
+
+    <path d={wLimb} fill="url(#ph-ground)" />
+    <path class="ph-limb" d={`M0 ${W.limbEdge}Q${W.w / 2} ${W.limbPeak - (W.limbEdge - W.limbPeak)} ${W.w} ${W.limbEdge}`} />
+    <g class="ph-aoi" transform={`translate(${W.aoiX} ${wAoiY})`}>
+      <path d="M-26 -6v-6h8M18 -12h8v6M26 6v6h-8M-18 12h-8v-6" />
+      <circle r="3" />
+      <text class="ph-aoi-t" x="34" y="-2">AOI · SITE 014</text>
+    </g>
+
+    {wTracks.map((s) => {
+      const k = swathKeys(s.tAoi);
+      return (
+        <g>
+          <polygon class="ph-swath" points={`0,6 -30,${s.drop} 30,${s.drop}`} opacity="0">
+            <animate attributeName="opacity" dur={`${s.dur}s`} begin={`${s.begin}s`} repeatCount="indefinite" keyTimes={k.keyTimes} values={k.values} />
+            <animateMotion dur={`${s.dur}s`} begin={`${s.begin}s`} repeatCount="indefinite" path={s.d} calcMode="linear" />
+          </polygon>
+          <g class="ph-sat" style={`--sat: ${s.color}`}>
+            <g set:html={satGlyph} />
+            <text class="ph-sat-t" x="26" y="4">{s.label}</text>
+            <animateMotion dur={`${s.dur}s`} begin={`${s.begin}s`} repeatCount="indefinite" path={s.d} calcMode="linear" />
+          </g>
+        </g>
+      );
+    })}
+
+    <text class="ph-k" x="70" y={wStoreY - 16}>RECEIVED · CUSTOMER STORAGE</text>
+    {wStores.map((s, i) => {
+      const cx = s.x + wStoreW / 2;
+      const top = limbY(cx, W.w, W.limbEdge, W.limbPeak) + 6;
+      return (
+        <g>
+          <line class="ph-down" x1={cx} y1={top} x2={cx} y2={s.y} />
+          <circle class="ph-pt ph-pt-down" r="2.6">
+            <animateMotion dur="2.6s" begin={`${-i * 0.7}s`} repeatCount="indefinite" path={`M${cx} ${top}L${cx} ${s.y}`} />
+          </circle>
+          <rect class="ph-store" x={s.x} y={s.y} width={wStoreW} height="54" />
+          <path class="ph-store-ico" d={`M${s.x + 14} ${s.y + 18}h14v18h-14zM${s.x + 14} ${s.y + 24}h14M${s.x + 14} ${s.y + 30}h14`} />
+          <text class="ph-title" x={s.x + 38} y={s.y + 24}>{s.title}</text>
+          <text class="ph-sub" x={s.x + 38} y={s.y + 41}>{s.sub}</text>
+        </g>
+      );
+    })}
+
+    <rect class="ph-pipe" x={wStageX[0] - 34} y={wPipeY - 18} width={wStageX[3] - wStageX[0] + 68} height="36" rx="18" />
+    <rect class="ph-pipe-ok" x={wStageX[2]} y={wPipeY - 2} width={wStageX[3] - wStageX[2]} height="4" />
+    <text class="ph-k ph-k-core" x={wStageX[0] - 34} y={wPipeY - 68}>MIAR · POST-RECEPTION PIPELINE</text>
+    {wStores.map((s, i) => (
+      <g>
+        <path class="ph-feed" d={wEntry(s)} />
+        {[0, 1, 2].map((j) => (
+          <rect class:list={["ph-pt", i === 1 && "ph-pt-sar", i === 2 && "ph-pt-hsi"]} x="-3" y="-3" width="6" height="6">
+            <animateMotion dur="6.5s" begin={`${-(i * 1.6 + j * 2.17)}s`} repeatCount="indefinite" path={wEntry(s)} />
+          </rect>
+        ))}
+      </g>
+    ))}
+    {stages.map((st, i) => (
+      <g transform={`translate(${wStageX[i]} ${wPipeY})`}>
+        <circle class:list={["ph-stage", i === 2 && "is-human"]} r="22" />
+        <text class="ph-stage-n" y="4" text-anchor="middle">0{i + 1}</text>
+        <text class="ph-title" y="46" text-anchor="middle">{st.title}</text>
+        <text class="ph-sub" y="62" text-anchor="middle">{st.sub}</text>
+        <text class="ph-stat" y="-32" text-anchor="middle">{st.stat}</text>
+      </g>
+    ))}
+
+    <path class="ph-feed ph-feed-out" d={`M${wStageX[3] + 22} ${wPipeY}C${wStageX[3] + 50} ${wPipeY} ${wCard.x - 40} ${wCard.y + wCard.h / 2} ${wCard.x} ${wCard.y + wCard.h / 2}`} />
+    <circle class="ph-pt ph-pt-ok" r="3.2">
+      <animateMotion dur="2.2s" repeatCount="indefinite" path={`M${wStageX[3] + 22} ${wPipeY}C${wStageX[3] + 50} ${wPipeY} ${wCard.x - 40} ${wCard.y + wCard.h / 2} ${wCard.x} ${wCard.y + wCard.h / 2}`} />
+    </circle>
+
+    <g class="ph-card" transform={`translate(${wCard.x} ${wCard.y})`}>
+      <rect width={wCard.w} height={wCard.h} />
+      <rect class="ph-card-bar" width={wCard.w} height="30" />
+      <text class="ph-card-k" x="14" y="20">INTELLIGENCE CONTRACT · F-0152</text>
+      {contract.map(([key, value, state], i) => (
+        <text class="ph-code" x="14" y={56 + i * 26}>
+          <tspan class="ph-code-k">{key}</tspan><tspan>: </tspan><tspan class:list={["ph-code-v", state && `is-${state}`]}>{value}</tspan>
+        </text>
+      ))}
+    </g>
+
+    {wCons.map((c, i) => {
+      const from = `M${wCard.x + wCard.w / 2} ${wCard.y + wCard.h}C${wCard.x + wCard.w / 2} ${wCard.y + wCard.h + 14} ${c.x + 72} ${c.y - 14} ${c.x + 72} ${c.y}`;
+      return (
+        <g>
+          <path class="ph-feed" d={from} />
+          <circle class="ph-pt ph-pt-ok" r="2.4">
+            <animateMotion dur="2.4s" begin={`${-i * 0.6}s`} repeatCount="indefinite" path={from} />
+          </circle>
+          <rect class="ph-cons" x={c.x} y={c.y} width="146" height="46" />
+          <text class="ph-title ph-title-s" x={c.x + 12} y={c.y + 20}>{c.title}</text>
+          <text class="ph-sub" x={c.x + 12} y={c.y + 35}>{c.sub}</text>
+        </g>
+      );
+    })}
+  </svg>
+
+  <!-- Tall rendition -->
+  <svg class="ph-tall" viewBox="0 0 420 1190" aria-hidden="true">
+    <rect width="420" height="1190" fill="#0b0e10" />
+    <rect width="420" height="330" fill="url(#ph-space)" />
+    {Array.from({ length: 24 }, (_, i) => (
+      <circle cx={(i * 131) % 420} cy={(i * 37) % 170 + 8} r={i % 5 === 0 ? 1.1 : 0.7} class="ph-star" />
+    ))}
+    <text class="ph-k" x="16" y="30">IN ORBIT · PROVIDER CONSTELLATIONS</text>
+    {tTracks.map((s) => <path class="ph-track" d={s.d} />)}
+    <path d={tLimb} fill="url(#ph-ground)" />
+    <g class="ph-aoi" transform={`translate(${T.aoiX} ${tAoiY})`}>
+      <path d="M-22 -5v-6h7M15 -11h7v6M22 5v6h-7M-15 11h-7v-6" />
+      <circle r="3" />
+      <text class="ph-aoi-t" x="30" y="-2">AOI · SITE 014</text>
+    </g>
+    {tTracks.map((s) => {
+      const k = swathKeys(s.tAoi);
+      return (
+        <g>
+          <polygon class="ph-swath" points={`0,6 -24,${s.drop} 24,${s.drop}`} opacity="0">
+            <animate attributeName="opacity" dur={`${s.dur}s`} begin={`${s.begin}s`} repeatCount="indefinite" keyTimes={k.keyTimes} values={k.values} />
+            <animateMotion dur={`${s.dur}s`} begin={`${s.begin}s`} repeatCount="indefinite" path={s.d} calcMode="linear" />
+          </polygon>
+          <g class="ph-sat" style={`--sat: ${s.color}`}>
+            <g set:html={satGlyph} />
+            <text class="ph-sat-t" x="24" y="4">{s.label}</text>
+            <animateMotion dur={`${s.dur}s`} begin={`${s.begin}s`} repeatCount="indefinite" path={s.d} calcMode="linear" />
+          </g>
+        </g>
+      );
+    })}
+
+    <text class="ph-k" x="16" y="348">RECEIVED · CUSTOMER STORAGE</text>
+    {tStores.map((s, i) => (
+      <g>
+        <rect class="ph-store" x={s.x} y={s.y} width="190" height="52" />
+        <text class="ph-title" x={s.x + 12} y={s.y + 22}>{s.title}</text>
+        <text class="ph-sub" x={s.x + 12} y={s.y + 39}>{s.sub}</text>
+        <path class="ph-feed" d={tEntry(s)} />
+        {[0, 1].map((j) => (
+          <rect class:list={["ph-pt", i === 1 && "ph-pt-sar", i === 2 && "ph-pt-hsi"]} x="-3" y="-3" width="6" height="6">
+            <animateMotion dur="6s" begin={`${-(i * 1.5 + j * 3)}s`} repeatCount="indefinite" path={tEntry(s)} />
+          </rect>
+        ))}
+      </g>
+    ))}
+
+    <rect class="ph-pipe" x={tPipeX - 18} y={tStageY[0] - 34} width="36" height={tStageY[3] - tStageY[0] + 68} rx="18" />
+    <rect class="ph-pipe-ok" x={tPipeX - 2} y={tStageY[2]} width="4" height={tStageY[3] - tStageY[2]} />
+    <text class="ph-k ph-k-core" x="16" y={tStageY[0] - 46}>MIAR · POST-RECEPTION PIPELINE</text>
+    {stages.map((st, i) => (
+      <g transform={`translate(${tPipeX} ${tStageY[i]})`}>
+        <circle class:list={["ph-stage", i === 2 && "is-human"]} r="20" />
+        <text class="ph-stage-n" y="4" text-anchor="middle">0{i + 1}</text>
+        <text class="ph-title" x="40" y="-4">{st.title}</text>
+        <text class="ph-sub" x="40" y="13">{st.sub}</text>
+        <text class="ph-stat" x={404 - tPipeX} y="4" text-anchor="end">{st.stat}</text>
+      </g>
+    ))}
+
+    <path class="ph-feed ph-feed-out" d={`M${tPipeX} ${tStageY[3] + 20}L${tPipeX} ${tCard.y}`} />
+    <g class="ph-card" transform={`translate(${tCard.x} ${tCard.y})`}>
+      <rect width={tCard.w} height={tCard.h} />
+      <rect class="ph-card-bar" width={tCard.w} height="30" />
+      <text class="ph-card-k" x="14" y="20">INTELLIGENCE CONTRACT · F-0152</text>
+      {contract.map(([key, value, state], i) => (
+        <text class="ph-code" x="14" y={52 + i * 21}>
+          <tspan class="ph-code-k">{key}</tspan><tspan>: </tspan><tspan class:list={["ph-code-v", state && `is-${state}`]}>{value}</tspan>
+        </text>
+      ))}
+    </g>
+    {tCons.map((c) => (
+      <g>
+        <rect class="ph-cons" x={c.x} y={c.y} width="190" height="44" />
+        <text class="ph-title ph-title-s" x={c.x + 12} y={c.y + 19}>{c.title}</text>
+        <text class="ph-sub" x={c.x + 12} y={c.y + 34}>{c.sub}</text>
+      </g>
+    ))}
+  </svg>
+
+  <figcaption>Illustrative data flow. Providers, formats and counts are examples; MIAR reads each provider's native delivery.</figcaption>
+</figure>
+
+<style>
+  .ph {
+    margin: 0;
+    border: 1px solid var(--ink);
+    background: #0b0e10;
+    overflow: hidden;
+  }
+
+  .ph svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .ph-tall {
+    display: none !important;
+  }
+
+  @media (max-width: 820px) {
+    .ph-wide {
+      display: none !important;
+    }
+
+    .ph-tall {
+      display: block !important;
+    }
+  }
+
+  .ph figcaption {
+    padding: 10px 14px;
+    border-top: 1px solid rgba(242, 241, 236, 0.14);
+    background: #0b0e10;
+    font-size: 12.5px;
+    color: rgba(242, 241, 236, 0.5);
+  }
+
+  .ph-star {
+    fill: rgba(242, 241, 236, 0.35);
+  }
+
+  .ph-k {
+    fill: rgba(242, 241, 236, 0.45);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .ph-k-core {
+    fill: #ff8a5c;
+  }
+
+  .ph-track {
+    fill: none;
+    stroke: rgba(242, 241, 236, 0.12);
+    stroke-dasharray: 2 6;
+  }
+
+  .ph-limb {
+    fill: none;
+    stroke: rgba(159, 195, 214, 0.35);
+    stroke-width: 1.5;
+  }
+
+  .ph-aoi path {
+    fill: none;
+    stroke: #e4571e;
+    stroke-width: 2;
+  }
+
+  .ph-aoi circle {
+    fill: #e4571e;
+  }
+
+  .ph-aoi-t {
+    fill: #f2f1ec;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  .ph-swath {
+    fill: url(#ph-swath);
+  }
+
+  .ph-sat {
+    fill: var(--sat);
+  }
+
+  .ph-sat rect {
+    stroke: #0b0e10;
+    stroke-width: 0.5;
+  }
+
+  .ph-sat-t {
+    fill: rgba(242, 241, 236, 0.75);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+  }
+
+  .ph-down {
+    stroke: rgba(242, 241, 236, 0.22);
+    stroke-dasharray: 3 5;
+  }
+
+  .ph-store,
+  .ph-cons {
+    fill: #12181c;
+    stroke: rgba(242, 241, 236, 0.16);
+  }
+
+  .ph-store-ico {
+    fill: none;
+    stroke: rgba(242, 241, 236, 0.5);
+  }
+
+  .ph-title {
+    fill: #f2f1ec;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .ph-title-s {
+    font-size: 13px;
+  }
+
+  .ph-sub {
+    fill: rgba(242, 241, 236, 0.5);
+    font-family: var(--mono);
+    font-size: 10.5px;
+  }
+
+  .ph-feed {
+    fill: none;
+    stroke: rgba(242, 241, 236, 0.16);
+    stroke-width: 1.2;
+  }
+
+  .ph-feed-out {
+    stroke: rgba(95, 211, 176, 0.45);
+  }
+
+  .ph-pipe {
+    fill: #0f1418;
+    stroke: rgba(228, 87, 30, 0.5);
+    stroke-dasharray: 5 4;
+  }
+
+  .ph-pipe-ok {
+    fill: #5fd3b0;
+    opacity: 0.8;
+  }
+
+  .ph-pt {
+    fill: #e9e6dd;
+  }
+
+  .ph-pt-sar {
+    fill: #9fc3d6;
+  }
+
+  .ph-pt-hsi {
+    fill: #b99be0;
+  }
+
+  .ph-pt-down {
+    fill: #e4571e;
+  }
+
+  .ph-pt-ok {
+    fill: #5fd3b0;
+  }
+
+  .ph-stage {
+    fill: #f2f1ec;
+    stroke: #0b0e10;
+    stroke-width: 3;
+  }
+
+  .ph-stage.is-human {
+    fill: #c2410c;
+  }
+
+  .ph-stage-n {
+    fill: #0b0e10;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .ph-stage.is-human + .ph-stage-n {
+    fill: #fff;
+  }
+
+  .ph-stat {
+    fill: #ff8a5c;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .ph-card rect:first-child {
+    fill: #12181c;
+    stroke: #e4571e;
+  }
+
+  .ph-card-bar {
+    fill: #c2410c;
+  }
+
+  .ph-card-k {
+    fill: #fff;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+
+  .ph-code {
+    fill: rgba(242, 241, 236, 0.6);
+    font-family: var(--mono);
+    font-size: 12.5px;
+  }
+
+  .ph-code-k {
+    fill: #f2f1ec;
+  }
+
+  .ph-code-v.is-change {
+    fill: #ff8a5c;
+  }
+
+  .ph-code-v.is-ok {
+    fill: #5fd3b0;
+  }
+</style>
+
+<script>
+  // Pause the motion when off screen, and entirely for reduced motion.
+  document.querySelectorAll<HTMLElement>("[data-ph]").forEach((root) => {
+    const svgs = [...root.querySelectorAll<SVGSVGElement>("svg")];
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const setRunning = (running: boolean) =>
+      svgs.forEach((svg) => (running && !reduced ? svg.unpauseAnimations() : svg.pauseAnimations()));
+    if (reduced) {
+      setRunning(false);
+      return;
+    }
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => setRunning(entries.some((entry) => entry.isIntersecting))).observe(root);
+    }
+  });
+</script>

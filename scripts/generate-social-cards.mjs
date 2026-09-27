@@ -39,9 +39,9 @@ for (const file of await readdir(path.join(root, "src/content/blog"))) {
 }
 
 const cards = [
-  { file: "home", label: "Post-reception imagery exploitation", title: "Know what changed at every site you watch." },
-  { file: "solutions", label: "Solutions", title: "One review process for every question about a site." },
-  { file: "how-it-works", label: "How it works", title: "From received scene to qualified finding." },
+  { file: "home", label: "MIAR by ReachDefence", title: "The unified intelligence processing layer for the modern battlefield." },
+  { file: "solutions", label: "Solutions", title: "Five questions asked of a monitored site, on one exploitation thread." },
+  { file: "how-it-works", label: "How it works", title: "From received scene to qualified finding, with nothing lost." },
   { file: "insights", label: "Insights", title: "Imagery intelligence, explained plainly." },
   ...solutions.map((s) => ({ file: `solution-${s.slug}`, label: `Solutions · ${s.number} ${s.name}`, title: s.title })),
   ...posts.map((p) => ({ file: `post-${p.slug}`, label: `Insights · ${p.category}`, title: p.title })),

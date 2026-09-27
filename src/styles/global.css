@@ -26,7 +26,7 @@
   --paper-sunk: #eae8e2;
   --ink: #0e1113;
   --ink-2: #3f454a;
-  --ink-3: #6b7176;
+  --ink-3: #5f656a;
   --rule: #d8d5cd;
   --rule-strong: #b9b5ab;
 
@@ -35,11 +35,13 @@
   --night-3: #1a2024;
   --on-night: #f2f1ec;
   --on-night-2: rgba(242, 241, 236, 0.66);
-  --on-night-3: rgba(242, 241, 236, 0.44);
+  --on-night-3: rgba(242, 241, 236, 0.54);
   --night-rule: rgba(242, 241, 236, 0.14);
 
   --signal: #e4571e;
   --signal-ink: #b8400f;
+  /* Deeper orange for fills that carry white text (5.2:1). --signal stays for lines and accents. */
+  --signal-fill: #c2410c;
   --held: #f2f1ec;
 
   --series-1: #1e6fc0;
@@ -340,8 +342,8 @@ h3 {
 }
 
 .button-primary:hover {
-  --btn-bg: var(--signal);
-  --btn-border: var(--signal);
+  --btn-bg: var(--signal-fill);
+  --btn-border: var(--signal-fill);
   --btn-fg: #fff;
 }
 
@@ -364,8 +366,8 @@ h3 {
 
 .on-night .button-primary:hover,
 .button-light:hover {
-  --btn-bg: var(--signal);
-  --btn-border: var(--signal);
+  --btn-bg: var(--signal-fill);
+  --btn-border: var(--signal-fill);
   --btn-fg: #fff;
 }
 
@@ -628,8 +630,8 @@ h3 {
 }
 
 .site-header-home:not(.is-scrolled):not(:has(.is-nav-open)) .header-cta:hover {
-  --btn-bg: var(--signal);
-  --btn-border: var(--signal);
+  --btn-bg: var(--signal-fill);
+  --btn-border: var(--signal-fill);
   --btn-fg: #fff;
 }
 
@@ -1228,7 +1230,7 @@ h3 {
 }
 
 .mark-tag.is-change rect {
-  fill: var(--signal);
+  fill: var(--signal-fill);
 }
 
 .mark-tag text {
@@ -2056,7 +2058,7 @@ h3 {
   display: grid;
   place-items: center;
   border-radius: 50%;
-  background: var(--signal);
+  background: var(--signal-fill);
   color: #fff;
   font-family: var(--mono);
   font-size: 11.5px;
@@ -4821,7 +4823,7 @@ h3 {
   display: grid;
   place-items: center;
   transform: translateY(-50%);
-  background: var(--signal);
+  background: var(--signal-fill);
   color: #fff;
   font-size: 14px;
   z-index: 1;
@@ -5614,7 +5616,8 @@ h3 {
 
 /* When the hero flows instead of pinning (short or landscape phones), content scrolls under
    the header, so the header is solid from the start. Pure CSS: no dependency on site.js. */
-body:has(.field-hero.is-flow) .site-header-home:not(.is-scrolled) {
+body:has(.field-hero.is-flow) .site-header-home:not(.is-scrolled),
+.site-header-home.is-solid-dark:not(.is-scrolled) {
   background: rgba(11, 14, 16, 0.94);
   border-bottom-color: var(--night-rule);
   backdrop-filter: saturate(1.4) blur(14px);
@@ -5630,4 +5633,19 @@ body:has(.field-hero.is-flow) .site-header-home:not(.is-scrolled) {
   color: var(--ink);
   padding-left: 20px;
   border-left: 2px solid var(--signal);
+}
+
+
+.pipeline-hero {
+  margin-bottom: clamp(48px, 7vw, 96px);
+}
+
+/* Contrast fixes from the theme audit */
+.compare .label {
+  color: var(--on-night-3);
+}
+
+.detectors .is-soon .num,
+.detectors .is-soon .detector-meta {
+  color: var(--ink-2);
 }
