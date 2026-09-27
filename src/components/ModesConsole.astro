@@ -1,12 +1,7 @@
 ---
-// Operating modes for the same pass. Heightened awareness joins the detection to a
-// platform capability library and assesses it against protected assets.
-// All variants are rendered on the server; the script only switches between them.
-import { PLATFORMS, ASSETS, OBSERVED, assessThreat } from "../lib/threat-model.mjs";
-
-const detection = { id: "D-2291", count: 4, delta: 4, confidence: 0.88 };
-const platformOrder = ["fighter", "transport", "tanker", "aew"] as const;
-const signals = platformOrder.map((id) => ({ id, signal: assessThreat(id, detection) }));
+// Operating modes for the same pass. Heightened awareness watches the observed airbases
+// across the international boundary (BorderWatch); the other modes are static examples.
+import BorderWatch from "./BorderWatch.astro";
 
 const modes = [
   { id: "detect", name: "Detect", when: "Every pass" },
@@ -15,17 +10,9 @@ const modes = [
   { id: "audit", name: "Audit", when: "Assurance and review" },
   { id: "report", name: "Report", when: "Daily or on demand" },
 ];
-
-// Schematic map: 0.9 px per km, observed base on the left.
-const scale = 0.9;
-const origin = { x: 72, y: 190 };
-const px = (p: { x: number; y: number }) => ({ x: origin.x + p.x * scale, y: origin.y - p.y * scale });
-const base = px(OBSERVED);
-const borderX = origin.x + 42 * scale;
-const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
 ---
 
-<div class="modes" data-modes data-mode="aware" data-platform="fighter">
+<div class="modes" data-modes data-mode="aware">
   <div class="modes-tabs" role="tablist" aria-label="Operating mode">
     {modes.map((mode) => (
       <button type="button" role="tab" data-mode-tab={mode.id} aria-selected={mode.id === "aware" ? "true" : "false"}>
@@ -63,107 +50,13 @@ const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
   <!-- Heightened awareness -->
   <section class="modes-panel" data-mode-panel="aware">
     <p class="modes-lede">
-      Join the detection to the platform's established capability and the dynamic ORBAT, then assess it
-      against the assets you protect. Choose the platform MIAR identified at the same base:
+      Heightened awareness watches the other side of the border. Each observed airbase gets a threat
+      perception level from what was seen on the latest pass, joined to the platform's established
+      capability and your dynamic ORBAT. The boundary itself carries the signal for its sector.
+      Select an airbase to see why it reads the way it does.
     </p>
-    <div class="aware-switch" role="group" aria-label="Detected platform">
-      {platformOrder.map((id) => (
-        <button type="button" data-platform-pick={id} aria-pressed={id === "fighter" ? "true" : "false"}>
-          <strong>{PLATFORMS[id].family}</strong>
-          <span>{PLATFORMS[id].role}</span>
-        </button>
-      ))}
-    </div>
-
-    <div class="aware-grid">
-      <figure class="aware-map">
-        <svg viewBox="0 0 640 380" role="img" aria-label="Schematic map: the observed border airbase on the left, protected assets to the east, and the reach of the detected platform drawn as a ring.">
-          <defs>
-            <pattern id="aware-grid" width="36" height="36" patternUnits="userSpaceOnUse">
-              <path d="M36 0H0V36" fill="none" stroke="rgba(242,241,236,0.06)" />
-            </pattern>
-            <clipPath id="aware-clip"><rect width="640" height="380" /></clipPath>
-          </defs>
-          <rect width="640" height="380" fill="url(#aware-grid)" />
-          <g clip-path="url(#aware-clip)">
-            {signals.map(({ id, signal }) => (
-              <g class="aware-layer" data-platform-layer={id}>
-                {id === "tanker" && (
-                  <circle class="ring ring-inner" cx={base.x} cy={base.y} r={PLATFORMS.fighter.radiusKm * scale} />
-                )}
-                {signal.reach && (
-                  <circle class:list={["ring", `ring-${id}`]} cx={base.x} cy={base.y} r={signal.reach * scale} />
-                )}
-                {signal.inRange.map((asset) => {
-                  const p = px(asset);
-                  return <circle class="halo" cx={p.x} cy={p.y} r="15" />;
-                })}
-                {id === "transport" && (
-                  <path class="movement" d={`M${base.x + 16} ${base.y}C${base.x + 60} ${base.y - 30} ${borderX - 10} ${base.y - 34} ${borderX + 6} ${base.y - 12}`} />
-                )}
-              </g>
-            ))}
-          </g>
-
-          <line class="border" x1={borderX} y1="10" x2={borderX} y2="370" />
-          <text class="map-k" x={borderX - 8} y="26" text-anchor="end">OBSERVED</text>
-          <text class="map-k" x={borderX + 8} y="26">PROTECTED</text>
-
-          <g class="base">
-            <rect x={base.x - 9} y={base.y - 9} width="18" height="18" />
-            <text class="map-name" x={base.x - 12} y={base.y - 34}>{OBSERVED.name}</text>
-            <text class="map-sub" x={base.x - 12} y={base.y - 20}>D-2291 · +4 detected</text>
-          </g>
-
-          {ASSETS.map((asset) => {
-            const p = px(asset);
-            const flip = p.x > 500;
-            const tx = flip ? p.x - 12 : p.x + 12;
-            const anchor = flip ? "end" : "start";
-            return (
-              <g class="asset" data-asset={asset.id}>
-                <path d={`M${p.x} ${p.y - 7}L${p.x + 7} ${p.y}L${p.x} ${p.y + 7}L${p.x - 7} ${p.y}Z`} />
-                <text class="map-name" x={tx} y={p.y - 6} text-anchor={anchor}>{asset.name}</text>
-                <text class="map-sub" x={tx} y={p.y + 8} text-anchor={anchor}>{asset.kind} · {Math.round(Math.hypot(asset.x, asset.y))} km</text>
-              </g>
-            );
-          })}
-        </svg>
-        <figcaption>Schematic. Placeholder installations; capability figures are rounded open-source reference values.</figcaption>
-      </figure>
-
-      <div class="aware-cards">
-        {signals.map(({ id, signal }) => (
-          <article class:list={["signal", levelClass(signal.level)]} data-platform-card={id} hidden={id !== "fighter"}>
-            <header>
-              <span class="signal-level">{signal.level}</span>
-              <span class="mono">Threat signal · T-{id === "fighter" ? "0317" : id === "transport" ? "0318" : id === "tanker" ? "0319" : "0320"}</span>
-            </header>
-            <h3>{signal.headline}</h3>
-            <dl>
-              <div><dt>Detected platform</dt><dd>{detection.count} × {signal.platform.family} · {signal.platform.role.toLowerCase()} · confidence {detection.confidence.toFixed(2)}</dd></div>
-              <div><dt>Established capability</dt><dd>{signal.platform.capability}. {signal.platform.radiusLabel}.</dd></div>
-              <div><dt>Threat assessment</dt><dd><strong>{signal.posture}.</strong> {signal.inRange.length ? `${signal.inRange.length} protected ${signal.inRange.length === 1 ? "asset" : "assets"} within reach.` : "No protected asset within reach."}</dd></div>
-            </dl>
-            <div class="signal-why">
-              <span>Because</span>
-              <ol>{signal.reasons.map((reason) => <li>{reason}</li>)}</ol>
-            </div>
-            <div class="signal-actions">
-              <span>Recommended</span>
-              <ul>{signal.actions.map((action) => <li>{action}</li>)}</ul>
-            </div>
-            <footer>
-              <p class="signal-state" data-signal-state>Awaiting analyst qualification</p>
-              <div>
-                <button type="button" class="is-primary" data-signal-decide="qualify">Qualify signal</button>
-                <button type="button" data-signal-decide="dismiss">Dismiss</button>
-              </div>
-            </footer>
-          </article>
-        ))}
-      </div>
-    </div>
+    <BorderWatch />
+    <p class="modes-note">Illustrative exercise data. Airbases A, B and C are fictional; boundary from Natural Earth; capability figures are rounded open-source references.</p>
   </section>
 
   <!-- Audit -->
@@ -325,318 +218,9 @@ const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
     color: var(--on-night-2);
   }
 
-  /* Heightened awareness */
-  .aware-switch {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-  }
-
-  .aware-switch button {
-    display: grid;
-    gap: 2px;
-    padding: 10px 12px;
-    border: 1px solid var(--night-rule);
-    background: transparent;
-    color: var(--on-night);
-    text-align: left;
-    transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
-  }
-
-  .aware-switch button span {
+  .modes-note {
     font-size: 12.5px;
     color: var(--on-night-3);
-  }
-
-  .aware-switch button:hover {
-    border-color: var(--on-night-3);
-  }
-
-  .aware-switch button[aria-pressed="true"] {
-    border-color: var(--signal);
-    background: rgba(228, 87, 30, 0.12);
-  }
-
-  .aware-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: 18px;
-    align-items: start;
-  }
-
-  .aware-map {
-    margin: 0;
-    border: 1px solid var(--night-rule);
-    background: var(--night-2);
-  }
-
-  .aware-map svg {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .aware-map figcaption {
-    padding: 8px 12px;
-    border-top: 1px solid var(--night-rule);
-    font-size: 12px;
-    color: var(--on-night-3);
-  }
-
-  .aware-layer {
-    opacity: 0;
-    transition: opacity 0.4s var(--ease);
-  }
-
-  [data-platform="fighter"] [data-platform-layer="fighter"],
-  [data-platform="transport"] [data-platform-layer="transport"],
-  [data-platform="tanker"] [data-platform-layer="tanker"],
-  [data-platform="aew"] [data-platform-layer="aew"] {
-    opacity: 1;
-  }
-
-  .ring {
-    fill: rgba(228, 87, 30, 0.07);
-    stroke: #e4571e;
-    stroke-width: 1.5;
-    stroke-dasharray: 6 5;
-  }
-
-  .ring-inner {
-    fill: none;
-    stroke: rgba(242, 241, 236, 0.35);
-  }
-
-  .ring-aew {
-    fill: rgba(95, 211, 176, 0.06);
-    stroke: #5fd3b0;
-  }
-
-  .halo {
-    fill: none;
-    stroke: #e4571e;
-    stroke-width: 1.5;
-    animation: halo 2.2s var(--ease) infinite;
-    transform-box: fill-box;
-    transform-origin: center;
-  }
-
-  [data-platform-layer="aew"] .halo {
-    stroke: #5fd3b0;
-  }
-
-  @keyframes halo {
-    0% {
-      transform: scale(0.7);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1.6);
-      opacity: 0;
-    }
-  }
-
-  .movement {
-    fill: none;
-    stroke: var(--on-night-2);
-    stroke-width: 1.5;
-    stroke-dasharray: 4 5;
-    marker-end: none;
-    animation: move 1.4s linear infinite;
-  }
-
-  @keyframes move {
-    to {
-      stroke-dashoffset: -18;
-    }
-  }
-
-  .border {
-    stroke: rgba(242, 241, 236, 0.4);
-    stroke-dasharray: 2 6;
-  }
-
-  .map-k {
-    fill: var(--on-night-3);
-    font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
-  }
-
-  .base rect {
-    fill: #e4571e;
-  }
-
-  .asset path {
-    fill: var(--night);
-    stroke: var(--on-night);
-    stroke-width: 1.5;
-  }
-
-  .map-name {
-    fill: var(--on-night);
-    font-family: var(--sans);
-    font-size: 12.5px;
-    font-weight: 500;
-  }
-
-  .map-sub {
-    fill: var(--on-night-3);
-    font-family: var(--mono);
-    font-size: 10px;
-  }
-
-  .signal {
-    display: grid;
-    gap: 14px;
-    padding: 18px;
-    border: 1px solid var(--night-rule);
-    border-top: 3px solid var(--on-night-3);
-    background: var(--night-2);
-  }
-
-  .signal.lvl-high {
-    border-top-color: #e4571e;
-  }
-
-  .signal.lvl-elevated {
-    border-top-color: #e3a13a;
-  }
-
-  .signal.lvl-watch {
-    border-top-color: #5fd3b0;
-  }
-
-  .signal header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    color: var(--on-night-3);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  .signal-level {
-    padding: 3px 8px;
-    font-family: var(--mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: #0b0e10;
-    background: var(--on-night-3);
-  }
-
-  .lvl-high .signal-level {
-    background: #e4571e;
-    color: #fff;
-  }
-
-  .lvl-elevated .signal-level {
-    background: #e3a13a;
-  }
-
-  .lvl-watch .signal-level {
-    background: #5fd3b0;
-  }
-
-  .signal h3 {
-    font-size: 1.1rem;
-    line-height: 1.3;
-  }
-
-  .signal dl {
-    display: grid;
-    gap: 10px;
-  }
-
-  .signal dl div {
-    display: grid;
-    gap: 2px;
-  }
-
-  .signal dt,
-  .signal-why > span,
-  .signal-actions > span {
-    font-family: var(--mono);
-    font-size: 10.5px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--on-night-3);
-  }
-
-  .signal dd {
-    font-size: 14px;
-    color: var(--on-night);
-  }
-
-  .signal dd strong {
-    font-weight: 500;
-  }
-
-  .signal-why,
-  .signal-actions {
-    display: grid;
-    gap: 6px;
-  }
-
-  .signal-why ol,
-  .signal-actions ul {
-    display: grid;
-    gap: 4px;
-    padding-left: 18px;
-    font-size: 13.5px;
-    color: var(--on-night-2);
-  }
-
-  .signal-why ol {
-    list-style: decimal;
-  }
-
-  .signal-actions ul {
-    list-style: square;
-  }
-
-  .signal footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding-top: 12px;
-    border-top: 1px solid var(--night-rule);
-  }
-
-  .signal-state {
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: #e3a13a;
-  }
-
-  .signal-state.is-done {
-    color: #5fd3b0;
-  }
-
-  .signal footer div {
-    display: flex;
-    gap: 6px;
-  }
-
-  .signal footer button {
-    min-height: 34px;
-    padding: 0 12px;
-    border: 1px solid var(--night-rule);
-    background: transparent;
-    color: var(--on-night);
-    font-size: 13.5px;
-  }
-
-  .signal footer .is-primary {
-    background: var(--on-night);
-    border-color: var(--on-night);
-    color: var(--night);
-    font-weight: 500;
   }
 
   /* Audit */
@@ -696,10 +280,6 @@ const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
       border-top: 1px solid var(--night-rule);
     }
 
-    .aware-grid {
-      grid-template-columns: 1fr;
-    }
-
     .modes-chain {
       grid-template-columns: 1fr 1fr;
     }
@@ -713,12 +293,6 @@ const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
     .modes-tabs button {
       border-right: 1px solid var(--night-rule);
       border-top: 1px solid var(--night-rule);
-    }
-
-    .aware-switch,
-    .modes-changes,
-    .modes-chain {
-      grid-template-columns: 1fr 1fr;
     }
 
     .modes-changes,
@@ -737,8 +311,7 @@ const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .halo,
-    .movement {
+    .modes-panel {
       animation: none;
     }
   }
@@ -748,9 +321,6 @@ const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
   document.querySelectorAll<HTMLElement>("[data-modes]").forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>("[data-mode-tab]")];
     const panels = [...root.querySelectorAll<HTMLElement>("[data-mode-panel]")];
-    const picks = [...root.querySelectorAll<HTMLButtonElement>("[data-platform-pick]")];
-    const cards = [...root.querySelectorAll<HTMLElement>("[data-platform-card]")];
-
     const showMode = (id: string) => {
       root.dataset.mode = id;
       tabs.forEach((tab) => tab.setAttribute("aria-selected", String(tab.dataset.modeTab === id)));
@@ -759,31 +329,6 @@ const levelClass = (level: string) => `lvl-${level.toLowerCase()}`;
       });
     };
 
-    const showPlatform = (id: string) => {
-      root.dataset.platform = id;
-      picks.forEach((pick) => pick.setAttribute("aria-pressed", String(pick.dataset.platformPick === id)));
-      cards.forEach((card) => {
-        card.hidden = card.dataset.platformCard !== id;
-      });
-    };
-
     tabs.forEach((tab) => tab.addEventListener("click", () => showMode(tab.dataset.modeTab ?? "aware")));
-    picks.forEach((pick) => pick.addEventListener("click", () => showPlatform(pick.dataset.platformPick ?? "fighter")));
-
-    cards.forEach((card) => {
-      const state = card.querySelector<HTMLElement>("[data-signal-state]");
-      card.querySelectorAll<HTMLButtonElement>("[data-signal-decide]").forEach((button) => {
-        button.addEventListener("click", () => {
-          if (!state) return;
-          const now = new Date();
-          const time = `${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")}Z`;
-          state.textContent =
-            button.dataset.signalDecide === "qualify"
-              ? `Qualified by you · ${time} · published to the operational picture`
-              : `Dismissed by you · ${time} · reason logged`;
-          state.classList.add("is-done");
-        });
-      });
-    });
   });
 </script>

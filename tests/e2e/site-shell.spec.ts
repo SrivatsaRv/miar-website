@@ -405,26 +405,29 @@ test("scene-field hero tells the story as the reader scrolls", async ({ page }) 
   expect(copy?.width ?? 0).toBeGreaterThan(300);
 });
 
-test("heightened awareness turns the same detection into different threat signals", async ({ page }) => {
+test("heightened awareness shows threat perception per airbase across the border", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const modes = page.locator("[data-modes]");
   await modes.scrollIntoViewIfNeeded();
   await expect(modes).toHaveAttribute("data-mode", "aware");
 
-  const card = (id: string) => modes.locator(`[data-platform-card="${id}"]`);
-  await expect(card("fighter")).toBeVisible();
-  await expect(card("fighter")).toContainText("HIGH", { ignoreCase: true });
-  await expect(card("fighter")).toContainText("under threat from detection D-2291");
-  await expect(card("fighter")).toContainText("Established capability");
+  const bw = modes.locator("[data-bw]");
+  const card = (id: string) => bw.locator(`[data-bw-card="${id}"]`);
+  await expect(card("a")).toBeVisible();
+  await expect(card("a")).toContainText("Threat perception: High");
+  await expect(card("a")).toContainText("Observed");
+  await expect(card("a")).toContainText("Capability");
+  await expect(card("a")).toContainText("km from the IB");
 
-  await modes.getByRole("button", { name: /C-130 family/ }).click();
-  await expect(card("transport")).toBeVisible();
-  await expect(card("transport")).toContainText("Logistics or troop movement");
-  await expect(card("transport")).toContainText("No protected asset under direct threat");
+  await bw.locator('[data-bw-pick="b"]').click();
+  await expect(card("b")).toBeVisible();
+  await expect(card("b")).toContainText("Threat perception: Elevated");
+  await bw.locator('[data-bw-pick="c"]').click();
+  await expect(card("c")).toContainText("Threat perception: Routine");
 
-  await card("transport").getByRole("button", { name: "Qualify signal" }).click();
-  await expect(card("transport").locator("[data-signal-state]")).toContainText("Qualified by you");
+  await card("c").getByRole("button", { name: "Qualify" }).click();
+  await expect(card("c").locator("[data-bw-state]")).toContainText("Qualified by you");
 
   await modes.getByRole("tab", { name: /Audit/ }).click();
   await expect(modes.locator('[data-mode-panel="audit"]')).toBeVisible();

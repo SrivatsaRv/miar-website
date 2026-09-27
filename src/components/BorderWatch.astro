@@ -1,0 +1,638 @@
+---
+// Heightened awareness: observed airbases across the international boundary, each with a
+// threat perception level derived from what was seen. The IB is drawn as a border signal,
+// coloured per sector by the adjacent base. Logic: src/lib/border-watch.mjs (unit tested).
+import { BASES, assessBase, distanceToLineKm, nearestOnLine, sectorsFor } from "../lib/border-watch.mjs";
+import ib from "../data/ib-sector.json";
+
+const bases = BASES.map((base) => {
+  const nearest = nearestOnLine(base, ib.latlngs);
+  const distance = Math.round(distanceToLineKm(base, ib.latlngs));
+  return { ...base, distance, nearest, ...assessBase(base, distance) };
+});
+const sectors = sectorsFor(ib.latlngs, BASES).map((sector) => ({
+  ...sector,
+  level: bases.find((b) => b.id === sector.baseId)?.level ?? "Routine",
+}));
+const initial = bases[0].id;
+const mapData = {
+  ib: ib.latlngs,
+  sectors,
+  bases: bases.map(({ id, name, lat, lng, level, distance, nearest }) => ({ id, name, lat, lng, level, distance, nearest })),
+};
+const levelKey = (level: string) => level.toLowerCase();
+---
+
+<div class="bw" data-bw data-selected={initial}>
+  <div class="bw-map-wrap">
+    <div class="bw-map" data-bw-map role="img" aria-label="Map of the Punjab and north Rajasthan sector of the India–Pakistan international boundary, with three observed airbases on the far side coloured by threat perception.">
+      <p class="bw-map-fallback">Loading map…</p>
+    </div>
+    <div class="bw-legend" aria-hidden="true">
+      <span><i class="sw sw-high"></i>High</span>
+      <span><i class="sw sw-elevated"></i>Elevated</span>
+      <span><i class="sw sw-routine"></i>Routine</span>
+      <span class="bw-legend-ib"><i class="sw-line"></i>International boundary, coloured by sector</span>
+    </div>
+  </div>
+
+  <div class="bw-side">
+    <table class="bw-table">
+      <caption class="sr-only">Observed airbases across the international boundary</caption>
+      <thead><tr><th>Observed airbase</th><th>From IB</th><th>Perception</th></tr></thead>
+      <tbody>
+        {bases.map((base) => (
+          <tr data-bw-row={base.id} class:list={[base.id === initial && "is-on"]}>
+            <td><button type="button" data-bw-pick={base.id} aria-pressed={base.id === initial ? "true" : "false"}>{base.name}</button></td>
+            <td class="num">{base.distance} km</td>
+            <td><span class:list={["meter", `m-${levelKey(base.level)}`]} aria-hidden="true"><i></i><i></i><i></i></span>{base.level}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    {bases.map((base) => (
+      <article class="bw-record" data-bw-card={base.id} hidden={base.id !== initial}>
+        <header>
+          <div>
+            <h3>{base.name}</h3>
+            <p>{base.distance} km across the IB · {base.pass}</p>
+          </div>
+          <p class="bw-level"><span class:list={["meter", `m-${levelKey(base.level)}`]} aria-hidden="true"><i></i><i></i><i></i></span>Threat perception: {base.level}</p>
+        </header>
+        <dl>
+          <div><dt>Observed</dt><dd>{base.observed.join(" · ")}</dd></div>
+          <div><dt>Platform</dt><dd>{base.platform}</dd></div>
+          <div><dt>Capability</dt><dd>{base.capability}</dd></div>
+          <div><dt>Assessment</dt><dd>{base.assessment}</dd></div>
+          <div><dt>Next</dt><dd>{base.next}</dd></div>
+        </dl>
+        <footer>
+          <p data-bw-state>Awaiting analyst qualification</p>
+          <div>
+            <button type="button" class="is-primary" data-bw-decide="qualify">Qualify</button>
+            <button type="button" data-bw-decide="dismiss">Dismiss</button>
+          </div>
+        </footer>
+      </article>
+    ))}
+  </div>
+
+  <script type="application/json" data-bw-data set:html={JSON.stringify(mapData)} />
+</div>
+
+<style>
+  .bw {
+    --lvl-high: #c8372d;
+    --lvl-elevated: #d99a1e;
+    --lvl-routine: #4f9a6c;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 18px;
+    align-items: start;
+    font-family: var(--sans);
+  }
+
+  .bw-map-wrap {
+    border: 1px solid var(--night-rule);
+    background: #0f1417;
+  }
+
+  .bw-map {
+    position: relative;
+    height: 520px;
+    background: #10161a;
+  }
+
+  .bw-map-fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    color: var(--on-night-3);
+  }
+
+  .bw-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--night-rule);
+    font-size: 13px;
+    color: var(--on-night-2);
+  }
+
+  .bw-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .sw {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+  }
+
+  .sw-high {
+    background: var(--lvl-high);
+  }
+
+  .sw-elevated {
+    background: var(--lvl-elevated);
+  }
+
+  .sw-routine {
+    background: var(--lvl-routine);
+  }
+
+  .sw-line {
+    width: 22px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--lvl-high), var(--lvl-elevated), var(--lvl-routine));
+  }
+
+  .bw-legend-ib {
+    margin-left: auto;
+  }
+
+  .bw-side {
+    display: grid;
+    gap: 14px;
+  }
+
+  .bw-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14.5px;
+  }
+
+  .bw-table th {
+    padding: 0 10px 8px;
+    border-bottom: 1px solid var(--night-rule);
+    text-align: left;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--on-night-3);
+  }
+
+  .bw-table td {
+    padding: 0 10px;
+    height: 46px;
+    border-bottom: 1px solid var(--night-rule);
+    color: var(--on-night-2);
+    white-space: nowrap;
+  }
+
+  .bw-table tr td:first-child {
+    padding-left: 0;
+    box-shadow: inset 2px 0 0 transparent;
+  }
+
+  .bw-table tr.is-on td:first-child {
+    box-shadow: inset 2px 0 0 var(--on-night);
+  }
+
+  .bw-table button {
+    width: 100%;
+    height: 46px;
+    padding: 0 10px 0 12px;
+    border: 0;
+    background: transparent;
+    color: var(--on-night);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .bw-table tr.is-on td {
+    color: var(--on-night);
+    background: rgba(242, 241, 236, 0.04);
+  }
+
+  .bw-table .num {
+    font-family: var(--sans);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .meter {
+    display: inline-flex;
+    gap: 2px;
+    margin-right: 9px;
+    vertical-align: 1px;
+  }
+
+  .meter i {
+    width: 12px;
+    height: 5px;
+    background: rgba(242, 241, 236, 0.16);
+  }
+
+  .m-routine i:nth-child(-n + 1),
+  .m-elevated i:nth-child(-n + 2),
+  .m-high i:nth-child(-n + 3) {
+    background: var(--lvl);
+  }
+
+  .m-routine {
+    --lvl: var(--lvl-routine);
+  }
+
+  .m-elevated {
+    --lvl: var(--lvl-elevated);
+  }
+
+  .m-high {
+    --lvl: var(--lvl-high);
+  }
+
+  .bw-record {
+    border: 1px solid var(--night-rule);
+    background: #12181c;
+  }
+
+  .bw-record header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 16px 18px 14px;
+    border-bottom: 1px solid var(--night-rule);
+  }
+
+  .bw-record h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .bw-record header p {
+    margin-top: 2px;
+    font-size: 13px;
+    color: var(--on-night-3);
+  }
+
+  .bw-record header .bw-level {
+    margin-top: 4px;
+    font-size: 14px;
+    color: var(--on-night);
+  }
+
+  .bw-record dl div {
+    display: grid;
+    grid-template-columns: 104px 1fr;
+    gap: 12px;
+    padding: 11px 18px;
+    border-bottom: 1px solid rgba(242, 241, 236, 0.07);
+  }
+
+  .bw-record dt {
+    font-size: 13px;
+    color: var(--on-night-3);
+  }
+
+  .bw-record dd {
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--on-night);
+  }
+
+  .bw-record footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 18px 14px;
+  }
+
+  .bw-record footer p {
+    font-size: 13px;
+    color: var(--on-night-3);
+  }
+
+  .bw-record footer p.is-done {
+    color: var(--on-night);
+  }
+
+  .bw-record footer div {
+    display: flex;
+    gap: 6px;
+  }
+
+  .bw-record footer button {
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--night-rule);
+    background: transparent;
+    color: var(--on-night);
+    font-size: 13.5px;
+  }
+
+  .bw-record footer .is-primary {
+    border-color: var(--on-night);
+    background: var(--on-night);
+    color: var(--night);
+    font-weight: 500;
+  }
+
+  /* Leaflet-generated elements */
+  .bw :global(.leaflet-container) {
+    background: #10161a;
+    font-family: var(--sans);
+  }
+
+  .bw :global(.leaflet-tile-pane) {
+    filter: invert(1) hue-rotate(180deg) saturate(0.3) brightness(0.82) contrast(0.92);
+  }
+
+  .bw :global(.leaflet-control-attribution) {
+    background: rgba(11, 14, 16, 0.75);
+    color: var(--on-night-3);
+    font-size: 10.5px;
+  }
+
+  .bw :global(.leaflet-control-attribution a) {
+    color: var(--on-night-2);
+  }
+
+  .bw :global(.leaflet-bar a) {
+    background: #151b1f;
+    color: var(--on-night);
+    border-bottom-color: var(--night-rule);
+  }
+
+  .bw :global(.bw-marker) {
+    display: grid;
+    place-items: center;
+  }
+
+  .bw :global(.bw-marker i) {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #0b0e10;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px rgba(242, 241, 236, 0.6);
+  }
+
+  .bw :global(.bw-marker.is-high i) {
+    background: var(--lvl-high);
+  }
+
+  .bw :global(.bw-marker.is-elevated i) {
+    background: var(--lvl-elevated);
+  }
+
+  .bw :global(.bw-marker.is-routine i) {
+    background: var(--lvl-routine);
+  }
+
+  .bw :global(.bw-marker.is-selected i) {
+    box-shadow: 0 0 0 2px #f2f1ec, 0 0 0 7px rgba(242, 241, 236, 0.18);
+  }
+
+  .bw :global(.bw-label) {
+    white-space: nowrap;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #f2f1ec;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  }
+
+  .bw :global(.bw-label small) {
+    display: block;
+    font-weight: 500;
+    font-size: 11.5px;
+    color: rgba(242, 241, 236, 0.75);
+  }
+
+  .bw :global(.bw-distance) {
+    font-weight: 500;
+    font-size: 11.5px;
+    color: rgba(242, 241, 236, 0.85);
+  }
+
+  .bw :global(.bw-side-label) {
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: rgba(242, 241, 236, 0.55);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+  }
+
+  .bw :global(.bw-sector-label span) {
+    display: inline-block;
+    padding: 1px 7px;
+    white-space: nowrap;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #f2f1ec;
+    background: rgba(11, 14, 16, 0.78);
+  }
+
+  @media (max-width: 1000px) {
+    .bw {
+      grid-template-columns: 1fr;
+    }
+
+    .bw-map {
+      height: 420px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .bw :global(.bw-sector-label),
+    .bw :global(.bw-distance) {
+      display: none;
+    }
+
+    .bw-record dl div {
+      grid-template-columns: 1fr;
+      gap: 2px;
+    }
+
+    .bw-map {
+      height: 360px;
+    }
+
+    .bw-legend-ib {
+      margin-left: 0;
+    }
+  }
+</style>
+
+<script>
+  const LEAFLET_JS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
+  const LEAFLET_JS_SRI = "sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==";
+  const LEAFLET_CSS = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+  const LEAFLET_CSS_SRI = "sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw==";
+  const COLORS: Record<string, string> = { High: "#c8372d", Elevated: "#d99a1e", Routine: "#4f9a6c" };
+
+  let leaflet: Promise<any> | null = null;
+  const loadLeaflet = () => {
+    if (leaflet) return leaflet;
+    leaflet = new Promise((resolve, reject) => {
+      const css = document.createElement("link");
+      css.rel = "stylesheet";
+      css.href = LEAFLET_CSS;
+      css.integrity = LEAFLET_CSS_SRI;
+      css.crossOrigin = "anonymous";
+      document.head.append(css);
+      const js = document.createElement("script");
+      js.src = LEAFLET_JS;
+      js.integrity = LEAFLET_JS_SRI;
+      js.crossOrigin = "anonymous";
+      js.onload = () => resolve((window as any).L);
+      js.onerror = reject;
+      document.head.append(js);
+    });
+    return leaflet;
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-bw]").forEach((root) => {
+    const data = JSON.parse(root.querySelector("[data-bw-data]")?.textContent ?? "{}");
+    const mapNode = root.querySelector<HTMLElement>("[data-bw-map]");
+    const picks = [...root.querySelectorAll<HTMLButtonElement>("[data-bw-pick]")];
+    const cards = [...root.querySelectorAll<HTMLElement>("[data-bw-card]")];
+    let markers: Record<string, any> = {};
+    let connector: any = null;
+    let map: any = null;
+    let L: any = null;
+
+    const drawConnector = (id: string) => {
+      if (!map || !L) return;
+      const base = data.bases.find((b: { id: string }) => b.id === id);
+      if (!base) return;
+      connector?.remove();
+      connector = L.layerGroup([
+        L.polyline([[base.lat, base.lng], [base.nearest.lat, base.nearest.lng]], {
+          color: "#f2f1ec",
+          weight: 1.5,
+          dashArray: "4 6",
+          opacity: 0.8,
+          interactive: false,
+        }),
+        L.marker([(base.lat + base.nearest.lat) / 2, (base.lng + base.nearest.lng) / 2], {
+          interactive: false,
+          icon: L.divIcon({ className: "bw-label bw-distance", html: `${base.distance} km to the IB`, iconSize: null, iconAnchor: [40, -8] }),
+        }),
+      ]).addTo(map);
+    };
+
+    const select = (id: string) => {
+      root.dataset.selected = id;
+      picks.forEach((pick) => pick.setAttribute("aria-pressed", String(pick.dataset.bwPick === id)));
+      root.querySelectorAll<HTMLElement>("[data-bw-row]").forEach((row) => row.classList.toggle("is-on", row.dataset.bwRow === id));
+      cards.forEach((card) => {
+        card.hidden = card.dataset.bwCard !== id;
+      });
+      Object.entries(markers).forEach(([key, marker]) => {
+        marker.getElement()?.classList.toggle("is-selected", key === id);
+      });
+      drawConnector(id);
+    };
+
+    picks.forEach((pick) => pick.addEventListener("click", () => select(pick.dataset.bwPick ?? "a")));
+
+    cards.forEach((card) => {
+      const state = card.querySelector<HTMLElement>("[data-bw-state]");
+      card.querySelectorAll<HTMLButtonElement>("[data-bw-decide]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if (!state) return;
+          const now = new Date();
+          const time = `${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")}Z`;
+          state.textContent = button.dataset.bwDecide === "qualify" ? `Qualified by you at ${time}, published to the operational picture` : `Dismissed by you at ${time}, reason logged`;
+          state.classList.add("is-done");
+        });
+      });
+    });
+
+    const build = async () => {
+      if (!mapNode || map) return;
+      try {
+        L = await loadLeaflet();
+      } catch {
+        const fallback = mapNode.querySelector(".bw-map-fallback");
+        if (fallback) fallback.textContent = "Map unavailable. The airbase list and assessments still work.";
+        return;
+      }
+      mapNode.querySelector(".bw-map-fallback")?.remove();
+      // Keep the view on the Punjab and north Rajasthan sector of the IB. The northern limit sits
+      // below Jammu so the map never renders the Jammu and Kashmir region.
+      const limits = L.latLngBounds([[28.6, 71.4], [32.35, 76.8]]);
+      map = L.map(mapNode, {
+        scrollWheelZoom: false,
+        maxZoom: 10,
+        maxBounds: limits,
+        maxBoundsViscosity: 1,
+        attributionControl: true,
+      });
+      map.fitBounds([[29.4, 72.3], [32.1, 75.9]], { padding: [8, 8] });
+      map.setMinZoom(Math.max(map.getZoom(), map.getBoundsZoom(limits, true)));
+      map.panInsideBounds(limits, { animate: false });
+
+      // OpenStreetMap standard tiles, toned to the dark console with a CSS filter.
+      // For production traffic, point this at a keyed provider or self-hosted tiles.
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      // Border signal: a soft glow plus a solid line, coloured per sector by the adjacent base.
+      for (const sector of data.sectors) {
+        const color = COLORS[sector.level];
+        L.polyline(sector.latlngs, { color, weight: 12, opacity: 0.18, interactive: false }).addTo(map);
+        L.polyline(sector.latlngs, { color, weight: 3.5, opacity: 0.95, interactive: false }).addTo(map);
+        const mid = sector.latlngs[Math.floor(sector.latlngs.length / 2)];
+        L.marker(mid, {
+          interactive: false,
+          icon: L.divIcon({
+            className: "bw-sector-label",
+            html: `<span style="border-left:3px solid ${color}">${sector.level}</span>`,
+            iconSize: null,
+            iconAnchor: [-10, 10],
+          }),
+        }).addTo(map);
+      }
+      L.polyline(data.ib, { color: "#f2f1ec", weight: 1, opacity: 0.7, dashArray: "2 5", interactive: false }).addTo(map);
+
+      const side = (latlng: [number, number], text: string) =>
+        L.marker(latlng, { interactive: false, icon: L.divIcon({ className: "bw-side-label", html: text, iconSize: null }) }).addTo(map);
+      side([31.95, 72.35], "Observed side");
+      side([31.95, 75.35], "Protected side");
+
+      for (const base of data.bases) {
+        const marker = L.marker([base.lat, base.lng], {
+          keyboard: true,
+          title: `${base.name}: ${base.level}`,
+          icon: L.divIcon({ className: `bw-marker is-${base.level.toLowerCase()}`, html: "<i></i>", iconSize: [22, 22], iconAnchor: [11, 11] }),
+        }).addTo(map);
+        marker.on("click", () => select(base.id));
+        L.marker([base.lat, base.lng], {
+          interactive: false,
+          icon: L.divIcon({ className: "bw-label", html: `${base.name}<small>${base.level}</small>`, iconSize: null, iconAnchor: [-14, 22] }),
+        }).addTo(map);
+        markers[base.id] = marker;
+      }
+      select(root.dataset.selected ?? "a");
+    };
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        observer.disconnect();
+        build();
+      }, { rootMargin: "300px" });
+      observer.observe(root);
+      // The panel may start hidden behind another mode tab; build when it becomes visible.
+      new MutationObserver(() => {
+        if (map && root.offsetParent) map.invalidateSize();
+      }).observe(root.closest("[data-mode-panel]") ?? root, { attributes: true, attributeFilter: ["hidden"] });
+    } else {
+      build();
+    }
+  });
+</script>
