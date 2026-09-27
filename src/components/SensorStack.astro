@@ -837,12 +837,45 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     }
 
     .ss-tag-name,
-    .ss-reading g {
+    .ss-reading g,
+    .ss-finding rect,
+    .ss-finding text,
+    .ss-finding path {
       display: none;
+    }
+
+    .ss-tag-code {
+      font-size: 22px;
+    }
+
+    .wb-cands button {
+      min-height: 44px;
+      min-width: 52px;
+    }
+
+    .wb-actions button {
+      min-height: 44px;
+      padding: 0 20px;
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
+  @media (pointer: coarse) {
+    .ss-target {
+      r: 34px;
+    }
+
+    .wb-cands button {
+      min-height: 44px;
+      min-width: 52px;
+    }
+
+    .wb-actions button {
+      min-height: 44px;
+      padding: 0 20px;
+    }
+  }
+
+    @media (prefers-reduced-motion: reduce) {
     .ss-scan,
     .ss-ping,
     .ss-beam {

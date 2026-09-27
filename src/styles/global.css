@@ -5659,3 +5659,76 @@ body:has(.field-hero.is-flow) .site-header-home:not(.is-scrolled),
     border-bottom-color: var(--night-rule);
   }
 }
+
+
+/* ---------- Mobile legibility for text drawn inside graphics ---------- */
+@media (max-width: 700px) {
+  /* Compare and tactical scenes: brackets and colours stay; the text labels are carried by the
+     summary list, the readout and the 2025 / 2026 controls below each image. */
+  .compare-frame .mark-tag,
+  .compare-frame .compare-stamp,
+  .solution-scene .mark-tag {
+    display: none;
+  }
+
+  .compare-range {
+    height: 4px;
+  }
+
+  .compare-range::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .compare-range::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+  }
+
+  .trend-chart .axis-text {
+    font-size: 28px;
+  }
+
+  .trend-chart .annot-text {
+    font-size: 26px;
+    text-anchor: end;
+    transform: translateX(-16px);
+  }
+
+  .asset-register-map .df-mono {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 900px) {
+  .solution-scene .mark-tag {
+    display: none;
+  }
+
+  .solution-evidence-delivery .delivery-desktop {
+    display: none !important;
+  }
+
+  .solution-evidence-delivery .delivery-mobile {
+    display: grid;
+  }
+}
+
+
+/* Touch devices at any width: finger-sized targets. */
+@media (pointer: coarse) {
+  .compare-range {
+    height: 32px;
+    background: linear-gradient(var(--night-rule), var(--night-rule)) center / 100% 2px no-repeat;
+  }
+
+  .compare-range::-webkit-slider-thumb {
+    width: 30px;
+    height: 30px;
+  }
+
+  .compare-range::-moz-range-thumb {
+    width: 30px;
+    height: 30px;
+  }
+}
