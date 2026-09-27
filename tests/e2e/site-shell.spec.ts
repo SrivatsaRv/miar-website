@@ -433,3 +433,42 @@ test("heightened awareness shows threat perception per airbase across the border
   await expect(modes.locator('[data-mode-panel="audit"]')).toBeVisible();
   await expect(modes.locator('[data-mode-panel="aware"]')).toBeHidden();
 });
+
+test("homepage fits phones, tablets, laptops and TVs in both orientations", async ({ browser }) => {
+  test.setTimeout(180_000);
+  const screens = [
+    [360, 640], [390, 844], [844, 390], [740, 360], [768, 1024], [1024, 768], [1280, 800], [1920, 1080], [3840, 2160],
+  ];
+  for (const [width, height] of screens) {
+    const touch = width < 1100;
+    const context = await browser.newContext({ viewport: { width, height }, isMobile: touch, hasTouch: touch });
+    const page = await context.newPage();
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    const label = `${width}x${height}`;
+
+    const layout = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
+      h1Clear: document.querySelector("h1")!.getBoundingClientRect().top - document.querySelector(".site-header")!.getBoundingClientRect().bottom,
+      broken: [...document.images].filter((image) => image.complete && image.naturalWidth === 0).length,
+    }));
+    expect(layout.overflow, `${label} overflows`).toBe(false);
+    expect(layout.h1Clear, `${label} headline sits under the header`).toBeGreaterThan(0);
+    expect(layout.broken, `${label} broken images`).toBe(0);
+
+    // The hero story completes and the contract lands on screen.
+    const hero = page.locator("[data-field]");
+    const flow = await hero.evaluate((node) => node.classList.contains("is-flow"));
+    if (flow) {
+      await hero.scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollBy(0, 120));
+    } else {
+      await page.evaluate(() => {
+        const node = document.querySelector("[data-field]")!;
+        window.scrollTo(0, node.getBoundingClientRect().height - window.innerHeight);
+      });
+    }
+    await expect(page.locator("[data-field-contract]"), `${label} contract`).toHaveCSS("opacity", "1", { timeout: 8000 });
+    await context.close();
+  }
+});

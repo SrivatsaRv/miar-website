@@ -5505,3 +5505,122 @@ h3 {
     border-top: 1px solid var(--rule);
   }
 }
+
+
+/* ---------- Responsive pass: phones, tablets, laptops, TVs ---------- */
+
+.insights-head {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  max-width: none;
+}
+
+@media (max-width: 600px) {
+  .insights-head {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  /* Sensor matrix becomes one card per sensor. */
+  .matrix-scroll {
+    overflow: visible;
+  }
+
+  .matrix {
+    min-width: 0;
+  }
+
+  .matrix thead {
+    display: none;
+  }
+
+  .matrix tr {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 10px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .matrix th,
+  .matrix td {
+    padding: 0;
+    border: 0;
+  }
+
+  .matrix th[scope="row"] {
+    grid-column: 1 / -1;
+    padding-bottom: 4px;
+  }
+
+  .matrix td[data-label] {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    text-align: left;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  .matrix td[data-label]::after {
+    content: attr(data-label);
+  }
+
+  .matrix-context td {
+    grid-column: 1 / -1;
+    font-size: 14px;
+  }
+
+  .contract-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Laptops and wide monitors: let content use the screen instead of a fixed column. */
+@media (min-width: 1500px) {
+  :root {
+    --wrap: min(88vw, 1720px);
+  }
+}
+
+/* Large displays and TVs: scale the whole interface so it fills the screen. */
+@media (min-width: 1900px) {
+  :root {
+    --zoom: 1.15;
+  }
+
+  html {
+    zoom: 1.15;
+  }
+}
+
+@media (min-width: 2300px) {
+  :root {
+    --zoom: 1.4;
+  }
+
+  html {
+    zoom: 1.4;
+  }
+}
+
+@media (min-width: 3000px) {
+  :root {
+    --zoom: 1.8;
+  }
+
+  html {
+    zoom: 1.8;
+  }
+}
+
+@media (min-width: 3600px) {
+  :root {
+    --zoom: 2.1;
+  }
+
+  html {
+    zoom: 2.1;
+  }
+}

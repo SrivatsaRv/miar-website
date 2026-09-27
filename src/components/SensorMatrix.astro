@@ -25,8 +25,8 @@ const words: Record<Level, string> = { full: "Strong", part: "Partial", none: "L
       {rows.map((row) => (
         <tr>
           <th scope="row"><strong>{row.name}</strong><span>{row.note}</span></th>
-          {row.values.map((value) => (
-            <td>
+          {row.values.map((value, index) => (
+            <td data-label={columns[index]}>
               <span class:list={["dot", `dot-${value}`]} role="img" aria-label={words[value]} title={words[value]}></span>
             </td>
           ))}

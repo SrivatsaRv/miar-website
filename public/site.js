@@ -12,8 +12,14 @@ const submitButton = form?.querySelector(".submit-button");
 
 if (header?.classList.contains("site-header-home")) {
   const pinnedHero = document.querySelector(".field-hero");
-  const threshold = () => (pinnedHero ? pinnedHero.offsetHeight - header.offsetHeight : 24);
-  const syncHeader = () => header.classList.toggle("is-scrolled", window.scrollY > threshold());
+  // Stay transparent while the dark hero sits under the header (rect-based, so page zoom is safe).
+  const syncHeader = () => {
+    const pinned = pinnedHero && !pinnedHero.classList.contains("is-flow");
+    const past = pinned
+      ? pinnedHero.getBoundingClientRect().bottom <= header.getBoundingClientRect().bottom + 1
+      : window.scrollY > 24;
+    header.classList.toggle("is-scrolled", past);
+  };
   syncHeader();
   window.addEventListener("scroll", syncHeader, { passive: true });
 }

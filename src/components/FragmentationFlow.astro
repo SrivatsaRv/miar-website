@@ -155,6 +155,25 @@ const stages = [
             <text y="6" text-anchor="middle">?</text>
           </g>
         </svg>
+
+        <!-- Phone rendition of the same story: vertical, readable, same data-step states. -->
+        <div class="fm" aria-hidden="true">
+          <p class="fm-k">Collection sources</p>
+          <ul class="fm-row">{sources.map((b) => <li><strong>{b.title}</strong><span>{b.sub}</span></li>)}</ul>
+          <p class="fm-arrow">↓</p>
+          <div class="fm-mid fm-frag">
+            <p class="fm-k">Nine separate tools · 19 manual handoffs</p>
+            <ul class="fm-tools">{tools.map((t) => <li><strong>{t.title}</strong><span>{t.sub}</span></li>)}</ul>
+          </div>
+          <div class="fm-mid fm-miar">
+            <p class="fm-core-t">MIAR <span>Post-reception layer</span></p>
+            <ol>{stages.map(([title, sub]) => <li><strong>{title}</strong><span>{sub}</span></li>)}</ol>
+            <p class="fm-contract">Intelligence contract</p>
+          </div>
+          <p class="fm-arrow">↓</p>
+          <p class="fm-k">Downstream</p>
+          <ul class="fm-row fm-out">{consumers.map((b) => <li><strong>{b.title}</strong><span>{b.sub}</span></li>)}</ul>
+        </div>
       </div>
 
       <aside class="frag-side">
@@ -625,6 +644,132 @@ const stages = [
     .frag-stats {
       border-right: 0;
       border-bottom: 1px solid var(--night-rule);
+    }
+  }
+
+  .fm {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .frag-figure svg {
+      display: none;
+    }
+
+    .frag-figure {
+      overflow: visible;
+      padding: 16px;
+    }
+
+    .fm {
+      display: grid;
+      gap: 10px;
+    }
+
+    .fm-k {
+      font-size: 12.5px;
+      color: var(--on-night-3);
+    }
+
+    .fm-row,
+    .fm-tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .fm li {
+      display: grid;
+      gap: 2px;
+      padding: 9px 10px;
+      border: 1px solid var(--night-rule);
+      background: var(--night-2);
+    }
+
+    .fm strong {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--on-night);
+    }
+
+    .fm span {
+      font-size: 11.5px;
+      color: var(--on-night-3);
+    }
+
+    .fm-tools li {
+      border-left: 2px solid #e4571e;
+    }
+
+    .fm-arrow {
+      text-align: center;
+      color: var(--on-night-3);
+    }
+
+    .fm-miar {
+      display: none;
+      gap: 8px;
+      padding: 14px;
+      background: #f2f1ec;
+      color: #0b0e10;
+    }
+
+    .fm-miar ol {
+      display: grid;
+      gap: 6px;
+    }
+
+    .fm-miar li {
+      border: 0;
+      background: #e7e5de;
+    }
+
+    .fm-miar strong {
+      color: #0b0e10;
+    }
+
+    .fm-miar span {
+      color: #5d6368;
+    }
+
+    .fm-core-t {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .fm-core-t span {
+      margin-left: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #b8400f;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .fm-contract {
+      padding: 8px 10px;
+      background: #e4571e;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    [data-step="2"] .fm-frag,
+    [data-step="3"] .fm-frag {
+      display: none;
+    }
+
+    [data-step="2"] .fm-miar,
+    [data-step="3"] .fm-miar {
+      display: grid;
+    }
+
+    [data-step="3"] .fm-out li {
+      border-color: #f2f1ec;
+    }
+
+    .fm-row li:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
     }
   }
 
