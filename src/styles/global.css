@@ -5649,3 +5649,13 @@ body:has(.field-hero.is-flow) .site-header-home:not(.is-scrolled),
 .detectors .is-soon .detector-meta {
   color: var(--ink-2);
 }
+
+/* Phones and tablets: the homepage header is always solid over the dark hero. Real mobile
+   browsers resize the viewport as the address bar collapses, so no scroll-position logic is
+   relied on to keep hero text from showing through the header. */
+@media (max-width: 900px) {
+  .site-header-home:not(.is-scrolled) {
+    background: #0b0e10;
+    border-bottom-color: var(--night-rule);
+  }
+}
