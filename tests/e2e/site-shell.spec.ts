@@ -90,13 +90,14 @@ test("header anchors remain aligned between routes", async ({ page }) => {
   expect(Math.abs(home.navRight - internal.navRight)).toBeLessThanOrEqual(2);
 });
 
-test("hero workbench lets a visitor review a candidate like an analyst", async ({ page }) => {
+test("sensor-stack workbench lets a visitor review a candidate like an analyst", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
 
   const stack = page.locator("[data-sensor-stack]");
+  await stack.scrollIntoViewIfNeeded();
   await expect(stack).toBeVisible();
-  expect(await page.locator(".hero img").count(), "hero should be vector, not raster").toBe(0);
+  expect(await page.locator("[data-field] img").count(), "hero should be drawn, not raster").toBe(0);
 
   await stack.getByRole("button", { name: "C-3", exact: true }).click();
   await expect(stack).toHaveAttribute("data-cand-active", "C-3");
@@ -328,4 +329,25 @@ test("article imagery exposes visible captions and structured descriptions", asy
   );
   await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute("content", "1200");
   await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute("content", "630");
+});
+
+test("scene-field hero tells the story as the reader scrolls", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const hero = page.locator("[data-field]");
+  const caption = page.locator("[data-field-count]");
+  await expect(page.locator("[data-field-canvas]")).toBeVisible();
+  await expect(caption).toContainText("5 providers");
+
+  const span = await hero.evaluate((node) => node.offsetHeight - window.innerHeight);
+  await page.evaluate((y) => window.scrollTo(0, y), span * 0.45);
+  await expect(caption).toContainText("Co-registering");
+  await page.evaluate((y) => window.scrollTo(0, y), span);
+  await expect(caption).toContainText("1 site record");
+  await expect(hero).toHaveAttribute("data-caption", "2");
+  await expect(page.locator("[data-field-contract]")).toHaveCSS("opacity", "1");
+
+  // The headline stays readable: nothing is drawn over the centred copy block.
+  const copy = await page.locator("[data-field-safe]").boundingBox();
+  expect(copy?.width ?? 0).toBeGreaterThan(300);
 });

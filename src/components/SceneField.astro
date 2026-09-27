@@ -1,0 +1,594 @@
+---
+// Option-3 hero, "visual 2": scattered scenes from many providers settle into one
+// co-registered site record under a centred headline, then issue one contract.
+// Layout lives in src/lib/scene-field.mjs (unit tested); this file only renders.
+---
+
+<section class="field-hero on-night" id="home" data-field>
+  <div class="field-sticky">
+    <canvas class="field-canvas" data-field-canvas aria-hidden="true"></canvas>
+
+    <div class="field-copy" data-field-safe>
+      <span class="label">Post-reception imagery exploitation</span>
+      <h1 class="display">Know what changed at every site you watch.</h1>
+      <p class="lead">
+        You focus on obtaining imagery. MIAR does the rest: every scene, from every provider and
+        portal, co-registered into one site record and exploited into one qualified finding.
+      </p>
+      <div class="field-actions">
+        <a class="button button-primary" href="#waitlist">Request access <span class="arrow" aria-hidden="true">→</span></a>
+        <a class="button button-secondary" href="#try-it">Qualify a pass yourself</a>
+      </div>
+      <p class="field-phase" data-field-caption aria-live="polite">
+        <span data-field-count>5 providers · 7 formats · 0 shared context</span>
+      </p>
+    </div>
+
+    <div class="field-contract" data-field-contract aria-hidden="true">
+      <span>Intelligence contract · F-0152</span>
+      <strong>3 changes · qualified</strong>
+      <em>→ Operational picture · GIS · Collection cue</em>
+    </div>
+
+    <p class="field-hint" data-field-hint aria-hidden="true">Scroll to process the pass <span>↓</span></p>
+    <p class="sr-only">
+      Illustration: scenes from five imagery providers arrive scattered, in different formats. As the page scrolls,
+      unusable and duplicate scenes drop out and the rest settle into one site record by sensor and date. Three
+      changes are flagged and one intelligence contract is issued.
+    </p>
+  </div>
+</section>
+
+<style>
+  .field-hero {
+    position: relative;
+    height: 250vh;
+    background: var(--night);
+  }
+
+  .field-sticky {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    min-height: 620px;
+    overflow: hidden;
+  }
+
+  .field-sticky::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(242, 241, 236, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(242, 241, 236, 0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 75% 70% at 50% 45%, #000 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 45%, #000 30%, transparent 80%);
+  }
+
+  .field-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .field-copy {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+    width: min(880px, calc(100% - 2 * var(--gutter)));
+    margin: 0 auto;
+    padding-top: calc(var(--header-h) + clamp(28px, 7vh, 72px));
+    text-align: center;
+  }
+
+  .field-copy .display {
+    font-size: clamp(2.5rem, 6vw, 5.2rem);
+  }
+
+  .field-copy .lead {
+    max-width: 660px;
+    color: rgba(242, 241, 236, 0.76);
+  }
+
+  .field-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .field-phase {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-night-3);
+  }
+
+  .field-phase span::before {
+    content: "";
+    display: inline-block;
+    margin-right: 10px;
+    vertical-align: 1px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--signal);
+  }
+
+  .field-hero[data-caption="2"] .field-phase span::before {
+    background: #5fd3b0;
+  }
+
+  .field-contract {
+    position: absolute;
+    z-index: 2;
+    display: grid;
+    gap: 3px;
+    padding: 12px 16px;
+    background: var(--signal);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+    pointer-events: none;
+  }
+
+  .field-contract span {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .field-contract strong {
+    font-weight: 500;
+    font-size: 16px;
+  }
+
+  .field-contract em {
+    font-style: normal;
+    font-size: 12.5px;
+    opacity: 0.9;
+  }
+
+  .field-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 22px;
+    z-index: 2;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--on-night-3);
+    transition: opacity 0.3s var(--ease);
+  }
+
+  .field-hint span {
+    display: inline-block;
+    animation: hint 1.8s var(--ease) infinite;
+  }
+
+  @keyframes hint {
+    50% {
+      transform: translateY(4px);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .field-hero {
+      height: 210vh;
+    }
+
+    .field-copy {
+      gap: 16px;
+    }
+
+    .field-copy .lead {
+      font-size: 1rem;
+    }
+
+    .field-actions .button-secondary {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field-hint span {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import {
+    SOURCES,
+    SENSORS,
+    makeScenes,
+    chaosPosition,
+    entryPosition,
+    recordLayout,
+    phases,
+    staggered,
+    clamp01,
+    easeInOut,
+    mulberry32,
+  } from "../lib/scene-field.mjs";
+
+  type Scene = ReturnType<typeof makeScenes>[number];
+
+  const root = document.querySelector<HTMLElement>("[data-field]");
+  const canvas = root?.querySelector<HTMLCanvasElement>("[data-field-canvas]");
+  const safeNode = root?.querySelector<HTMLElement>("[data-field-safe]");
+  const caption = root?.querySelector<HTMLElement>("[data-field-count]");
+  const contractNode = root?.querySelector<HTMLElement>("[data-field-contract]");
+  const hint = root?.querySelector<HTMLElement>("[data-field-hint]");
+  const context = canvas?.getContext("2d");
+
+  if (root && canvas && safeNode && context) {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const captions = [
+      "5 providers · 7 formats · 0 shared context",
+      "Co-registering to Site 014 · dropping unusable and duplicate scenes",
+      "1 site record · 3 changes flagged · 1 qualified contract",
+    ];
+    const tags: Record<string, string> = Object.fromEntries(SOURCES.map((s) => [s.id, s.tag]));
+
+    // ---- Tile textures (drawn once) ----
+    const TEX = 96;
+    const texture = (draw: (g: CanvasRenderingContext2D, r: () => number) => void, seed: number) => {
+      const c = document.createElement("canvas");
+      c.width = TEX;
+      c.height = TEX;
+      const g = c.getContext("2d")!;
+      draw(g, mulberry32(seed));
+      return c;
+    };
+    const plane = (g: CanvasRenderingContext2D, x: number, y: number, s: number, color: string) => {
+      g.fillStyle = color;
+      g.fillRect(x - s * 0.1, y - s * 0.5, s * 0.2, s);
+      g.fillRect(x - s * 0.5, y - s * 0.08, s, s * 0.18);
+      g.fillRect(x - s * 0.22, y + s * 0.34, s * 0.44, s * 0.12);
+    };
+    const eo = (cloudy: boolean) => (g: CanvasRenderingContext2D, r: () => number) => {
+      g.fillStyle = "#6c685b";
+      g.fillRect(0, 0, TEX, TEX);
+      g.fillStyle = "#58624c";
+      g.fillRect(0, TEX * 0.72, TEX * (0.4 + r() * 0.3), TEX * 0.28);
+      g.fillStyle = "#908b7e";
+      g.fillRect(TEX * 0.2, TEX * 0.3, TEX * 0.7, TEX * 0.38);
+      g.fillStyle = "#2b2e30";
+      g.fillRect(0, TEX * 0.12, TEX, TEX * 0.1);
+      g.fillStyle = "#b9b3a3";
+      g.fillRect(TEX * 0.04, TEX * 0.34, TEX * 0.12, TEX * 0.2);
+      for (let i = 0; i < 2 + Math.floor(r() * 3); i++) plane(g, TEX * (0.3 + r() * 0.5), TEX * (0.4 + r() * 0.2), TEX * 0.16, "#efece4");
+      if (cloudy) {
+        for (let i = 0; i < 7; i++) {
+          const x = r() * TEX;
+          const y = r() * TEX;
+          const grad = g.createRadialGradient(x, y, 2, x, y, TEX * (0.3 + r() * 0.3));
+          grad.addColorStop(0, "rgba(245,245,242,0.95)");
+          grad.addColorStop(1, "rgba(245,245,242,0)");
+          g.fillStyle = grad;
+          g.fillRect(0, 0, TEX, TEX);
+        }
+      }
+    };
+    const sar = (g: CanvasRenderingContext2D, r: () => number) => {
+      g.fillStyle = "#0b0f12";
+      g.fillRect(0, 0, TEX, TEX);
+      for (let i = 0; i < 420; i++) {
+        g.fillStyle = `rgba(207,224,232,${0.08 + r() * 0.35})`;
+        g.fillRect(r() * TEX, r() * TEX, 1.2, 1.2);
+      }
+      g.fillStyle = "#030405";
+      g.fillRect(0, TEX * 0.12, TEX, TEX * 0.1);
+      for (let i = 0; i < 4 + Math.floor(r() * 3); i++) {
+        const x = TEX * (0.25 + r() * 0.6);
+        const y = TEX * (0.35 + r() * 0.35);
+        const grad = g.createRadialGradient(x, y, 0, x, y, 6);
+        grad.addColorStop(0, "rgba(255,255,255,1)");
+        grad.addColorStop(1, "rgba(191,227,255,0)");
+        g.fillStyle = grad;
+        g.fillRect(x - 6, y - 6, 12, 12);
+      }
+      g.strokeStyle = "rgba(233,244,248,0.85)";
+      g.beginPath();
+      g.moveTo(TEX * 0.05, TEX * 0.6);
+      g.lineTo(TEX * 0.05, TEX * 0.35);
+      g.lineTo(TEX * 0.18, TEX * 0.35);
+      g.stroke();
+    };
+    const palette = ["#7d6538", "#23806a", "#6d7789", "#262c3a", "#4f79a6", "#d6dbe0", "#a07ccf"];
+    const hsi = (g: CanvasRenderingContext2D, r: () => number) => {
+      const n = 8;
+      const cell = TEX / n;
+      for (let y = 0; y < n; y++) {
+        for (let x = 0; x < n; x++) {
+          let index = y < 2 ? 3 : x < 2 ? 4 : y > 5 ? 1 : 2;
+          if (r() < 0.12) index = Math.floor(r() * palette.length);
+          if (x > 3 && x < 6 && y > 2 && y < 5) index = 5;
+          g.globalAlpha = 0.75 + r() * 0.25;
+          g.fillStyle = palette[index];
+          g.fillRect(x * cell + 0.5, y * cell + 0.5, cell - 1, cell - 1);
+        }
+      }
+      g.globalAlpha = 1;
+    };
+    const textures: Record<string, HTMLCanvasElement[]> = {
+      eo: [0, 1, 2, 3].map((v) => texture(eo(false), 100 + v)),
+      cloud: [0, 1, 2, 3].map((v) => texture(eo(true), 200 + v)),
+      sar: [0, 1, 2, 3].map((v) => texture(sar, 300 + v)),
+      hsi: [0, 1, 2, 3].map((v) => texture(hsi, 400 + v)),
+    };
+
+    // ---- Layout ----
+    let width = 0;
+    let height = 0;
+    let dates = 12;
+    let scenes: Scene[] = [];
+    let size = 44;
+    let chaos = new Map<number, { x: number; y: number; rot: number }>();
+    let entry = new Map<number, { x: number; y: number }>();
+    let record = recordLayout([], { left: 0, top: 0, width: 1, height: 1 }, 1);
+    let contractAt = { x: 0, y: 0, below: false };
+
+    const layout = () => {
+      const rect = canvas.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      const dpr = Math.min(2, window.devicePixelRatio || 1);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      context.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const narrow = width < 760;
+      dates = narrow ? 8 : 12;
+      scenes = makeScenes(dates);
+      size = narrow ? 30 : Math.min(52, Math.max(36, width * 0.032));
+
+      const copy = safeNode.getBoundingClientRect();
+      const top = rect.top;
+      const safe = { left: copy.left - rect.left - 16, right: copy.right - rect.left + 16, top: copy.top - top - 12, bottom: copy.bottom - top + 12 };
+      const viewport = { width, height };
+      const headerSafe = { left: 0, right: width, top: 0, bottom: (document.querySelector(".site-header")?.getBoundingClientRect().height ?? 68) + 8 };
+      chaos = new Map(scenes.map((s) => [s.id, chaosPosition(s, viewport, [safe, headerSafe], size)]));
+      entry = new Map(scenes.map((s) => [s.id, entryPosition(s, viewport, size)]));
+
+      const gutter = narrow ? 16 : 48;
+      const contractWidth = narrow ? 0 : 290;
+      const bandTop = safe.bottom + (narrow ? 12 : 24);
+      const bandBottom = height - (narrow ? 118 : 60);
+      const labelWidth = narrow ? 34 : 48;
+      const band = { left: gutter, top: bandTop, width: width - gutter * 2 - contractWidth, height: Math.max(60, bandBottom - bandTop) };
+      const options = { maxSize: narrow ? 34 : 58, labelWidth };
+      record = recordLayout(scenes, band, dates, options);
+      if (!narrow) {
+        // Centre the record and the contract chip together as one group.
+        const chipWidth = contractNode?.offsetWidth ?? 275;
+        const groupWidth = labelWidth + record.width + 40 + chipWidth;
+        const desiredLeft = Math.max(gutter, (width - groupWidth) / 2);
+        record = recordLayout(scenes, { ...band, left: desiredLeft, width: labelWidth + record.width }, dates, options);
+      }
+      contractAt = narrow
+        ? { x: gutter, y: record.top + record.height + 18, below: true }
+        : { x: record.left + record.width + 40, y: record.top + record.height / 2, below: false };
+    };
+
+    // ---- Render ----
+    const started = performance.now();
+    let pointer = { x: -9999, y: -9999 };
+    let progress = 0;
+
+    const tile = (image: HTMLCanvasElement, x: number, y: number, s: number, rot: number, alpha: number, outline: string, lineWidth = 1) => {
+      if (alpha <= 0.01) return;
+      context.save();
+      context.globalAlpha = alpha;
+      context.translate(x + s / 2, y + s / 2);
+      context.rotate((rot * Math.PI) / 180);
+      context.drawImage(image, -s / 2, -s / 2, s, s);
+      context.strokeStyle = outline;
+      context.lineWidth = lineWidth;
+      context.strokeRect(-s / 2 + lineWidth / 2, -s / 2 + lineWidth / 2, s - lineWidth, s - lineWidth);
+      context.restore();
+    };
+
+    const label = (text: string, x: number, y: number, alpha: number, color = "rgba(242,241,236,0.85)") => {
+      if (alpha <= 0.02) return;
+      context.save();
+      context.globalAlpha = alpha;
+      context.font = '500 10px "Geist Mono", ui-monospace, monospace';
+      const w = context.measureText(text).width + 10;
+      context.fillStyle = "rgba(11,14,16,0.86)";
+      context.fillRect(x, y - 15, w, 16);
+      context.fillStyle = color;
+      context.fillText(text, x + 5, y - 4);
+      context.restore();
+    };
+
+    const frame = (now: number) => {
+      const phase = phases(progress);
+      context.clearRect(0, 0, width, height);
+      const t = (now - started) / 1000;
+
+      const introFor = (scene: Scene) => (reduced ? 1 : easeInOut(clamp01((now - started - scene.id * 22) / 1100)));
+      const place = (scene: Scene) => {
+        const c = chaos.get(scene.id)!;
+        const e = entry.get(scene.id)!;
+        const intro = introFor(scene);
+        let x = e.x + (c.x - e.x) * intro;
+        let y = e.y + (c.y - e.y) * intro;
+        if (!reduced) {
+          const calm = 1 - phase.order;
+          x += Math.sin(t * 0.6 + scene.seed) * 5 * calm;
+          y += Math.cos(t * 0.5 + scene.seed * 0.7) * 5 * calm;
+          const dx = x + size / 2 - pointer.x;
+          const dy = y + size / 2 - pointer.y;
+          const d = Math.hypot(dx, dy);
+          if (d < 150 && d > 0) {
+            const push = (1 - d / 150) * 28 * calm;
+            x += (dx / d) * push;
+            y += (dy / d) * push;
+          }
+        }
+        return { x, y, rot: c.rot, intro };
+      };
+
+      // Discarded scenes: fade and sink.
+      for (const scene of scenes.filter((s) => !s.usable)) {
+        const p = place(scene);
+        const alpha = p.intro * (1 - phase.discard);
+        const image = scene.reason === "cloud" ? textures.cloud[scene.variant] : textures[scene.sensor][scene.variant];
+        tile(image, p.x, p.y + phase.discard * 70, size, p.rot, alpha * 0.9, "rgba(242,241,236,0.25)");
+        if (scene.id % 2 === 0) label(scene.reason === "cloud" ? "CLOUD 82% · UNUSABLE" : "DUPLICATE PASS", p.x, p.y + phase.discard * 70 - 3, alpha * (1 - phase.order * 1.4));
+      }
+
+      // Record frame and axes.
+      const frameAlpha = clamp01((phase.order - 0.7) / 0.3);
+      if (frameAlpha > 0) {
+        context.save();
+        context.globalAlpha = frameAlpha;
+        context.strokeStyle = "rgba(242,241,236,0.18)";
+        context.strokeRect(record.left - 10, record.top - 10, record.width + 20, record.height + 20);
+        context.font = '500 10.5px "Geist Mono", ui-monospace, monospace';
+        context.fillStyle = "rgba(242,241,236,0.55)";
+        context.fillText("SITE 014 · SITE RECORD", record.left - 10, record.top - 18);
+        SENSORS.forEach((sensor, i) => {
+          context.fillText(sensor.toUpperCase(), record.left - (width < 760 ? 34 : 46), record.rowY[i] + record.size / 2 + 4);
+        });
+        context.textAlign = "center";
+        const step = dates > 8 ? 3 : 2;
+        record.colX.forEach((x, i) => {
+          if ((i % step !== 0 || i === dates - 2) && i !== dates - 1) return;
+          context.fillText(i === dates - 1 ? "LATEST" : `T-${dates - 1 - i}`, x + record.size / 2, record.top + record.height + 22);
+        });
+        context.restore();
+      }
+
+      // Usable scenes: travel from scattered to their cell.
+      for (const scene of scenes.filter((s) => s.usable)) {
+        const p = place(scene);
+        const target = record.positions.get(scene.id)!;
+        const k = staggered(phase.order, scene, dates);
+        const s = size + (record.size - size) * k;
+        const x = p.x + (target.x - p.x) * k;
+        const y = p.y + (target.y - p.y) * k;
+        const rot = p.rot * (1 - k);
+        const changed = scene.change && phase.change > 0;
+        const outline = changed ? `rgba(228,87,30,${0.4 + 0.6 * phase.change})` : "rgba(242,241,236,0.28)";
+        tile(textures[scene.sensor][scene.variant], x, y, s, rot, p.intro, outline, changed ? 2.5 : 1);
+        if (scene.id % 5 === 0) label(tags[scene.source], x, y - 3, p.intro * (1 - phase.order * 1.6));
+        if (changed && !reduced) {
+          const pulse = (t * 0.8) % 1;
+          context.save();
+          context.globalAlpha = (1 - pulse) * phase.change * 0.8;
+          context.strokeStyle = "#e4571e";
+          context.lineWidth = 1.5;
+          const grow = pulse * 10;
+          context.strokeRect(x - grow, y - grow, s + grow * 2, s + grow * 2);
+          context.restore();
+        }
+      }
+
+      // Contract lines from each change to the contract chip.
+      if (phase.contract > 0) {
+        const changes = scenes.filter((s) => s.usable && s.change).map((s) => record.positions.get(s.id)!);
+        context.save();
+        context.strokeStyle = "#e4571e";
+        context.lineWidth = 1.5;
+        for (const c of changes) {
+          const x1 = c.x + record.size;
+          const y1 = c.y + record.size / 2;
+          const x2 = contractAt.below ? contractAt.x + 60 : contractAt.x;
+          const y2 = contractAt.below ? contractAt.y : contractAt.y;
+          const midX = contractAt.below ? x1 + 8 : x1 + (x2 - x1) * 0.5;
+          const length = Math.abs(x2 - x1) + Math.abs(y2 - y1) + 40;
+          context.setLineDash([length * phase.contract, length]);
+          context.beginPath();
+          context.moveTo(x1, y1);
+          if (contractAt.below) {
+            context.lineTo(midX, y1);
+            context.lineTo(midX, y2);
+          } else {
+            context.bezierCurveTo(midX, y1, midX, y2, x2, y2);
+          }
+          context.stroke();
+        }
+        context.restore();
+      }
+
+      if (contractNode) {
+        contractNode.style.left = `${contractAt.below ? contractAt.x : contractAt.x}px`;
+        contractNode.style.top = `${contractAt.below ? contractAt.y : contractAt.y}px`;
+        contractNode.style.transform = contractAt.below
+          ? `translateY(${(1 - phase.contract) * 8}px)`
+          : `translateY(calc(-50% + ${(1 - phase.contract) * 8}px))`;
+        contractNode.style.opacity = String(clamp01((phase.contract - 0.55) / 0.45));
+      }
+
+      if (caption) {
+        const text = captions[phase.caption];
+        if (caption.textContent !== text) caption.textContent = text;
+        root.dataset.caption = String(phase.caption);
+      }
+      if (hint) hint.style.opacity = String(1 - clamp01(progress / 0.1));
+    };
+
+    // ---- Drive ----
+    let running = false;
+    let raf = 0;
+    const loop = (now: number) => {
+      frame(now);
+      if (running) raf = requestAnimationFrame(loop);
+    };
+    const start = () => {
+      if (running) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    const readScroll = () => {
+      const rect = root.getBoundingClientRect();
+      const span = rect.height - window.innerHeight;
+      progress = span > 0 ? clamp01(-rect.top / span) : 1;
+    };
+
+    window.addEventListener("scroll", readScroll, { passive: true });
+    window.addEventListener("resize", () => {
+      layout();
+      readScroll();
+      if (!running) frame(performance.now());
+    });
+    root.addEventListener("pointermove", (event) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    });
+    root.addEventListener("pointerleave", () => {
+      pointer = { x: -9999, y: -9999 };
+    });
+
+    const boot = () => {
+      layout();
+      readScroll();
+      new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) start();
+        else stop();
+      }).observe(root);
+      frame(performance.now());
+    };
+    // Wait for fonts so the safe area around the headline is measured correctly.
+    if (document.fonts?.ready) document.fonts.ready.then(boot);
+    else boot();
+  }
+</script>

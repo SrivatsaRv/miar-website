@@ -174,11 +174,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
 ---
 
 <figure class="sensor-stack" data-sensor-stack data-active="all" data-cand-active={candidates[0].id}>
-  <svg viewBox="0 0 660 700" role="img" aria-labelledby="ws-title">
-    <title id="ws-title">
-      An airfield seen by optical, radar and hyperspectral sensors. Select a candidate detection to see what
-      each sensor reads at that location.
-    </title>
+  <svg viewBox="0 0 660 700" role="img" aria-label="An airfield seen by optical, radar and hyperspectral sensors. Select a candidate detection to see what each sensor reads at that location.">
     <defs>
       <pattern id="ss-speckle" width="40" height="40" patternUnits="userSpaceOnUse">
         {speckle.map((dot) => <circle cx={dot.x} cy={dot.y} r={dot.r} fill="#cfe0e8" opacity={dot.o} />)}
