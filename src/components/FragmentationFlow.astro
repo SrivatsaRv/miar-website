@@ -201,7 +201,7 @@ const stages = [
 
 <style>
   .frag {
-    --frag-bg: var(--night);
+    --frag-bg: var(--panel);
     position: relative;
     height: 280vh;
   }
@@ -252,12 +252,12 @@ const stages = [
     grid-template-columns: minmax(0, 1fr) 300px;
     border: 1px solid var(--ink);
     background: var(--frag-bg);
-    color: var(--on-night);
+    color: var(--on-panel);
   }
 
   .frag-figure {
     padding: 20px;
-    border-right: 1px solid var(--night-rule);
+    border-right: 1px solid var(--panel-rule);
   }
 
   .frag-figure svg {
@@ -269,20 +269,20 @@ const stages = [
 
   /* Nodes */
   .ff-node rect {
-    fill: var(--night-2);
-    stroke: var(--night-rule);
+    fill: var(--panel-2);
+    stroke: var(--panel-rule);
     transition: stroke 0.4s var(--ease), fill 0.4s var(--ease);
   }
 
   .ff-title {
-    fill: var(--on-night);
+    fill: var(--on-panel);
     font-family: var(--sans);
     font-size: 15px;
     font-weight: 500;
   }
 
   .ff-sub {
-    fill: var(--on-night-3);
+    fill: var(--on-panel-3);
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.03em;
@@ -296,7 +296,7 @@ const stages = [
   }
 
   .ff-tool .ff-accent {
-    fill: var(--on-night-3);
+    fill: var(--on-panel-3);
     stroke: none;
     transition: fill 0.4s var(--ease);
   }
@@ -306,7 +306,7 @@ const stages = [
   }
 
   [data-step="1"] .ff-tool .ff-accent {
-    fill: #e4571e;
+    fill: var(--signal);
   }
 
   [data-step="2"] .ff-tool,
@@ -318,7 +318,7 @@ const stages = [
   /* Edges */
   .ff-edge {
     fill: none;
-    stroke: rgba(228, 87, 30, 0.7);
+    stroke: color-mix(in srgb, var(--signal) 70%, transparent);
     stroke-width: 1.3;
     stroke-dasharray: 1;
     stroke-dashoffset: 1;
@@ -327,7 +327,7 @@ const stages = [
   }
 
   .ff-edge-miar {
-    stroke: var(--on-night-2);
+    stroke: var(--on-panel-2);
     stroke-width: 1.5;
   }
 
@@ -349,7 +349,7 @@ const stages = [
 
   .ff-flow {
     fill: none;
-    stroke: #e4571e;
+    stroke: var(--signal);
     stroke-width: 2;
     stroke-dasharray: 3 12;
     opacity: 0;
@@ -385,11 +385,11 @@ const stages = [
   }
 
   .ff-core-box {
-    fill: #f2f1ec;
+    fill: var(--on-panel);
   }
 
   .ff-core-title {
-    fill: #0b0e10;
+    fill: var(--panel);
     font-family: var(--sans);
     font-size: 22px;
     font-weight: 600;
@@ -397,32 +397,32 @@ const stages = [
   }
 
   .ff-core-kicker {
-    fill: #b8400f;
+    fill: var(--signal-ink);
     font-family: var(--mono);
     font-size: 10.5px;
     letter-spacing: 0.08em;
   }
 
   .ff-stage {
-    fill: #e7e5de;
-    stroke: rgba(11, 14, 16, 0.12);
+    fill: color-mix(in srgb, var(--panel) 8%, var(--on-panel));
+    stroke: color-mix(in srgb, var(--panel) 12%, transparent);
   }
 
   .ff-stage-num {
-    fill: #b8400f;
+    fill: var(--signal-ink);
     font-family: var(--mono);
     font-size: 11px;
   }
 
   .ff-stage-title {
-    fill: #0b0e10;
+    fill: var(--panel);
     font-family: var(--sans);
     font-size: 14.5px;
     font-weight: 500;
   }
 
   .ff-stage-sub {
-    fill: #5d6368;
+    fill: color-mix(in srgb, var(--panel) 62%, var(--on-panel));
     font-family: var(--mono);
     font-size: 10.5px;
   }
@@ -437,18 +437,18 @@ const stages = [
   }
 
   .ff-contract rect {
-    fill: #c2410c;
+    fill: var(--signal-fill);
   }
 
   .ff-contract-k {
-    fill: #fff;
+    fill: var(--on-signal);
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 0.08em;
   }
 
   [data-step="3"] .ff-consumer rect {
-    stroke: #f2f1ec;
+    stroke: var(--on-panel);
   }
 
   .ff-gap {
@@ -462,12 +462,12 @@ const stages = [
 
   .ff-gap circle {
     fill: none;
-    stroke: #e4571e;
+    stroke: var(--signal);
     stroke-dasharray: 3 3;
   }
 
   .ff-gap text {
-    fill: #e4571e;
+    fill: var(--signal);
     font-family: var(--mono);
     font-size: 16px;
   }
@@ -481,7 +481,7 @@ const stages = [
   .frag-stats {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    border-bottom: 1px solid var(--night-rule);
+    border-bottom: 1px solid var(--panel-rule);
   }
 
   .frag-stats div {
@@ -491,11 +491,11 @@ const stages = [
   }
 
   .frag-stats div:nth-child(odd) {
-    border-right: 1px solid var(--night-rule);
+    border-right: 1px solid var(--panel-rule);
   }
 
   .frag-stats div:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--night-rule);
+    border-bottom: 1px solid var(--panel-rule);
   }
 
   .frag-stats dt {
@@ -503,7 +503,7 @@ const stages = [
     font-size: 10.5px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   .frag-stats dd {
@@ -512,13 +512,13 @@ const stages = [
     letter-spacing: -0.03em;
     line-height: 1.1;
     font-variant-numeric: tabular-nums;
-    color: #ff8a5c;
+    color: var(--signal-ink);
     transition: color 0.4s var(--ease);
   }
 
   [data-step="2"] .frag-stats dd,
   [data-step="3"] .frag-stats dd {
-    color: #5fd3b0;
+    color: var(--ok);
   }
 
   .frag-stats div:last-child dd {
@@ -533,12 +533,12 @@ const stages = [
   }
 
   .frag-cue .label {
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   .frag-cue-a {
     font-size: 14.5px;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   .frag-cue-b {
@@ -561,7 +561,7 @@ const stages = [
     grid-template-columns: 1fr auto;
     gap: 2px 10px;
     padding: 10px 12px;
-    border: 1px solid var(--night-rule);
+    border: 1px solid var(--panel-rule);
     font-size: 13.5px;
   }
 
@@ -570,13 +570,13 @@ const stages = [
     font-size: 10.5px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   .frag-cue-b strong {
     grid-column: 1;
     font-weight: 500;
-    color: var(--on-night);
+    color: var(--on-panel);
   }
 
   .frag-cue-b em {
@@ -586,15 +586,15 @@ const stages = [
     font-style: normal;
     font-family: var(--mono);
     font-size: 11px;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   .frag-cue-b .is-pick {
-    border-color: #e4571e;
+    border-color: var(--signal);
   }
 
   .frag-cue-b .is-pick em {
-    color: #e4571e;
+    color: var(--signal-ink);
   }
 
   .frag-note {
@@ -617,7 +617,7 @@ const stages = [
 
     .frag-figure {
       border-right: 0;
-      border-bottom: 1px solid var(--night-rule);
+      border-bottom: 1px solid var(--panel-rule);
       overflow-x: auto;
     }
 
@@ -632,7 +632,7 @@ const stages = [
 
     .frag-stats {
       border-bottom: 0;
-      border-right: 1px solid var(--night-rule);
+      border-right: 1px solid var(--panel-rule);
     }
   }
 
@@ -643,7 +643,7 @@ const stages = [
 
     .frag-stats {
       border-right: 0;
-      border-bottom: 1px solid var(--night-rule);
+      border-bottom: 1px solid var(--panel-rule);
     }
   }
 
@@ -668,7 +668,7 @@ const stages = [
 
     .fm-k {
       font-size: 12.5px;
-      color: var(--on-night-3);
+      color: var(--on-panel-3);
     }
 
     .fm-row,
@@ -682,36 +682,36 @@ const stages = [
       display: grid;
       gap: 2px;
       padding: 9px 10px;
-      border: 1px solid var(--night-rule);
-      background: var(--night-2);
+      border: 1px solid var(--panel-rule);
+      background: var(--panel-2);
     }
 
     .fm strong {
       font-size: 13.5px;
       font-weight: 500;
-      color: var(--on-night);
+      color: var(--on-panel);
     }
 
     .fm span {
       font-size: 11.5px;
-      color: var(--on-night-3);
+      color: var(--on-panel-3);
     }
 
     .fm-tools li {
-      border-left: 2px solid #e4571e;
+      border-left: 2px solid var(--signal);
     }
 
     .fm-arrow {
       text-align: center;
-      color: var(--on-night-3);
+      color: var(--on-panel-3);
     }
 
     .fm-miar {
       display: none;
       gap: 8px;
       padding: 14px;
-      background: #f2f1ec;
-      color: #0b0e10;
+      background: var(--on-panel);
+      color: var(--panel);
     }
 
     .fm-miar ol {
@@ -721,15 +721,15 @@ const stages = [
 
     .fm-miar li {
       border: 0;
-      background: #e7e5de;
+      background: color-mix(in srgb, var(--panel) 8%, var(--on-panel));
     }
 
     .fm-miar strong {
-      color: #0b0e10;
+      color: var(--panel);
     }
 
     .fm-miar span {
-      color: #5d6368;
+      color: color-mix(in srgb, var(--panel) 62%, var(--on-panel));
     }
 
     .fm-core-t {
@@ -741,15 +741,15 @@ const stages = [
       margin-left: 8px;
       font-size: 11px;
       font-weight: 500;
-      color: #b8400f;
+      color: var(--signal-ink);
       letter-spacing: 0.04em;
       text-transform: uppercase;
     }
 
     .fm-contract {
       padding: 8px 10px;
-      background: #c2410c;
-      color: #fff;
+      background: var(--signal-fill);
+      color: var(--on-signal);
       font-size: 13px;
       font-weight: 500;
     }
@@ -765,7 +765,7 @@ const stages = [
     }
 
     [data-step="3"] .fm-out li {
-      border-color: #f2f1ec;
+      border-color: var(--on-panel);
     }
 
     .fm-row li:last-child:nth-child(odd) {

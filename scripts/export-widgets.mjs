@@ -147,7 +147,7 @@ frames[0].save(sys.argv[2], save_all=True, append_images=frames[1:], duration=du
 
 const browser = await chromium.launch();
 const open = async (route, { width = 1440, height = 1500, scale = 2 } = {}) => {
-  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: scale, colorScheme: "light", reducedMotion: "no-preference" });
+  const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: scale, colorScheme: "dark", reducedMotion: "no-preference" });
   await page.goto(BASE + route, { waitUntil: "networkidle" });
   // Keep captures clean: no page-level overlays (progress rail, dev toolbar) in any frame.
   await page.addStyleTag({ content: "[data-rail], astro-dev-toolbar { display: none !important; }" });

@@ -4,7 +4,7 @@
 // Layout lives in src/lib/scene-field.mjs (unit tested); this file only renders.
 ---
 
-<section class="field-hero on-night" id="home" data-field>
+<section class="field-hero panel-surface" id="home" data-field>
   <div class="field-sticky">
     <canvas class="field-canvas" data-field-canvas aria-hidden="true"></canvas>
 
@@ -44,7 +44,7 @@
     position: relative;
     /* Viewport units are divided by the page zoom used on large displays (global.css). */
     height: calc(250vh / var(--zoom, 1));
-    background: var(--night);
+    background: var(--panel);
   }
 
   .field-sticky {
@@ -71,8 +71,8 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(rgba(242, 241, 236, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(242, 241, 236, 0.035) 1px, transparent 1px);
+      linear-gradient(color-mix(in srgb, var(--on-panel) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--on-panel) 4%, transparent) 1px, transparent 1px);
     background-size: 48px 48px;
     mask-image: radial-gradient(ellipse 75% 70% at 50% 45%, #000 30%, transparent 80%);
     -webkit-mask-image: radial-gradient(ellipse 75% 70% at 50% 45%, #000 30%, transparent 80%);
@@ -105,7 +105,7 @@
   .field-copy .lead {
     max-width: 560px;
     font-size: clamp(0.98rem, 1.15vw, 1.1rem);
-    color: rgba(242, 241, 236, 0.76);
+    color: color-mix(in srgb, var(--on-panel) 76%, transparent);
   }
 
   .field-copy .button {
@@ -130,7 +130,7 @@
     font-size: 12px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   .field-phase span::before {
@@ -145,7 +145,7 @@
   }
 
   .field-hero[data-caption="2"] .field-phase span::before {
-    background: #5fd3b0;
+    background: var(--ok);
   }
 
   .field-contract {
@@ -155,7 +155,7 @@
     gap: 3px;
     padding: 12px 16px;
     background: var(--signal-fill);
-    color: #fff;
+    color: var(--on-signal);
     opacity: 0;
     transform: translateY(8px);
     transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
@@ -191,7 +191,7 @@
     font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
     transition: opacity 0.3s var(--ease);
   }
 
@@ -245,6 +245,7 @@
     easeInOut,
     mulberry32,
   } from "../lib/scene-field.mjs";
+  import { token, withAlpha, onThemeChange } from "../lib/theme.mjs";
 
   type Scene = ReturnType<typeof makeScenes>[number];
 
@@ -267,6 +268,19 @@
     const captionsNarrow = ["5 providers · 7 formats", "Lining up every image", "3 changes · 1 contract"];
     let captions = captionsWide;
     const tags: Record<string, string> = Object.fromEntries(SOURCES.map((s) => [s.id, s.tag]));
+
+    // UI colours for the canvas come from the design tokens and refresh on theme change.
+    // Tile textures are imagery and keep their own palette.
+    const tok = { onPanel: "", panel: "", signal: "" };
+    const readTokens = () => {
+      tok.onPanel = token("--on-panel");
+      tok.panel = token("--panel");
+      tok.signal = token("--signal");
+    };
+    readTokens();
+    const ink = (a: number) => withAlpha(tok.onPanel, a);
+    const plate = (a: number) => withAlpha(tok.panel, a);
+    const signal = (a = 1) => withAlpha(tok.signal, a);
 
     // ---- Tile textures (drawn once) ----
     const TEX = 96;
@@ -438,13 +452,13 @@
       context.restore();
     };
 
-    const label = (text: string, x: number, y: number, alpha: number, color = "rgba(242,241,236,0.85)") => {
+    const label = (text: string, x: number, y: number, alpha: number, color = ink(0.85)) => {
       if (alpha <= 0.02) return;
       context.save();
       context.globalAlpha = alpha;
       context.font = '500 10px "Geist Mono", ui-monospace, monospace';
       const w = context.measureText(text).width + 10;
-      context.fillStyle = "rgba(11,14,16,0.86)";
+      context.fillStyle = plate(0.86);
       context.fillRect(x, y - 15, w, 16);
       context.fillStyle = color;
       context.fillText(text, x + 5, y - 4);
@@ -484,7 +498,7 @@
         const p = place(scene);
         const alpha = p.intro * (1 - phase.discard);
         const image = scene.reason === "cloud" ? textures.cloud[scene.variant] : textures[scene.sensor][scene.variant];
-        tile(image, p.x, p.y + phase.discard * 70, size, p.rot, alpha * 0.9, "rgba(242,241,236,0.25)");
+        tile(image, p.x, p.y + phase.discard * 70, size, p.rot, alpha * 0.9, ink(0.25));
         if (scene.id % 2 === 0) label(scene.reason === "cloud" ? "CLOUD 82% · UNUSABLE" : "DUPLICATE PASS", p.x, p.y + phase.discard * 70 - 3, alpha * (1 - phase.order * 1.4));
       }
 
@@ -493,10 +507,10 @@
       if (frameAlpha > 0) {
         context.save();
         context.globalAlpha = frameAlpha;
-        context.strokeStyle = "rgba(242,241,236,0.18)";
+        context.strokeStyle = ink(0.24);
         context.strokeRect(record.left - 10, record.top - 10, record.width + 20, record.height + 20);
         context.font = '500 10.5px "Geist Mono", ui-monospace, monospace';
-        context.fillStyle = "rgba(242,241,236,0.55)";
+        context.fillStyle = ink(0.62);
         context.fillText("SITE 014 · SITE RECORD", record.left - 10, record.top - 18);
         SENSORS.forEach((sensor, i) => {
           context.fillText(sensor.toUpperCase(), record.left - (width < 760 ? 34 : 46), record.rowY[i] + record.size / 2 + 4);
@@ -520,14 +534,14 @@
         const y = p.y + (target.y - p.y) * k;
         const rot = p.rot * (1 - k);
         const changed = scene.change && phase.change > 0;
-        const outline = changed ? `rgba(228,87,30,${0.4 + 0.6 * phase.change})` : "rgba(242,241,236,0.28)";
+        const outline = changed ? signal(0.4 + 0.6 * phase.change) : ink(0.3);
         tile(textures[scene.sensor][scene.variant], x, y, s, rot, p.intro, outline, changed ? 2.5 : 1);
         if (scene.id % 5 === 0) label(tags[scene.source], x, y - 3, p.intro * (1 - phase.order * 1.6));
         if (changed && !reduced) {
           const pulse = (t * 0.8) % 1;
           context.save();
           context.globalAlpha = (1 - pulse) * phase.change * 0.8;
-          context.strokeStyle = "#e4571e";
+          context.strokeStyle = signal();
           context.lineWidth = 1.5;
           const grow = pulse * 10;
           context.strokeRect(x - grow, y - grow, s + grow * 2, s + grow * 2);
@@ -539,7 +553,7 @@
       if (phase.contract > 0) {
         const changes = scenes.filter((s) => s.usable && s.change).map((s) => record.positions.get(s.id)!);
         context.save();
-        context.strokeStyle = "#e4571e";
+        context.strokeStyle = signal();
         context.lineWidth = 1.5;
         if (contractAt.below) {
           const latest = record.colX[record.colX.length - 1] + record.size / 2;
@@ -555,7 +569,7 @@
           context.setLineDash([]);
           context.beginPath();
           context.arc(x, y1, 3, 0, Math.PI * 2);
-          context.fillStyle = "#e4571e";
+          context.fillStyle = signal();
           context.globalAlpha = phase.contract;
           context.fill();
         }
@@ -645,6 +659,10 @@
       progress = span > 0 ? clamp01(-rect.top / span) : 1;
     };
 
+    onThemeChange(() => {
+      readTokens();
+      frame(performance.now());
+    });
     window.addEventListener("scroll", readScroll, { passive: true });
     window.addEventListener("resize", () => {
       flowMode = decideMode();

@@ -498,3 +498,25 @@ test("header is never transparent over hero text while scrolling on phones", asy
     await context.close();
   }
 });
+
+
+test("visuals follow the theme: light panels in light mode, dark in dark mode", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const luminance = (rgb: string) => {
+    const [r, g, b] = (rgb.match(/[\d.]+/g) ?? ["0", "0", "0"]).map(Number);
+    return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  };
+  const panelBg = () => page.locator("[data-frag] .frag-grid").evaluate((node) => getComputedStyle(node).backgroundColor);
+
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/");
+  expect(luminance(await panelBg())).toBeGreaterThan(0.8);
+  expect(luminance(await page.locator(".site-footer").evaluate((n) => getComputedStyle(n).backgroundColor))).toBeLessThan(0.1);
+
+  await page.locator("[data-theme-toggle]").click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  expect(luminance(await panelBg())).toBeLessThan(0.1);
+  await expect(page.locator("[data-theme-toggle]")).toHaveAttribute("aria-pressed", "true");
+  const themeColor = await page.locator('meta[name="theme-color"]:not([media])').getAttribute("content");
+  expect(themeColor?.toLowerCase()).toBe("#0e1214");
+});

@@ -174,10 +174,10 @@ const year = new Date().getFullYear();
 
     <slot />
 
-    <footer class="site-footer" data-pagefind-ignore>
+    <footer class="site-footer" data-surface="inverse" data-pagefind-ignore>
       <div class="wrap">
         {!isHome && (
-          <div class="footer-cta on-night">
+          <div class="footer-cta panel-surface">
             <h2>See what changed at your sites. <span>Talk to the MIAR team.</span></h2>
             <a class="button button-primary" href={requestHref}>Request access <span class="arrow" aria-hidden="true">→</span></a>
           </div>

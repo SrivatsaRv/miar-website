@@ -23,7 +23,7 @@ const marks = [
     <div class="plate-figure">
       <svg viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`} role="img" aria-label="Current image of a monitored airbase with seven aircraft detections, four marked for analyst review">
         <image href="/imagery/monitored-site-follow-on-2026.webp" x="2" y="78" width="1546" height="1090" />
-        <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="#0b0e10" opacity="0.2" />
+        <rect x={view.x} y={view.y} width={view.w} height={view.h} opacity="0.2" style="fill: var(--panel)" />
         {marks.map((m) => (
           <g>
             <path class:list={["mark-box", m.change && "is-change"]} d={bracket(m.x, m.y, m.size)} />

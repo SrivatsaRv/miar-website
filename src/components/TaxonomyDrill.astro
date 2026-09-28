@@ -244,7 +244,7 @@ const extensions = [
   }
 
   .tx-node[aria-pressed="true"] .tx-bar {
-    background: rgba(128, 128, 128, 0.35);
+    background: color-mix(in srgb, currentColor 30%, transparent);
   }
 
   .tx-node[aria-pressed="true"] .tx-bar i {
@@ -265,7 +265,7 @@ const extensions = [
   }
 
   .tx-node.is-limited[aria-pressed="true"] .tx-name::after {
-    color: #ffb08c;
+    color: color-mix(in srgb, var(--signal) 60%, var(--paper));
   }
 
   .tx-node.is-soon {

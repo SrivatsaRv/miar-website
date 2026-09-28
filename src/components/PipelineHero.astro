@@ -4,10 +4,10 @@
 // Pure SVG with SMIL motion. Two renditions: wide (desktop) and tall (phones and tablets).
 
 const satellites = [
-  { label: "Provider A · EO", dur: 17, begin: -3, color: "#e9e6dd" },
-  { label: "Provider B · SAR", dur: 22, begin: -12, color: "#9fc3d6" },
-  { label: "Provider C · HSI", dur: 14, begin: -8, color: "#b99be0" },
-  { label: "National · EO", dur: 26, begin: -19, color: "#e9e6dd" },
+  { label: "Provider A · EO", dur: 17, begin: -3, color: "var(--sensor-eo)" },
+  { label: "Provider B · SAR", dur: 22, begin: -12, color: "var(--sensor-sar)" },
+  { label: "Provider C · HSI", dur: 14, begin: -8, color: "var(--sensor-hsi)" },
+  { label: "National · EO", dur: 26, begin: -19, color: "var(--sensor-eo)" },
 ];
 
 const stores = [
@@ -109,16 +109,16 @@ const satGlyph = `<rect x="-6" y="-4" width="12" height="8" rx="1.5"/><rect x="-
   <svg class="ph-wide" viewBox={`0 0 ${W.w} ${W.h}`} aria-hidden="true">
     <defs>
       <linearGradient id="ph-space" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#070a0c" />
-        <stop offset="1" stop-color="#0e1519" />
+        <stop offset="0" style="stop-color: var(--panel)" />
+        <stop offset="1" style="stop-color: var(--panel-2)" />
       </linearGradient>
       <linearGradient id="ph-ground" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#1a2226" />
-        <stop offset="1" stop-color="#0b0e10" />
+        <stop offset="0" style="stop-color: var(--panel-3)" />
+        <stop offset="1" style="stop-color: var(--panel)" />
       </linearGradient>
       <linearGradient id="ph-swath" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#e4571e" stop-opacity="0.05" />
-        <stop offset="1" stop-color="#e4571e" stop-opacity="0.45" />
+        <stop offset="0" stop-opacity="0.05" style="stop-color: var(--signal)" />
+        <stop offset="1" stop-opacity="0.45" style="stop-color: var(--signal)" />
       </linearGradient>
     </defs>
     <rect width={W.w} height={W.h} fill="url(#ph-space)" />
@@ -229,7 +229,7 @@ const satGlyph = `<rect x="-6" y="-4" width="12" height="8" rx="1.5"/><rect x="-
 
   <!-- Tall rendition -->
   <svg class="ph-tall" viewBox="0 0 420 1190" aria-hidden="true">
-    <rect width="420" height="1190" fill="#0b0e10" />
+    <rect width="420" height="1190" style="fill: var(--panel)" />
     <rect width="420" height="330" fill="url(#ph-space)" />
     {Array.from({ length: 24 }, (_, i) => (
       <circle cx={(i * 131) % 420} cy={(i * 37) % 170 + 8} r={i % 5 === 0 ? 1.1 : 0.7} class="ph-star" />
@@ -314,7 +314,7 @@ const satGlyph = `<rect x="-6" y="-4" width="12" height="8" rx="1.5"/><rect x="-
   .ph {
     margin: 0;
     border: 1px solid var(--ink);
-    background: #0b0e10;
+    background: var(--panel);
     overflow: hidden;
   }
 
@@ -362,51 +362,51 @@ const satGlyph = `<rect x="-6" y="-4" width="12" height="8" rx="1.5"/><rect x="-
 
   .ph figcaption {
     padding: 10px 14px;
-    border-top: 1px solid rgba(242, 241, 236, 0.14);
-    background: #0b0e10;
+    border-top: 1px solid color-mix(in srgb, var(--on-panel) 14%, transparent);
+    background: var(--panel);
     font-size: 12.5px;
-    color: rgba(242, 241, 236, 0.5);
+    color: color-mix(in srgb, var(--on-panel) 50%, transparent);
   }
 
   .ph-star {
-    fill: rgba(242, 241, 236, 0.35);
+    fill: color-mix(in srgb, var(--on-panel) 35%, transparent);
   }
 
   .ph-k {
-    fill: rgba(242, 241, 236, 0.45);
+    fill: color-mix(in srgb, var(--on-panel) 45%, transparent);
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.08em;
   }
 
   .ph-k-core {
-    fill: #ff8a5c;
+    fill: var(--signal-ink);
   }
 
   .ph-track {
     fill: none;
-    stroke: rgba(242, 241, 236, 0.12);
+    stroke: color-mix(in srgb, var(--on-panel) 12%, transparent);
     stroke-dasharray: 2 6;
   }
 
   .ph-limb {
     fill: none;
-    stroke: rgba(159, 195, 214, 0.35);
+    stroke: color-mix(in srgb, var(--sensor-sar) 35%, transparent);
     stroke-width: 1.5;
   }
 
   .ph-aoi path {
     fill: none;
-    stroke: #e4571e;
+    stroke: var(--signal);
     stroke-width: 2;
   }
 
   .ph-aoi circle {
-    fill: #e4571e;
+    fill: var(--signal);
   }
 
   .ph-aoi-t {
-    fill: #f2f1ec;
+    fill: var(--on-panel);
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.06em;
@@ -421,35 +421,35 @@ const satGlyph = `<rect x="-6" y="-4" width="12" height="8" rx="1.5"/><rect x="-
   }
 
   .ph-sat rect {
-    stroke: #0b0e10;
+    stroke: var(--panel);
     stroke-width: 0.5;
   }
 
   .ph-sat-t {
-    fill: rgba(242, 241, 236, 0.75);
+    fill: color-mix(in srgb, var(--on-panel) 75%, transparent);
     font-family: var(--mono);
     font-size: 10.5px;
     letter-spacing: 0.04em;
   }
 
   .ph-down {
-    stroke: rgba(242, 241, 236, 0.22);
+    stroke: color-mix(in srgb, var(--on-panel) 22%, transparent);
     stroke-dasharray: 3 5;
   }
 
   .ph-store,
   .ph-cons {
-    fill: #12181c;
-    stroke: rgba(242, 241, 236, 0.16);
+    fill: var(--panel-2);
+    stroke: color-mix(in srgb, var(--on-panel) 16%, transparent);
   }
 
   .ph-store-ico {
     fill: none;
-    stroke: rgba(242, 241, 236, 0.5);
+    stroke: color-mix(in srgb, var(--on-panel) 50%, transparent);
   }
 
   .ph-title {
-    fill: #f2f1ec;
+    fill: var(--on-panel);
     font-family: var(--sans);
     font-size: 14px;
     font-weight: 500;
@@ -460,111 +460,111 @@ const satGlyph = `<rect x="-6" y="-4" width="12" height="8" rx="1.5"/><rect x="-
   }
 
   .ph-sub {
-    fill: rgba(242, 241, 236, 0.5);
+    fill: color-mix(in srgb, var(--on-panel) 50%, transparent);
     font-family: var(--mono);
     font-size: 10.5px;
   }
 
   .ph-feed {
     fill: none;
-    stroke: rgba(242, 241, 236, 0.16);
+    stroke: color-mix(in srgb, var(--on-panel) 16%, transparent);
     stroke-width: 1.2;
   }
 
   .ph-feed-out {
-    stroke: rgba(95, 211, 176, 0.45);
+    stroke: color-mix(in srgb, var(--ok) 45%, transparent);
   }
 
   .ph-pipe {
-    fill: #0f1418;
-    stroke: rgba(228, 87, 30, 0.5);
+    fill: var(--panel-2);
+    stroke: color-mix(in srgb, var(--signal) 50%, transparent);
     stroke-dasharray: 5 4;
   }
 
   .ph-pipe-ok {
-    fill: #5fd3b0;
+    fill: var(--ok);
     opacity: 0.8;
   }
 
   .ph-pt {
-    fill: #e9e6dd;
+    fill: var(--sensor-eo);
   }
 
   .ph-pt-sar {
-    fill: #9fc3d6;
+    fill: var(--sensor-sar);
   }
 
   .ph-pt-hsi {
-    fill: #b99be0;
+    fill: var(--sensor-hsi);
   }
 
   .ph-pt-down {
-    fill: #e4571e;
+    fill: var(--signal);
   }
 
   .ph-pt-ok {
-    fill: #5fd3b0;
+    fill: var(--ok);
   }
 
   .ph-stage {
-    fill: #f2f1ec;
-    stroke: #0b0e10;
+    fill: var(--on-panel);
+    stroke: var(--panel);
     stroke-width: 3;
   }
 
   .ph-stage.is-human {
-    fill: #c2410c;
+    fill: var(--signal-fill);
   }
 
   .ph-stage-n {
-    fill: #0b0e10;
+    fill: var(--panel);
     font-family: var(--mono);
     font-size: 11px;
     font-weight: 600;
   }
 
   .ph-stage.is-human + .ph-stage-n {
-    fill: #fff;
+    fill: var(--on-signal);
   }
 
   .ph-stat {
-    fill: #ff8a5c;
+    fill: var(--signal-ink);
     font-family: var(--mono);
     font-size: 11px;
   }
 
   .ph-card rect:first-child {
-    fill: #12181c;
-    stroke: #e4571e;
+    fill: var(--panel-2);
+    stroke: var(--signal);
   }
 
   .ph-card-bar {
-    fill: #c2410c;
+    fill: var(--signal-fill);
   }
 
   .ph-card-k {
-    fill: #fff;
+    fill: var(--on-signal);
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.06em;
   }
 
   .ph-code {
-    fill: rgba(242, 241, 236, 0.6);
+    fill: color-mix(in srgb, var(--on-panel) 60%, transparent);
     font-family: var(--mono);
     font-size: 12.5px;
   }
 
   .ph-code-k {
-    fill: #f2f1ec;
+    fill: var(--on-panel);
   }
 
   .ph-code-v.is-change {
-    fill: #ff8a5c;
+    fill: var(--signal-ink);
   }
 
   .ph-code-v.is-ok {
-    fill: #5fd3b0;
+    fill: var(--ok);
   }
 </style>
 

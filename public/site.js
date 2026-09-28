@@ -22,7 +22,7 @@ if (header?.classList.contains("site-header-home")) {
     // Once the pinned hero releases, its content moves up under the header: go solid then.
     const moving = pinned && !past && heroBottom < window.innerHeight - 1;
     header.classList.toggle("is-scrolled", past);
-    header.classList.toggle("is-solid-dark", moving);
+    header.classList.toggle("is-solid", moving);
   };
   syncHeader();
   window.addEventListener("scroll", syncHeader, { passive: true });
@@ -69,10 +69,33 @@ document.addEventListener("keydown", (event) => {
 });
 
 /* ---------- Theme ---------- */
+// Resolution: saved choice > system preference. The inline head script applies the saved choice
+// before first paint; this keeps the UI, theme-color and listeners in sync afterwards.
 
 const themeToggle = document.querySelector("[data-theme-toggle]");
 const darkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+const savedTheme = () => {
+  try {
+    return localStorage.getItem("miar-theme");
+  } catch {
+    return null;
+  }
+};
 const currentTheme = () => document.documentElement.dataset.theme || (darkQuery.matches ? "dark" : "light");
+
+const syncThemeChrome = () => {
+  const theme = currentTheme();
+  themeToggle?.setAttribute("aria-label", theme === "dark" ? "Switch to light theme" : "Switch to dark theme");
+  themeToggle?.setAttribute("aria-pressed", String(theme === "dark"));
+  let meta = document.querySelector('meta[name="theme-color"]:not([media])');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.name = "theme-color";
+    document.head.append(meta);
+  }
+  meta.content = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim();
+  document.dispatchEvent(new CustomEvent("themechange", { detail: { theme } }));
+};
 
 themeToggle?.addEventListener("click", () => {
   const next = currentTheme() === "dark" ? "light" : "dark";
@@ -80,7 +103,14 @@ themeToggle?.addEventListener("click", () => {
   try {
     localStorage.setItem("miar-theme", next);
   } catch {}
+  syncThemeChrome();
 });
+
+darkQuery.addEventListener("change", () => {
+  if (!savedTheme()) syncThemeChrome();
+});
+
+syncThemeChrome();
 
 /* ---------- Request form ---------- */
 

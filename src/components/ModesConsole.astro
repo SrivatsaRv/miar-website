@@ -90,14 +90,14 @@ const modes = [
 <style>
   .modes {
     border: 1px solid var(--ink);
-    background: var(--night);
-    color: var(--on-night);
+    background: var(--panel);
+    color: var(--on-panel);
   }
 
   .modes-tabs {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    border-bottom: 1px solid var(--night-rule);
+    border-bottom: 1px solid var(--panel-rule);
   }
 
   .modes-tabs button {
@@ -105,9 +105,9 @@ const modes = [
     gap: 3px;
     padding: 14px 16px;
     border: 0;
-    border-right: 1px solid var(--night-rule);
+    border-right: 1px solid var(--panel-rule);
     background: transparent;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
     text-align: left;
     transition: background 0.2s var(--ease), color 0.2s var(--ease);
   }
@@ -126,20 +126,20 @@ const modes = [
     font-size: 10.5px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   .modes-tabs button:hover {
-    color: var(--on-night);
+    color: var(--on-panel);
   }
 
   .modes-tabs button[aria-selected="true"] {
-    background: var(--on-night);
-    color: var(--night);
+    background: var(--on-panel);
+    color: var(--panel);
   }
 
   .modes-tabs button[aria-selected="true"] span {
-    color: #b8400f;
+    color: color-mix(in srgb, var(--panel) 72%, transparent);
   }
 
   .modes-panel {
@@ -151,7 +151,7 @@ const modes = [
   .modes-lede {
     max-width: 760px;
     font-size: 15.5px;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   .mono {
@@ -170,7 +170,7 @@ const modes = [
   .modes-table td {
     padding: 12px 10px;
     text-align: left;
-    border-bottom: 1px solid var(--night-rule);
+    border-bottom: 1px solid var(--panel-rule);
   }
 
   .modes-table th {
@@ -179,7 +179,7 @@ const modes = [
     font-weight: 500;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   /* Monitor */
@@ -187,8 +187,8 @@ const modes = [
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1px;
-    background: var(--night-rule);
-    border: 1px solid var(--night-rule);
+    background: var(--panel-rule);
+    border: 1px solid var(--panel-rule);
   }
 
   .modes-changes li {
@@ -196,16 +196,16 @@ const modes = [
     grid-template-columns: 52px 1fr;
     gap: 12px;
     padding: 16px;
-    background: var(--night);
+    background: var(--panel);
   }
 
   .modes-changes li > span {
     font-size: 20px;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   .modes-changes li.is-up > span {
-    color: var(--signal);
+    color: var(--signal-ink);
   }
 
   .modes-changes strong {
@@ -215,12 +215,12 @@ const modes = [
   .modes-changes p {
     margin-top: 2px;
     font-size: 14px;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   .modes-note {
     font-size: 12.5px;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   /* Audit */
@@ -228,8 +228,8 @@ const modes = [
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1px;
-    background: var(--night-rule);
-    border: 1px solid var(--night-rule);
+    background: var(--panel-rule);
+    border: 1px solid var(--panel-rule);
     counter-reset: chain;
   }
 
@@ -237,12 +237,12 @@ const modes = [
     display: grid;
     gap: 4px;
     padding: 16px;
-    background: var(--night);
+    background: var(--panel);
   }
 
   .modes-chain span {
     font-size: 11.5px;
-    color: var(--signal);
+    color: var(--signal-ink);
   }
 
   .modes-chain strong {
@@ -251,7 +251,7 @@ const modes = [
 
   .modes-chain p {
     font-size: 13.5px;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   /* Report */
@@ -259,12 +259,12 @@ const modes = [
     margin: 0;
     padding: 18px;
     overflow-x: auto;
-    border: 1px solid var(--night-rule);
-    background: var(--night-2);
+    border: 1px solid var(--panel-rule);
+    background: var(--panel-2);
     font-family: var(--mono);
     font-size: 12.5px;
     line-height: 1.7;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   @media (max-width: 1000px) {
@@ -277,7 +277,7 @@ const modes = [
     }
 
     .modes-tabs button:nth-child(n + 4) {
-      border-top: 1px solid var(--night-rule);
+      border-top: 1px solid var(--panel-rule);
     }
 
     .modes-chain {
@@ -291,8 +291,8 @@ const modes = [
     }
 
     .modes-tabs button {
-      border-right: 1px solid var(--night-rule);
-      border-top: 1px solid var(--night-rule);
+      border-right: 1px solid var(--panel-rule);
+      border-top: 1px solid var(--panel-rule);
     }
 
     .modes-changes,

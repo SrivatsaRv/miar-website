@@ -180,10 +180,10 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
         {speckle.map((dot) => <circle cx={dot.x} cy={dot.y} r={dot.r} fill="#cfe0e8" opacity={dot.o} />)}
       </pattern>
       <pattern id="ss-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-        <path d="M20 0H0V20" fill="none" stroke="#f2f1ec" stroke-opacity="0.08" stroke-width="1" vector-effect="non-scaling-stroke" />
+        <path d="M20 0H0V20" fill="none" stroke-opacity="0.08" stroke-width="1" vector-effect="non-scaling-stroke" style="stroke: var(--on-panel)" />
       </pattern>
       <radialGradient id="ss-glow">
-        <stop offset="0" stop-color="#ffffff" stop-opacity="0.95" />
+        <stop offset="0" stop-opacity="0.95" style="stop-color: var(--on-signal)" />
         <stop offset="0.45" stop-color="#bfe3ff" stop-opacity="0.55" />
         <stop offset="1" stop-color="#bfe3ff" stop-opacity="0" />
       </radialGradient>
@@ -192,14 +192,14 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     <!-- Fused assessment (bottom) -->
     <g class="ss-layer" data-layer="fused">
       <g transform={plane(layerY.fused)}>
-        <path d={diamond} fill="#0d1215" />
+        <path d={diamond} style="fill: var(--panel-2)" />
         <path d={diamond} fill="url(#ss-grid)" />
-        <g fill="none" stroke="#f2f1ec" stroke-opacity="0.26" stroke-width="1">
+        <g fill="none" stroke-opacity="0.26" stroke-width="1" style="stroke: var(--on-panel)">
           {[runway, taxiway, ...links, apron, ...hangars].map((r) => (
             <rect x={r.x} y={r.y} width={r.w} height={r.h} vector-effect="non-scaling-stroke" />
           ))}
         </g>
-        <g fill="none" stroke="#f2f1ec" stroke-opacity="0.45" stroke-width="1.2">
+        <g fill="none" stroke-opacity="0.45" stroke-width="1.2" style="stroke: var(--on-panel)">
           {aircraft.filter(([x, y]) => !candidates.some((c) => c.pos[0] === x && c.pos[1] === y)).map(([x, y]) => (
             <path d={bracket(x, y, 26)} vector-effect="non-scaling-stroke" />
           ))}
@@ -214,9 +214,9 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     <!-- Hyperspectral -->
     <g class="ss-layer" data-layer="hsi">
       <g transform={plane(layerY.hsi)}>
-        <path d={diamond} fill="#0b0e10" />
+        <path d={diamond} style="fill: var(--panel)" />
         {hsiCells.map((c) => <rect x={c.x + 1} y={c.y + 1} width={cell - 2} height={cell - 2} fill={c.fill} opacity={c.o} />)}
-        <rect class="ss-scan" x="0" y="0" width="26" height="400" fill="#f2f1ec" fill-opacity="0.14" />
+        <rect class="ss-scan" x="0" y="0" width="26" height="400" fill-opacity="0.14" style="fill: var(--on-panel)" />
         <path class="ss-edge" d={diamond} fill="none" vector-effect="non-scaling-stroke" />
       </g>
     </g>
@@ -259,7 +259,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
           {[...aircraft, decoy].map(([x, y]) => <path d={plan} transform={`translate(${x} ${y}) scale(1.05)`} />)}
         </g>
         <rect x={netted[0] - 11} y={netted[1] - 8} width="22" height="16" rx="5" fill="#5b5847" />
-        <rect class="ss-scan" x="0" y="0" width="26" height="400" fill="#ffffff" fill-opacity="0.14" />
+        <rect class="ss-scan" x="0" y="0" width="26" height="400" fill-opacity="0.14" style="fill: var(--on-signal)" />
         <path class="ss-edge" d={diamond} fill="none" vector-effect="non-scaling-stroke" />
       </g>
     </g>
@@ -405,7 +405,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .ss-edge {
-    stroke: rgba(242, 241, 236, 0.28);
+    stroke: color-mix(in srgb, var(--on-panel) 28%, transparent);
     stroke-width: 1;
     transition: stroke 0.4s var(--ease);
   }
@@ -430,7 +430,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   [data-active="sar"] [data-layer="sar"] .ss-edge,
   [data-active="hsi"] [data-layer="hsi"] .ss-edge,
   [data-active="fused"] [data-layer="fused"] .ss-edge {
-    stroke: #f2f1ec;
+    stroke: var(--on-panel);
   }
 
   /* Dim readings that are not on the peeled layer. */
@@ -461,7 +461,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .ss-cand-mark {
-    stroke: #f2f1ec;
+    stroke: var(--on-panel);
     stroke-width: 1.6;
     transition: stroke 0.3s var(--ease);
   }
@@ -481,7 +481,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   [data-cand-active="C-2"] [data-mark="C-2"],
   [data-cand-active="C-3"] [data-mark="C-3"],
   [data-cand-active="C-4"] [data-mark="C-4"] {
-    stroke: #e4571e;
+    stroke: var(--signal);
     stroke-width: 2.6;
   }
 
@@ -490,7 +490,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .ss-beam {
-    stroke: #e4571e;
+    stroke: var(--signal);
     stroke-width: 1.6;
     stroke-dasharray: 3 7;
     animation: ss-flow 1.2s linear infinite;
@@ -503,45 +503,45 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .ss-hit {
-    fill: rgba(228, 87, 30, 0.2);
-    stroke: #e4571e;
+    fill: color-mix(in srgb, var(--signal) 20%, transparent);
+    stroke: var(--signal);
     stroke-width: 1.5;
   }
 
   .ss-reading rect {
-    fill: rgba(11, 14, 16, 0.9);
-    stroke: rgba(242, 241, 236, 0.18);
+    fill: color-mix(in srgb, var(--panel) 90%, transparent);
+    stroke: color-mix(in srgb, var(--on-panel) 18%, transparent);
   }
 
   .ss-reading text {
     font-family: var(--mono);
     font-size: 11.5px;
     letter-spacing: 0.05em;
-    fill: #f2f1ec;
+    fill: var(--on-panel);
   }
 
   .ss-reading.is-ok text {
-    fill: #5fd3b0;
+    fill: var(--ok);
   }
 
   .ss-reading.is-no text {
-    fill: #ff8a5c;
+    fill: var(--signal-ink);
   }
 
   .ss-reading.is-no rect {
-    stroke: rgba(228, 87, 30, 0.6);
+    stroke: color-mix(in srgb, var(--signal) 60%, transparent);
   }
 
   .ss-finding path {
-    stroke: #e4571e;
+    stroke: var(--signal);
   }
 
   .ss-finding rect {
-    fill: #c2410c;
+    fill: var(--signal-fill);
   }
 
   .ss-finding text {
-    fill: #fff;
+    fill: var(--on-signal);
     font-family: var(--mono);
     font-size: 12.5px;
     letter-spacing: 0.06em;
@@ -549,7 +549,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
 
   .ss-ping {
     fill: none;
-    stroke: #e4571e;
+    stroke: var(--signal);
     stroke-width: 1.5;
     transform-box: fill-box;
     transform-origin: center;
@@ -573,15 +573,15 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .ss-target:hover {
-    fill: rgba(242, 241, 236, 0.1);
+    fill: color-mix(in srgb, var(--on-panel) 10%, transparent);
   }
 
   .ss-tag line {
-    stroke: rgba(242, 241, 236, 0.4);
+    stroke: color-mix(in srgb, var(--on-panel) 40%, transparent);
   }
 
   .ss-tag-code {
-    fill: #f2f1ec;
+    fill: var(--on-panel);
     font-family: var(--mono);
     font-size: 14px;
     font-weight: 500;
@@ -590,7 +590,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .ss-tag-name {
-    fill: rgba(242, 241, 236, 0.5);
+    fill: color-mix(in srgb, var(--on-panel) 50%, transparent);
     font-family: var(--sans);
     font-size: 13px;
   }
@@ -599,15 +599,15 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   [data-active="sar"] [data-tag="sar"] .ss-tag-code,
   [data-active="hsi"] [data-tag="hsi"] .ss-tag-code,
   [data-active="fused"] [data-tag="fused"] .ss-tag-code {
-    fill: #e4571e;
+    fill: var(--signal);
   }
 
   /* Review card */
 
   .wb {
     margin-top: 6px;
-    border: 1px solid var(--night-rule);
-    background: rgba(18, 23, 26, 0.86);
+    border: 1px solid var(--panel-rule);
+    background: color-mix(in srgb, var(--panel-2) 86%, transparent);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
   }
@@ -618,7 +618,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     align-items: center;
     gap: 12px;
     padding: 10px 12px 10px 16px;
-    border-bottom: 1px solid var(--night-rule);
+    border-bottom: 1px solid var(--panel-rule);
   }
 
   .wb-title {
@@ -626,11 +626,11 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     font-size: 11.5px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--on-night);
+    color: var(--on-panel);
   }
 
   .wb-title span {
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   .wb-cands {
@@ -642,23 +642,23 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     position: relative;
     min-height: 30px;
     padding: 0 10px;
-    border: 1px solid var(--night-rule);
+    border: 1px solid var(--panel-rule);
     background: transparent;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
     font-family: var(--mono);
     font-size: 12px;
     transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
   }
 
   .wb-cands button:hover {
-    border-color: var(--on-night-3);
-    color: var(--on-night);
+    border-color: var(--on-panel-3);
+    color: var(--on-panel);
   }
 
   .wb-cands button[aria-pressed="true"] {
-    background: var(--on-night);
-    border-color: var(--on-night);
-    color: var(--night);
+    background: var(--on-panel);
+    border-color: var(--on-panel);
+    color: var(--panel);
   }
 
   .wb-cands button.is-done::after {
@@ -669,14 +669,14 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background: #1a9c80;
-    box-shadow: 0 0 0 2px var(--night);
+    background: var(--ok);
+    box-shadow: 0 0 0 2px var(--panel);
   }
 
   .wb-readings {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    border-bottom: 1px solid var(--night-rule);
+    border-bottom: 1px solid var(--panel-rule);
   }
 
   .wb-readings li {
@@ -689,12 +689,12 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .wb-readings li + li {
-    border-left: 1px solid var(--night-rule);
+    border-left: 1px solid var(--panel-rule);
   }
 
   .wb-readings li:hover,
   .wb-readings li:focus-visible {
-    background: rgba(242, 241, 236, 0.05);
+    background: color-mix(in srgb, var(--on-panel) 5%, transparent);
     outline: none;
   }
 
@@ -702,14 +702,14 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     font-family: var(--mono);
     font-size: 11px;
     letter-spacing: 0.06em;
-    color: var(--on-night-3);
+    color: var(--on-panel-3);
   }
 
   .wb-text {
     grid-column: 1;
     font-size: 13.5px;
     line-height: 1.35;
-    color: var(--on-night);
+    color: var(--on-panel);
   }
 
   .wb-status {
@@ -726,13 +726,13 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   }
 
   .is-ok .wb-status {
-    background: rgba(26, 156, 128, 0.2);
-    color: #5fd3b0;
+    background: color-mix(in srgb, var(--series-2) 20%, transparent);
+    color: var(--ok);
   }
 
   .is-no .wb-status {
-    background: rgba(228, 87, 30, 0.2);
-    color: #ff8a5c;
+    background: color-mix(in srgb, var(--signal) 20%, transparent);
+    color: var(--signal-ink);
   }
 
   .wb-verdict {
@@ -753,12 +753,12 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   .wb-assessment strong {
     font-size: 16px;
     font-weight: 500;
-    color: var(--on-night);
+    color: var(--on-panel);
   }
 
   .wb-assessment span {
     font-size: 13px;
-    color: var(--on-night-2);
+    color: var(--on-panel-2);
   }
 
   .wb-actions {
@@ -769,28 +769,28 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
   .wb-actions button {
     min-height: 36px;
     padding: 0 16px;
-    border: 1px solid var(--night-rule);
+    border: 1px solid var(--panel-rule);
     background: transparent;
-    color: var(--on-night);
+    color: var(--on-panel);
     font-size: 14px;
     transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
   }
 
   .wb-actions button:hover {
-    border-color: var(--on-night);
+    border-color: var(--on-panel);
   }
 
   .wb-actions .is-accept {
-    background: var(--on-night);
-    border-color: var(--on-night);
-    color: var(--night);
+    background: var(--on-panel);
+    border-color: var(--on-panel);
+    color: var(--panel);
     font-weight: 500;
   }
 
   .wb-actions .is-accept:hover {
     background: var(--signal);
     border-color: var(--signal);
-    color: #fff;
+    color: var(--on-signal);
   }
 
   .wb-log {
@@ -801,15 +801,15 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
     font-family: var(--mono);
     font-size: 12px;
     letter-spacing: 0.02em;
-    color: #5fd3b0;
+    color: var(--ok);
   }
 
   .wb-log button,
   .wb-log a {
     padding: 4px 10px;
-    border: 1px solid var(--night-rule);
+    border: 1px solid var(--panel-rule);
     background: transparent;
-    color: var(--on-night);
+    color: var(--on-panel);
     font-family: var(--sans);
     font-size: 13px;
     letter-spacing: 0;
@@ -818,7 +818,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
 
   .wb-log button:hover,
   .wb-log a:hover {
-    border-color: var(--on-night);
+    border-color: var(--on-panel);
   }
 
   @media (max-width: 560px) {
@@ -833,7 +833,7 @@ const tagWidth = (text: string) => text.length * 7.6 + 30;
 
     .wb-readings li + li {
       border-left: 0;
-      border-top: 1px solid var(--night-rule);
+      border-top: 1px solid var(--panel-rule);
     }
 
     .ss-tag-name,

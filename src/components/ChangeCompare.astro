@@ -58,7 +58,7 @@ const divider = view.x + (view.w * start) / 100;
 
         <g clip-path={`url(#${id}-after)`}>
           <image href="/imagery/monitored-site-follow-on-2026.webp" x="2" y={followOnOffsetY} width="1546" height="1090" />
-          <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="#0b0e10" opacity="0.18" />
+          <rect x={view.x} y={view.y} width={view.w} height={view.h} opacity="0.18" style="fill: var(--panel)" />
           {current.map((mark) => (
             <g>
               <path class:list={["mark-box", mark.state === "new" && "is-change"]} d={bracket(mark.x, mark.y, mark.size)} />
@@ -78,7 +78,7 @@ const divider = view.x + (view.w * start) / 100;
 
         <g clip-path={`url(#${id}-before)`}>
           <image href="/imagery/monitored-site-reference-2025.webp" x="0" y="0" width="1564" height="1136" />
-          <rect x={view.x} y={view.y} width={view.w} height={view.h} fill="#0b0e10" opacity="0.18" />
+          <rect x={view.x} y={view.y} width={view.w} height={view.h} opacity="0.18" style="fill: var(--panel)" />
           {baseline.map((mark) => (
             <path class:list={["mark-box", mark.state === "vacated" && "is-vacated"]} d={bracket(mark.x, mark.y)} />
           ))}
